@@ -21,7 +21,7 @@ import org.apache.streampipes.model.graph.DataSinkDescription;
 
 import java.util.List;
 
-public interface IDataSinkStorage extends CRUDStorage<DataSinkDescription> {
+public interface IDataSinkStorage extends CRUDStorage<String, DataSinkDescription> {
 
   DataSinkDescription getFirstDataSinkByAppId(String appId);
 

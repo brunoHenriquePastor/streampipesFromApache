@@ -182,7 +182,8 @@ export class JsplumbService {
     ) {
         const sourceElement = sourceElementSelector.get()[0];
         const jsplumbBridge = this.getBridge(previewConfig);
-        const jsplumbConfig = this.jsplumbEndpointService.getJsplumbConfig();
+        const jsplumbConfig =
+            this.jsplumbEndpointService.getJsplumbConfig(true);
         const options = sourceElementSelector.hasClass('stream')
             ? jsplumbConfig.streamEndpointOptions
             : jsplumbConfig.sepaEndpointOptions;
@@ -251,7 +252,9 @@ export class JsplumbService {
         isCompleted: boolean,
         newElementId?: string,
     ): PipelineElementConfig {
-        const displaySettings = 'connectable-editor';
+        const displaySettings = isPreview
+            ? 'connectable-preview'
+            : 'connectable-editor';
         const connectable = 'connectable';
         const pipelineElementConfig = {} as PipelineElementConfig;
         pipelineElementConfig.type = PipelineElementTypeUtils.toCssShortHand(
@@ -263,6 +266,7 @@ export class JsplumbService {
         );
         pipelineElementConfig.settings = {
             connectable,
+            preview: isPreview,
             completed:
                 pipelineElement instanceof SpDataStream ||
                 isPreview ||
@@ -364,6 +368,7 @@ export class JsplumbService {
         if (endpoints) {
             const endpointOptions =
                 this.jsplumbEndpointService.getStreamEndpoint(
+                    preview,
                     pipelineElementDomId,
                 );
             jsplumbBridge.addEndpoint(pipelineElementDomId, endpointOptions);
@@ -388,6 +393,7 @@ export class JsplumbService {
             jsplumbBridge.addEndpoint(
                 pipelineElementDomId,
                 this.jsplumbEndpointService.getOutputEndpoint(
+                    preview,
                     pipelineElementDomId,
                 ),
             );
@@ -408,6 +414,7 @@ export class JsplumbService {
                 jsplumbBridge.addEndpoint(
                     pipelineElementDomId,
                     this.jsplumbEndpointService.getInputEndpoint(
+                        preview,
                         pipelineElementDomId,
                         0,
                     ),
@@ -416,6 +423,7 @@ export class JsplumbService {
                 jsplumbBridge.addEndpoint(
                     pipelineElementDomId,
                     this.jsplumbEndpointService.getNewTargetPoint(
+                        preview,
                         0,
                         0.3,
                         pipelineElementDomId,
@@ -425,6 +433,7 @@ export class JsplumbService {
                 jsplumbBridge.addEndpoint(
                     pipelineElementDomId,
                     this.jsplumbEndpointService.getNewTargetPoint(
+                        preview,
                         0,
                         0.7,
                         pipelineElementDomId,

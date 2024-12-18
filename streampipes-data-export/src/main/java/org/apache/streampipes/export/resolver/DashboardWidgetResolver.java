@@ -28,7 +28,7 @@ public class DashboardWidgetResolver extends AbstractResolver<DashboardWidgetMod
 
   @Override
   public DashboardWidgetModel findDocument(String resourceId) {
-    return getNoSqlStore().getDashboardWidgetStorage().getElementById(resourceId);
+    return getNoSqlStore().getDashboardWidgetStorage().getDashboardWidget(resourceId);
   }
 
   @Override
@@ -44,12 +44,12 @@ public class DashboardWidgetResolver extends AbstractResolver<DashboardWidgetMod
 
   @Override
   public ExportItem convert(DashboardWidgetModel document) {
-    return new ExportItem(document.getElementId(), document.getVisualizationName(), true);
+    return new ExportItem(document.getId(), document.getVisualizationName(), true);
   }
 
   @Override
   public void writeDocument(String document) throws JsonProcessingException {
-    getNoSqlStore().getDashboardWidgetStorage().persist(deserializeDocument(document));
+    getNoSqlStore().getDashboardWidgetStorage().storeDashboardWidget(deserializeDocument(document));
   }
 
   @Override

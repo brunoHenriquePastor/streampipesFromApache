@@ -30,9 +30,20 @@ public class DataSinkDescription extends ConsumableStreamPipesEntity {
 
   private List<String> category;
 
+  public DataSinkDescription(String uri, String name, String description, String iconUrl) {
+    super(uri, name, description, iconUrl);
+    this.spDataStreams = new ArrayList<>();
+    this.category = new ArrayList<>();
+  }
+
   public DataSinkDescription(DataSinkDescription other) {
     super(other);
     this.category = new Cloner().ecTypes(other.getCategory());
+  }
+
+  public DataSinkDescription(String uri, String name, String description) {
+    this(uri, name, description, "");
+    this.category = new ArrayList<>();
   }
 
   public DataSinkDescription() {
@@ -47,5 +58,6 @@ public class DataSinkDescription extends ConsumableStreamPipesEntity {
   public void setCategory(List<String> category) {
     this.category = category;
   }
+
 
 }

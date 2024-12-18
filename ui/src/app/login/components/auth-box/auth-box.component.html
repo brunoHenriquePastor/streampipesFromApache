@@ -44,39 +44,19 @@
             </div>
             <div fxLayout="row" fxLayoutAlign="end end" class="auth-box-footer">
                 <a
-                    *ngIf="linkSettings.showDocumentationLinkOnStartScreen"
                     class="footer-link"
-                    [href]="linkSettings.documentationUrl"
+                    href="https://streampipes.apache.org/docs/user-guide-introduction"
                 >
                     Documentation
                 </a>
-                <span
-                    style="margin-left: 10px; margin-right: 10px"
-                    *ngIf="linkSettings.showApiDocumentationLinkOnStartScreen"
-                >
-                    |
-                </span>
+                <span style="margin-left: 10px; margin-right: 10px"> | </span>
                 <a
-                    *ngIf="linkSettings.showApiDocumentationLinkOnStartScreen"
                     class="footer-link"
                     data-cy="view-api-docs-link"
                     routerLink="/apidocs"
                     routerLinkActive="active"
                     >API Documentation</a
                 >
-                <span
-                    style="margin-left: 10px; margin-right: 10px"
-                    *ngIf="linkSettings.showSupportUrlOnStartScreen"
-                >
-                    |
-                </span>
-                <a
-                    *ngIf="linkSettings.showSupportUrlOnStartScreen"
-                    class="footer-link"
-                    [href]="linkSettings.supportUrl"
-                >
-                    Support
-                </a>
             </div>
         </div>
     </div>

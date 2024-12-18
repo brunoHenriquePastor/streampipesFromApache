@@ -48,7 +48,7 @@ import { Observable, Subscription, timer } from 'rxjs';
 @Component({
     selector: 'sp-dashboard-grid',
     templateUrl: './dashboard-grid.component.html',
-    styleUrls: ['./dashboard-grid.component.scss'],
+    styleUrls: ['./dashboard-grid.component.css'],
 })
 export class DashboardGridComponent
     implements OnInit, OnChanges, AfterContentInit, OnDestroy

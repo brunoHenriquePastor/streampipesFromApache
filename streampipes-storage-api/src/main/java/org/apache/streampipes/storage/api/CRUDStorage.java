@@ -17,24 +17,17 @@
  */
 package org.apache.streampipes.storage.api;
 
-import org.apache.streampipes.model.Tuple2;
-
 import java.util.List;
 
-public interface CRUDStorage<T> {
+public interface CRUDStorage<K, V> {
 
-  List<T> findAll();
+  List<V> getAll();
 
-  Tuple2<Boolean, String> persist(T element);
+  void createElement(V element);
 
-  T getElementById(String id);
+  V getElementById(K id);
 
-  T updateElement(T element);
+  V updateElement(V element);
 
-  void deleteElement(T element);
-
-  default void deleteElementById(String id) {
-    var element = getElementById(id);
-    deleteElement(element);
-  }
+  void deleteElement(V element);
 }

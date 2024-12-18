@@ -16,10 +16,9 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import {
     CollectionStaticProperty,
-    ExtensionDeploymentConfiguration,
     StaticPropertyUnion,
 } from '@streampipes/platform-services';
 import { AbstractValidatedStaticPropertyRenderer } from '../base/abstract-validated-static-property';
@@ -27,12 +26,9 @@ import { AbstractValidatedStaticPropertyRenderer } from '../base/abstract-valida
 @Component({
     selector: 'sp-static-collection',
     templateUrl: './static-collection.component.html',
-    styleUrls: ['./static-collection.component.scss'],
+    styleUrls: ['./static-collection.component.css'],
 })
 export class StaticCollectionComponent extends AbstractValidatedStaticPropertyRenderer<CollectionStaticProperty> {
-    @Input()
-    deploymentConfiguration: ExtensionDeploymentConfiguration;
-
     constructor() {
         super();
     }
@@ -42,10 +38,18 @@ export class StaticCollectionComponent extends AbstractValidatedStaticPropertyRe
             this.staticProperty.members = [];
         }
         this.staticProperty.members.push(property);
+        this.updateIndex();
     }
 
     remove(i) {
         this.staticProperty.members.splice(i, 1).slice(0);
+        this.updateIndex();
+    }
+
+    updateIndex() {
+        this.staticProperty.members.forEach((property, index) => {
+            property.index = index;
+        });
     }
 
     onStatusChange(status: any) {}

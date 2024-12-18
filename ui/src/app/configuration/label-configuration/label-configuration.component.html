@@ -18,29 +18,28 @@
 
 <sp-basic-nav-tabs [spNavigationItems]="tabs" [activeLink]="'labels'">
     <div fxLayout="column" class="page-container-padding">
-        <sp-split-section
+        <sp-basic-header-title-component
             title="Labels"
-            subtitle="Configure labels which can be assigned to assets and other resources"
-        >
-            <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="10px">
-                <button
-                    mat-button
-                    mat-raised-button
-                    color="accent"
-                    data-cy="new-label-button"
-                    (click)="createLabelMode = true"
-                >
-                    <i class="material-icons">add</i
-                    ><span>&nbsp;New label</span>
-                </button>
-            </div>
-            <div *ngIf="createLabelMode" class="mb-10">
-                <sp-edit-label
-                    (cancelEmitter)="createLabelMode = false"
-                    (saveEmitter)="saveLabel($event)"
-                ></sp-edit-label>
-            </div>
-            <div class="subsection-title mt-10">Available labels</div>
+        ></sp-basic-header-title-component>
+        <div fxLayout="row" fxLayoutAlign="end start" fxLayoutGap="10px">
+            <button
+                mat-button
+                mat-raised-button
+                color="accent"
+                data-cy="new-label-button"
+                (click)="createLabelMode = true"
+            >
+                <i class="material-icons">add</i><span>&nbsp;New label</span>
+            </button>
+        </div>
+        <div *ngIf="createLabelMode">
+            <sp-edit-label
+                (cancelEmitter)="createLabelMode = false"
+                (saveEmitter)="saveLabel($event)"
+            ></sp-edit-label>
+        </div>
+
+        <sp-basic-inner-panel panelTitle="Available labels" class="mt-10">
             <div
                 fxLayout="column"
                 *ngFor="let label of allLabels"
@@ -53,7 +52,6 @@
                     fxLayoutGap="10px"
                 >
                     <sp-label
-                        size="small"
                         fxFlex="20"
                         [labelText]="label.label"
                         [labelBackground]="label.color"
@@ -66,7 +64,6 @@
                     <div fxFlex fxLayoutAlign="end center">
                         <button
                             mat-icon-button
-                            matTooltip="Edit label"
                             color="accent"
                             (click)="editedLabels.push(label._id)"
                             *ngIf="!isEditMode(label._id)"
@@ -75,7 +72,6 @@
                         </button>
                         <button
                             mat-icon-button
-                            matTooltip="Delete label"
                             color="warn"
                             (click)="deleteLabel(label)"
                             data-cy="delete-label-button"
@@ -95,6 +91,6 @@
                     </sp-edit-label>
                 </div>
             </div>
-        </sp-split-section>
+        </sp-basic-inner-panel>
     </div>
 </sp-basic-nav-tabs>

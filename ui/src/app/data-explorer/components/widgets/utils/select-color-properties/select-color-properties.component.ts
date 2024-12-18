@@ -63,6 +63,7 @@ export class SelectColorPropertiesComponent implements OnInit {
 
     triggerViewRefresh() {
         this.widgetConfigurationService.notify({
+            widgetId: this.currentlyConfiguredWidget._id,
             refreshData: false,
             refreshView: true,
         });

@@ -19,7 +19,7 @@ package org.apache.streampipes.model.client.user;
 
 public class PermissionBuilder {
 
-  private final Permission permission;
+  private Permission permission;
 
   private PermissionBuilder(String objectInstanceId,
                             Class<?> objectInstanceClass,

@@ -38,8 +38,7 @@ public class SpLogMessage {
 
   public static SpLogMessage from(Exception exception,
                                   String detail) {
-    var cause = exception.getCause() != null ? exception.getCause().getMessage() : exception.getMessage();
-
+    String cause = exception.getCause() != null ? exception.getCause().getMessage() : exception.getMessage();
     return new SpLogMessage(
         SpLogLevel.ERROR,
         exception.getMessage(),
@@ -78,7 +77,7 @@ public class SpLogMessage {
     this.fullStackTrace = other.getFullStackTrace();
   }
 
-  private SpLogMessage(SpLogLevel level,
+  public SpLogMessage(SpLogLevel level,
                       String title,
                       String detail) {
     this.level = level;
@@ -86,7 +85,7 @@ public class SpLogMessage {
     this.detail = detail;
   }
 
-  private SpLogMessage(SpLogLevel level,
+  public SpLogMessage(SpLogLevel level,
                       String title,
                       String detail,
                       String fullStackTrace,

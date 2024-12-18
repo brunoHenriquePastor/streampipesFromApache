@@ -89,7 +89,7 @@ export abstract class AdapterTemplateConfigurationDirective {
             this.selectedTemplate = event.value;
             this.pipelineElementTemplateService
                 .getConfiguredAdapterForTemplate(
-                    event.value.elementId,
+                    event.value._id,
                     this.adapterDescription,
                 )
                 .subscribe(adapterDescription => {

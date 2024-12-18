@@ -27,7 +27,7 @@
             formControlName="{{ fieldName }}"
             [style.background]="staticProperty.selectedColor"
             required
-            (blur)="checkCompleted()"
+            (blur)="emitUpdate()"
             [cpPresetColors]="presetColors"
         />
     </div>

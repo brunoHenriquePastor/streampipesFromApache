@@ -18,10 +18,9 @@
 package main
 
 import (
-	"log"
-
 	"github.com/apache/streampipes/streampipes-client-go/streampipes"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/config"
+	"log"
 )
 
 /*

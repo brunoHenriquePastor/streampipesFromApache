@@ -36,18 +36,16 @@ public class DeclarersSingletonTest {
     var id = "id";
     var testAdapter = mock(StreamPipesAdapter.class);
     doAnswer(invocation ->
-                 AdapterConfigurationBuilder
-                     .create(id, 0, null)
-                     .buildConfiguration())
+        AdapterConfigurationBuilder
+            .create(id, null)
+            .buildConfiguration())
         .when(testAdapter)
         .declareConfig();
 
 
-    DeclarersSingleton.getInstance()
-                      .setAdapters(List.of(testAdapter));
+    DeclarersSingleton.getInstance().setAdapters(List.of(testAdapter));
 
-    var result = DeclarersSingleton.getInstance()
-                                   .getAdapter(id);
+    var result = DeclarersSingleton.getInstance().getAdapter(id);
 
     Assertions.assertTrue(result.isPresent());
     Assertions.assertEquals(testAdapter, result.get());

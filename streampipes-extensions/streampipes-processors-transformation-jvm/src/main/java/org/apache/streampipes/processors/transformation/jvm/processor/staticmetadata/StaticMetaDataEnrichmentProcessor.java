@@ -26,7 +26,6 @@ import org.apache.streampipes.extensions.api.pe.param.IDataProcessorParameters;
 import org.apache.streampipes.extensions.api.pe.routing.SpOutputCollector;
 import org.apache.streampipes.extensions.api.runtime.ResolvesContainerProvidedOutputStrategy;
 import org.apache.streampipes.model.DataProcessorType;
-import org.apache.streampipes.model.extensions.ExtensionAssetType;
 import org.apache.streampipes.model.graph.DataProcessorInvocation;
 import org.apache.streampipes.model.runtime.Event;
 import org.apache.streampipes.model.schema.EventPropertyPrimitive;
@@ -46,6 +45,7 @@ import org.apache.streampipes.sdk.helpers.Labels;
 import org.apache.streampipes.sdk.helpers.Locales;
 import org.apache.streampipes.sdk.helpers.Options;
 import org.apache.streampipes.sdk.helpers.OutputStrategies;
+import org.apache.streampipes.sdk.utils.Assets;
 import org.apache.streampipes.sdk.utils.Datatypes;
 
 import java.util.ArrayList;
@@ -81,8 +81,8 @@ public class StaticMetaDataEnrichmentProcessor
                                 .withLocales(
                                     Locales.EN)
                                 .withAssets(
-                                    ExtensionAssetType.DOCUMENTATION,
-                                    ExtensionAssetType.ICON
+                                    Assets.DOCUMENTATION,
+                                    Assets.ICON
                                 )
                                 .requiredCollection(
                                     Labels.withId(

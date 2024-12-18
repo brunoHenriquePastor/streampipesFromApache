@@ -25,16 +25,13 @@
         <div fxFlex="100">
             <sp-app-static-property
                 *ngFor="let config of configuration"
-                [deploymentConfiguration]="deploymentConfiguration"
                 [staticProperty]="config"
                 [staticProperties]="configuration"
                 [adapterId]="adapterId"
                 [parentForm]="configurationGroup"
                 [fieldName]="config.internalName"
-                [completedConfigurations]="completedConfigurations"
-                (completedConfigurationsEmitter)="
-                    updateCompletedConfiguration($event)
-                "
+                (updateEmitter)="triggerUpdate($event)"
+                [completedStaticProperty]="completedStaticProperty"
             >
             </sp-app-static-property>
         </div>

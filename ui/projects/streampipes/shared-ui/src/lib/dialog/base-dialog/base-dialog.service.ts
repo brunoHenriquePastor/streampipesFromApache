@@ -102,12 +102,8 @@ export class DialogService {
                 overlayRef.dispose();
             }
         });
-
         if (!config.disableClose) {
-            overlayRef.backdropClick().subscribe(() => {
-                panelDialogComponentRef.instance.close();
-                overlayRef.dispose();
-            });
+            overlayRef.backdropClick().subscribe(() => overlayRef.dispose());
         }
     }
 

@@ -14,14 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-files: ^streampipes-client-python/(streampipes|tests)/
+files: streampipes/|tests/
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v4.2.0
     hooks:
       - id: check-json
       - id: check-yaml
-      - id: check-toml
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: mixed-line-ending
@@ -47,35 +46,35 @@ repos:
         name: pyupgrade
         language: python
         types: [ python ]
-        entry: pyupgrade --py38-plus --keep-runtime-typing
+        entry: pyupgrade --py38 --keep-runtime-typing
         verbose: true
 
       - id: autoflake
         name: autoflake
         language: python
         types: [ python ]
-        entry: autoflake
+        entry: autoflake --remove-all-unused-imports --expand-star-imports --in-place --remove-unused-variables --remove-duplicate-keys
         verbose: true
 
       - id: isort
         name: isort
         language: python
         types: [ python ]
-        entry: isort
+        entry: isort --profile black
         verbose: true
 
       - id: black
         name: black
         language: python
         types: [ python ]
-        entry: black
+        entry: black --line-length=120
         verbose: true
 
       - id: blacken-docks
         name: blacken-docs
         language: python
         types: [ python ]
-        entry: black
+        entry: black --line-length=120
         verbose: true
 
       - id: mypy

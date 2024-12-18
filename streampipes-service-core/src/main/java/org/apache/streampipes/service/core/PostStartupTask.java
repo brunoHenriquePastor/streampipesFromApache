@@ -20,8 +20,8 @@ package org.apache.streampipes.service.core;
 
 import org.apache.streampipes.commons.prometheus.adapter.AdapterMetricsManager;
 import org.apache.streampipes.connect.management.management.WorkerAdministrationManagement;
-import org.apache.streampipes.manager.execution.PipelineExecutor;
 import org.apache.streampipes.manager.health.ServiceHealthCheck;
+import org.apache.streampipes.manager.operations.Operations;
 import org.apache.streampipes.model.extensions.svcdiscovery.SpServiceTagPrefix;
 import org.apache.streampipes.model.pipeline.Pipeline;
 import org.apache.streampipes.model.pipeline.PipelineOperationStatus;
@@ -74,7 +74,7 @@ public class PostStartupTask implements Runnable {
 
   private void performAdapterAssetUpdate() {
     var installedAppIds = CouchDbStorageManager.INSTANCE.getExtensionsServiceStorage()
-                                                        .findAll()
+                                                        .getAll()
                                                         .stream()
                                                         .flatMap(config -> config.getTags()
                                                                                  .stream())
@@ -88,7 +88,7 @@ public class PostStartupTask implements Runnable {
   }
 
   private void startAllPreviouslyStoppedPipelines() {
-    var allPipelines = pipelineStorage.findAll();
+    var allPipelines = pipelineStorage.getAllPipelines();
     LOG.info("Checking for orphaned pipelines...");
     List<Pipeline> orphanedPipelines = allPipelines
         .stream()
@@ -120,12 +120,12 @@ public class PostStartupTask implements Runnable {
   }
 
   private void startPipeline(Pipeline pipeline, boolean restartOnReboot) {
-    PipelineOperationStatus status = new PipelineExecutor(pipeline).startPipeline();
+    PipelineOperationStatus status = Operations.startPipeline(pipeline);
     if (status.isSuccess()) {
       LOG.info("Pipeline {} successfully restarted", status.getPipelineName());
-      Pipeline storedPipeline = getPipelineStorage().getElementById(pipeline.getPipelineId());
+      Pipeline storedPipeline = getPipelineStorage().getPipeline(pipeline.getPipelineId());
       storedPipeline.setRestartOnSystemReboot(restartOnReboot);
-      getPipelineStorage().updateElement(storedPipeline);
+      getPipelineStorage().updatePipeline(storedPipeline);
     } else {
       storeFailedRestartAttempt(pipeline);
       int failedAttemptCount = failedPipelines.get(pipeline.getPipelineId());

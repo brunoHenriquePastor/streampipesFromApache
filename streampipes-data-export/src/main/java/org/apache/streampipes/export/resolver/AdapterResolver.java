@@ -29,7 +29,7 @@ public class AdapterResolver extends AbstractResolver<AdapterDescription> {
 
   @Override
   public AdapterDescription findDocument(String resourceId) {
-    return getNoSqlStore().getAdapterInstanceStorage().getElementById(resourceId);
+    return getNoSqlStore().getAdapterInstanceStorage().getAdapter(resourceId);
   }
 
   @Override
@@ -53,7 +53,7 @@ public class AdapterResolver extends AbstractResolver<AdapterDescription> {
 
   @Override
   public void writeDocument(String document) throws JsonProcessingException {
-    getNoSqlStore().getAdapterInstanceStorage().persist(deserializeDocument(document));
+    getNoSqlStore().getAdapterInstanceStorage().storeAdapter(deserializeDocument(document));
   }
 
   public void writeDocument(String document,
@@ -62,7 +62,7 @@ public class AdapterResolver extends AbstractResolver<AdapterDescription> {
     if (overrideDocument) {
       overrideProtocol(adapterDescription.getEventGrounding());
     }
-    getNoSqlStore().getAdapterInstanceStorage().persist(adapterDescription);
+    getNoSqlStore().getAdapterInstanceStorage().storeAdapter(adapterDescription);
   }
 
   @Override

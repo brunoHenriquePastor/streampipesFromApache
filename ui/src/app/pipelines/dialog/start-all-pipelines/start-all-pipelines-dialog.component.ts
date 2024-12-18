@@ -29,6 +29,9 @@ export class StartAllPipelinesDialogComponent implements OnInit {
     @Input()
     pipelines: Pipeline[];
 
+    @Input()
+    activeCategory: string;
+
     pipelinesToModify: Pipeline[];
     installationStatus: any;
     installationFinished: boolean;
@@ -74,10 +77,27 @@ export class StartAllPipelinesDialogComponent implements OnInit {
 
     getPipelinesToModify() {
         this.pipelines.forEach(pipeline => {
-            if (pipeline.running !== this.action) {
+            if (
+                pipeline.running !== this.action &&
+                this.hasCategory(pipeline)
+            ) {
                 this.pipelinesToModify.push(pipeline);
             }
         });
+    }
+
+    hasCategory(pipeline: Pipeline) {
+        let categoryPresent = false;
+        if (!this.activeCategory) {
+            return true;
+        } else {
+            pipeline.pipelineCategories.forEach(category => {
+                if (category === this.activeCategory) {
+                    categoryPresent = true;
+                }
+            });
+            return categoryPresent;
+        }
     }
 
     initiateInstallation(pipeline, index) {

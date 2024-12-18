@@ -26,5 +26,4 @@ export type UserInputType =
     | 'click'
     | 'button'
     | 'slider'
-    | 'select'
-    | 'tree';
+    | 'select';

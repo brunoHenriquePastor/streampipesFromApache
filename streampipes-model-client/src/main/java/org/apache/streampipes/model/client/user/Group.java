@@ -18,7 +18,6 @@
 package org.apache.streampipes.model.client.user;
 
 import org.apache.streampipes.model.shared.annotation.TsModel;
-import org.apache.streampipes.model.shared.api.Storable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.annotations.SerializedName;
@@ -27,19 +26,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 @TsModel
-public class Group implements Storable {
+public class Group {
 
   protected @SerializedName("_id") String groupId;
   protected @SerializedName("_rev") String rev;
 
   // This field should be called $type since this is the identifier used in the CouchDB view
-  @SerializedName("$type")
+  @SuppressWarnings("checkstyle:MemberName")
   @JsonIgnore
-  private String type = "group";
+  private String $type = "group";
 
   private String groupName;
 
-  private Set<String> roles;
+  private Set<Role> roles;
 
   public Group() {
     this.roles = new HashSet<>();
@@ -61,16 +60,6 @@ public class Group implements Storable {
     this.rev = rev;
   }
 
-  @Override
-  public String getElementId() {
-    return this.groupId;
-  }
-
-  @Override
-  public void setElementId(String elementId) {
-    this.groupId = elementId;
-  }
-
   public String getGroupName() {
     return groupName;
   }
@@ -79,19 +68,21 @@ public class Group implements Storable {
     this.groupName = groupName;
   }
 
-  public Set<String> getRoles() {
+  public Set<Role> getRoles() {
     return roles;
   }
 
-  public void setRoles(Set<String> roles) {
+  public void setRoles(Set<Role> roles) {
     this.roles = roles;
   }
 
-  public String getType() {
-    return type;
+  @SuppressWarnings("checkstyle:MethodName")
+  public String get$type() {
+    return $type;
   }
 
-  public void setType(String type) {
-    this.type = type;
+  @SuppressWarnings({"checkstyle:MethodName", "checkstyle:ParameterName"})
+  public void set$type(String $type) {
+    this.$type = $type;
   }
 }

@@ -80,7 +80,7 @@ public class FlinkDataProcessorRuntime extends FlinkRuntime<
 
     EventGrounding outputGrounding = getOutputStream().getEventGrounding();
     SpDataFormatDefinition outputDataFormatDefinition =
-        getDataFormatDefinition();
+        getDataFormatDefinition(outputGrounding.getTransportFormats().get(0));
 
     ByteArraySerializer serializer =
         new ByteArraySerializer(outputDataFormatDefinition);

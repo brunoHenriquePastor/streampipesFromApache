@@ -29,8 +29,8 @@ export class PrimitivePropertyMatch {
                     offer.runtimeType,
                 ) &&
                 new DomainPropertyMatch().match(
-                    requirement.semanticType,
-                    offer.semanticType,
+                    requirement.domainProperties,
+                    offer.domainProperties,
                 )
             );
         } else {

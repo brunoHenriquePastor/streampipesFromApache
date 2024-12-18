@@ -16,45 +16,28 @@
  *
  */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import {
-    ExtensionDeploymentConfiguration,
-    StaticPropertyUnion,
-} from '@streampipes/platform-services';
+import { StaticPropertyUnion } from '@streampipes/platform-services';
 import { ConfigurationInfo } from '../../model/ConfigurationInfo';
-import { StaticPropertyUtilService } from '../../../core-ui/static-properties/static-property-util.service';
 
 @Component({
     selector: 'sp-configuration-group',
     templateUrl: './configuration-group.component.html',
     styleUrls: ['./configuration-group.component.scss'],
 })
-export class ConfigurationGroupComponent implements OnInit {
+export class ConfigurationGroupComponent {
     @Input() configurationGroup: UntypedFormGroup;
 
     @Input() adapterId: string;
 
     @Input() configuration: StaticPropertyUnion[];
 
-    @Input() deploymentConfiguration: ExtensionDeploymentConfiguration;
+    completedStaticProperty: ConfigurationInfo;
 
-    completedConfigurations: ConfigurationInfo[] = [];
+    constructor() {}
 
-    constructor(private staticPropertyUtils: StaticPropertyUtilService) {}
-
-    ngOnInit() {
-        this.completedConfigurations =
-            this.staticPropertyUtils.initializeCompletedConfigurations(
-                this.configuration,
-            );
-    }
-
-    updateCompletedConfiguration(configurationInfo: ConfigurationInfo) {
-        this.staticPropertyUtils.updateCompletedConfiguration(
-            configurationInfo,
-            this.completedConfigurations,
-        );
-        this.completedConfigurations = [...this.completedConfigurations];
+    triggerUpdate(configurationInfo: ConfigurationInfo) {
+        this.completedStaticProperty = { ...configurationInfo };
     }
 }

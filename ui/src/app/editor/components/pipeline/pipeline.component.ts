@@ -24,7 +24,6 @@ import { ShepherdService } from '../../../services/tour/shepherd.service';
 import {
     Component,
     EventEmitter,
-    HostListener,
     Input,
     NgZone,
     OnDestroy,
@@ -43,11 +42,11 @@ import {
     DataSinkInvocation,
     Notification,
     Pipeline,
+    PipelineCanvasMetadata,
     PipelineEdgeValidation,
     PipelineModificationMessage,
     PipelinePreviewModel,
     SpDataStream,
-    SpMetricsEntry,
 } from '@streampipes/platform-services';
 import { ObjectProvider } from '../../services/object-provider.service';
 import { CustomizeComponent } from '../../dialog/customize/customize.component';
@@ -59,7 +58,9 @@ import {
 import { EditorService } from '../../services/editor.service';
 import { MatchingErrorComponent } from '../../dialog/matching-error/matching-error.component';
 import { MatDialog } from '@angular/material/dialog';
+import { forkJoin } from 'rxjs';
 import { JsplumbFactoryService } from '../../services/jsplumb-factory.service';
+import { PipelinePositioningService } from '../../services/pipeline-positioning.service';
 import {
     EVENT_CONNECTION,
     EVENT_CONNECTION_ABORT,
@@ -73,44 +74,48 @@ import { IdGeneratorService } from '../../../core-services/id-generator/id-gener
 @Component({
     selector: 'sp-pipeline',
     templateUrl: './pipeline.component.html',
-    styleUrls: ['./pipeline.component.scss'],
+    styleUrls: ['./pipeline.component.css'],
 })
 export class PipelineComponent implements OnInit, OnDestroy {
     @Input()
     pipelineValid: boolean;
 
     @Input()
-    rawPipelineModel: PipelineElementConfig[];
+    canvasId: string;
 
     @Input()
-    pipelineElement: PipelineElementConfig;
+    rawPipelineModel: PipelineElementConfig[];
 
     @Input()
     allElements: PipelineElementUnion[];
 
     @Input()
-    readonly: boolean;
+    preview: boolean;
 
     @Input()
-    metricsInfo: Record<string, SpMetricsEntry>;
+    pipelineCached: boolean;
 
     @Output()
-    deletePreviewEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
+    pipelineCachedChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+    @Input()
+    pipelineCacheRunning: boolean;
+
+    @Input()
+    pipelineCanvasMetadata: PipelineCanvasMetadata;
 
     @Output()
-    triggerPipelineCacheUpdateEmitter: EventEmitter<void> = new EventEmitter();
+    pipelineCacheRunningChanged: EventEmitter<boolean> =
+        new EventEmitter<boolean>();
 
-    currentMouseOverElement = '';
+    currentMouseOverElement: string;
     currentPipelineModel: Pipeline;
     idCounter: any;
     currentZoomLevel: any;
 
     JsplumbBridge: JsplumbBridge;
 
-    @Input()
     previewModeActive = false;
-
-    @Input()
     pipelinePreview: PipelinePreviewModel;
 
     shouldOpenCustomizeSettings = false;
@@ -118,6 +123,7 @@ export class PipelineComponent implements OnInit, OnDestroy {
     constructor(
         private jsplumbService: JsplumbService,
         private pipelineEditorService: PipelineEditorService,
+        private pipelinePositioningService: PipelinePositioningService,
         private jsplumbFactoryService: JsplumbFactoryService,
         private objectProvider: ObjectProvider,
         private editorService: EditorService,
@@ -129,6 +135,7 @@ export class PipelineComponent implements OnInit, OnDestroy {
         private dialog: MatDialog,
         private ngZone: NgZone,
     ) {
+        this.currentMouseOverElement = '';
         this.currentPipelineModel = new Pipeline();
         this.idCounter = 0;
 
@@ -137,24 +144,10 @@ export class PipelineComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.JsplumbBridge = this.jsplumbFactoryService.getJsplumbBridge(
-            this.readonly,
+            this.preview,
         );
-        if (!this.readonly) {
-            this.initAssembly();
-            this.initPlumb();
-        }
-    }
-
-    getCssStyle(
-        pipelineElementConfig: PipelineElementConfig,
-    ): Record<string, string> {
-        return {
-            position: 'absolute',
-            width: '90px',
-            height: '90px',
-            left: pipelineElementConfig.settings.position.x + 'px',
-            top: pipelineElementConfig.settings.position.y + 'px',
-        };
+        this.initAssembly();
+        this.initPlumb();
     }
 
     validatePipeline(pm?: PipelineModificationMessage) {
@@ -165,7 +158,7 @@ export class PipelineComponent implements OnInit, OnDestroy {
                         this.rawPipelineModel.filter(
                             pe => !pe.settings.disabled,
                         ),
-                        this.readonly,
+                        this.preview,
                         pm,
                     );
             });
@@ -173,13 +166,8 @@ export class PipelineComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.deletePreviewEmitter.emit(false);
-        this.jsplumbFactoryService.destroy();
-    }
-
-    @HostListener('window:beforeunload')
-    onWindowClose() {
-        this.ngOnDestroy();
+        this.deletePipelineElementPreview(false);
+        this.jsplumbFactoryService.destroy(this.preview);
     }
 
     updateMouseover(elementId: string) {
@@ -189,6 +177,55 @@ export class PipelineComponent implements OnInit, OnDestroy {
     updateOptionsClick(elementId: string) {
         this.currentMouseOverElement =
             this.currentMouseOverElement === elementId ? '' : elementId;
+    }
+
+    getElementCss(currentPipelineElementSettings) {
+        return (
+            'position:absolute;' +
+            (this.preview ? 'width:75px;' : 'width:90px;') +
+            (this.preview ? 'height:75px;' : 'height:90px;') +
+            'left: ' +
+            currentPipelineElementSettings.position.x +
+            'px; ' +
+            'top: ' +
+            currentPipelineElementSettings.position.y +
+            'px; '
+        );
+    }
+
+    getElementCssClasses(currentPipelineElement: PipelineElementConfig) {
+        return (
+            currentPipelineElement.type +
+            ' ' +
+            currentPipelineElement.settings.connectable +
+            ' ' +
+            currentPipelineElement.settings.displaySettings
+        );
+    }
+
+    isStreamInPipeline() {
+        return this.isInPipeline('stream');
+    }
+
+    isSetInPipeline() {
+        return this.isInPipeline('set');
+    }
+
+    isInPipeline(type: string) {
+        return this.rawPipelineModel.some(
+            x => x.type === type && !x.settings.disabled,
+        );
+    }
+
+    showMixedStreamAlert() {
+        this.dialog.open(ConfirmDialogComponent, {
+            width: '500px',
+            data: {
+                title: 'Currently, it is not possible to mix data streams and data sets in a single pipeline.',
+                confirmAndCancel: false,
+                okTitle: 'Ok',
+            },
+        });
     }
 
     findPipelineElementByElementId(elementId: string) {
@@ -219,39 +256,47 @@ export class PipelineComponent implements OnInit, OnDestroy {
                             false,
                             newElementId,
                         );
+                    if (
+                        (this.isStreamInPipeline() &&
+                            pipelineElementConfig.type === 'set') ||
+                        (this.isSetInPipeline() &&
+                            pipelineElementConfig.type === 'stream')
+                    ) {
+                        this.showMixedStreamAlert();
+                    } else {
+                        this.rawPipelineModel.push(pipelineElementConfig);
 
-                    this.rawPipelineModel.push(pipelineElementConfig);
-
-                    if (pipelineElementConfig.type === 'stream') {
-                        this.checkTopicModel(pipelineElementConfig);
-                    } else if (pipelineElementConfig.type === 'sepa') {
-                        setTimeout(() => {
-                            this.jsplumbService.dataProcessorDropped(
-                                pipelineElementConfig.payload.dom,
-                                pipelineElementConfig.payload as DataProcessorInvocation,
-                                true,
-                                false,
+                        if (pipelineElementConfig.type === 'stream') {
+                            this.checkTopicModel(pipelineElementConfig);
+                        } else if (pipelineElementConfig.type === 'sepa') {
+                            setTimeout(() => {
+                                this.jsplumbService.dataProcessorDropped(
+                                    pipelineElementConfig.payload.dom,
+                                    pipelineElementConfig.payload as DataProcessorInvocation,
+                                    true,
+                                    false,
+                                );
+                            }, 10);
+                        } else if (pipelineElementConfig.type === 'action') {
+                            setTimeout(() => {
+                                this.jsplumbService.dataSinkDropped(
+                                    pipelineElementConfig.payload.dom,
+                                    pipelineElementConfig.payload as DataSinkInvocation,
+                                    true,
+                                    false,
+                                );
+                            }, 10);
+                        }
+                        if (this.shepherdService.isTourActive()) {
+                            this.shepherdService.trigger(
+                                'drop-' + pipelineElementConfig.type,
                             );
-                        }, 10);
-                    } else if (pipelineElementConfig.type === 'action') {
-                        setTimeout(() => {
-                            this.jsplumbService.dataSinkDropped(
-                                pipelineElementConfig.payload.dom,
-                                pipelineElementConfig.payload as DataSinkInvocation,
-                                true,
-                                false,
-                            );
-                        }, 10);
-                    }
-                    if (this.shepherdService.isTourActive()) {
-                        this.shepherdService.trigger(
-                            'drop-' + pipelineElementConfig.type,
-                        );
+                        }
                     }
                 }
                 this.JsplumbBridge.repaintEverything();
                 this.validatePipeline();
-                this.triggerPipelineCacheUpdateEmitter.emit();
+                this.triggerPipelineCacheUpdate();
             },
         });
     }
@@ -278,16 +323,15 @@ export class PipelineComponent implements OnInit, OnDestroy {
 
     handleDeleteOption(pipelineElement: PipelineElementConfig) {
         this.JsplumbBridge.removeAllEndpoints(pipelineElement.payload.dom);
-        const index = this.rawPipelineModel.findIndex(
-            pe => pe.payload.dom === pipelineElement.payload.dom,
+        this.rawPipelineModel = this.rawPipelineModel.filter(
+            pe => !(pe.payload.dom === pipelineElement.payload.dom),
         );
-        this.rawPipelineModel.splice(index, 1);
         if (this.rawPipelineModel.every(pe => pe.settings.disabled)) {
             this.editorService.makePipelineAssemblyEmpty(true);
         }
         this.JsplumbBridge.repaintEverything();
         this.validatePipeline();
-        this.triggerPipelineCacheUpdateEmitter.emit();
+        this.triggerPipelineCacheUpdate();
     }
 
     initPlumb() {
@@ -379,7 +423,7 @@ export class PipelineComponent implements OnInit, OnDestroy {
                                 if (
                                     this.jsplumbService.isFullyConnected(
                                         pe,
-                                        this.readonly,
+                                        this.preview,
                                     )
                                 ) {
                                     const payload =
@@ -400,7 +444,7 @@ export class PipelineComponent implements OnInit, OnDestroy {
                                             PipelineElementConfigurationStatus.OK,
                                         );
                                         this.announceConfiguredElement(pe);
-                                        this.triggerPipelineCacheUpdateEmitter.emit();
+                                        this.triggerPipelineCacheUpdate();
                                     }
                                 }
                             } else {
@@ -513,6 +557,34 @@ export class PipelineComponent implements OnInit, OnDestroy {
         return custom;
     }
 
+    triggerPipelineCacheUpdate() {
+        setTimeout(() => {
+            this.pipelineCacheRunning = true;
+            this.pipelineCacheRunningChanged.emit(this.pipelineCacheRunning);
+            this.pipelinePositioningService.collectPipelineElementPositions(
+                this.pipelineCanvasMetadata,
+                this.rawPipelineModel,
+            );
+            const updateCachedPipeline =
+                this.editorService.updateCachedPipeline(this.rawPipelineModel);
+            const updateCachedCanvasMetadata =
+                this.editorService.updateCachedCanvasMetadata(
+                    this.pipelineCanvasMetadata,
+                );
+            forkJoin([
+                updateCachedPipeline,
+                updateCachedCanvasMetadata,
+            ]).subscribe(() => {
+                this.pipelineCacheRunning = false;
+                this.pipelineCacheRunningChanged.emit(
+                    this.pipelineCacheRunning,
+                );
+                this.pipelineCached = true;
+                this.pipelineCachedChanged.emit(this.pipelineCached);
+            });
+        });
+    }
+
     showErrorDialog(title: string, description: string) {
         this.dialog.open(ConfirmDialogComponent, {
             width: '500px',
@@ -557,10 +629,10 @@ export class PipelineComponent implements OnInit, OnDestroy {
                     .updatePipeline(this.currentPipelineModel)
                     .subscribe(pm => {
                         this.modifyPipeline(pm);
-                        this.triggerPipelineCacheUpdateEmitter.emit();
+                        this.triggerPipelineCacheUpdate();
                         this.announceConfiguredElement(pipelineElementConfig);
                         if (this.previewModeActive) {
-                            this.deletePreviewEmitter.emit(true);
+                            this.deletePipelineElementPreview(true);
                         }
                         this.validatePipeline(pm);
                     });
@@ -574,6 +646,35 @@ export class PipelineComponent implements OnInit, OnDestroy {
         this.editorService.announceConfiguredElement(pe.payload.dom);
     }
 
+    initiatePipelineElementPreview() {
+        if (!this.previewModeActive) {
+            const pipeline = this.objectProvider.makePipeline(
+                this.rawPipelineModel,
+            );
+            this.editorService
+                .initiatePipelinePreview(pipeline)
+                .subscribe(response => {
+                    this.pipelinePreview = response;
+                    this.previewModeActive = true;
+                });
+        } else {
+            this.deletePipelineElementPreview(false);
+        }
+    }
+
+    deletePipelineElementPreview(resume: boolean) {
+        if (this.previewModeActive) {
+            this.editorService
+                .deletePipelinePreviewRequest(this.pipelinePreview.previewId)
+                .subscribe(() => {
+                    this.previewModeActive = false;
+                    if (resume) {
+                        this.initiatePipelineElementPreview();
+                    }
+                });
+        }
+    }
+
     triggerPipelineModification() {
         this.currentPipelineModel = this.objectProvider.makePipeline(
             this.rawPipelineModel,
@@ -585,13 +686,9 @@ export class PipelineComponent implements OnInit, OnDestroy {
                 this.pipelineValid =
                     this.pipelineValidationService.isValidPipeline(
                         this.rawPipelineModel,
-                        this.readonly,
+                        this.preview,
                         pm,
                     );
             });
-    }
-
-    openTopicsDialog(pipelineElementConfig: PipelineElementConfig) {
-        this.editorService.openTopicsDialog(pipelineElementConfig);
     }
 }

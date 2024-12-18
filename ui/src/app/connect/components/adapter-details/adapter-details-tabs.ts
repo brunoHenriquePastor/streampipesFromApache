@@ -22,11 +22,6 @@ export class SpAdapterDetailsTabs {
     public getTabs(elementId: string): SpNavigationItem[] {
         return [
             {
-                itemId: 'data',
-                itemTitle: 'Data',
-                itemLink: ['connect', 'details', elementId, 'data'],
-            },
-            {
                 itemId: 'metrics',
                 itemTitle: 'Metrics',
                 itemLink: ['connect', 'details', elementId, 'metrics'],
@@ -35,11 +30,6 @@ export class SpAdapterDetailsTabs {
                 itemId: 'logs',
                 itemTitle: 'Logs',
                 itemLink: ['connect', 'details', elementId, 'logs'],
-            },
-            {
-                itemId: 'code',
-                itemTitle: 'Code',
-                itemLink: ['connect', 'details', elementId, 'code'],
             },
         ];
     }

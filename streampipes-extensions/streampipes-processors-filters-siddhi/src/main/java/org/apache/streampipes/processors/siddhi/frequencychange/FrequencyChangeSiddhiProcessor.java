@@ -18,7 +18,6 @@
 package org.apache.streampipes.processors.siddhi.frequencychange;
 
 import org.apache.streampipes.model.DataProcessorType;
-import org.apache.streampipes.model.extensions.ExtensionAssetType;
 import org.apache.streampipes.model.graph.DataProcessorDescription;
 import org.apache.streampipes.sdk.builder.ProcessingElementBuilder;
 import org.apache.streampipes.sdk.builder.StreamRequirementsBuilder;
@@ -27,6 +26,7 @@ import org.apache.streampipes.sdk.helpers.Labels;
 import org.apache.streampipes.sdk.helpers.Locales;
 import org.apache.streampipes.sdk.helpers.Options;
 import org.apache.streampipes.sdk.helpers.OutputStrategies;
+import org.apache.streampipes.sdk.utils.Assets;
 import org.apache.streampipes.wrapper.siddhi.SiddhiAppConfig;
 import org.apache.streampipes.wrapper.siddhi.SiddhiAppConfigBuilder;
 import org.apache.streampipes.wrapper.siddhi.SiddhiQueryBuilder;
@@ -44,11 +44,10 @@ public class FrequencyChangeSiddhiProcessor extends StreamPipesSiddhiProcessor {
 
   @Override
   public DataProcessorDescription declareModel() {
-    return ProcessingElementBuilder
-        .create("org.apache.streampipes.processors.siddhi.frequencychange", 0)
+    return ProcessingElementBuilder.create("org.apache.streampipes.processors.siddhi.frequencychange")
         .category(DataProcessorType.FILTER)
         .withLocales(Locales.EN)
-        .withAssets(ExtensionAssetType.DOCUMENTATION)
+        .withAssets(Assets.DOCUMENTATION)
         .requiredStream(StreamRequirementsBuilder
             .create()
             .requiredProperty(EpRequirements.anyProperty())

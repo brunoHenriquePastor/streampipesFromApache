@@ -16,11 +16,13 @@
   ~
   -->
 
+<sp-live-preview-loading *ngIf="!runtimeData && !runtimeDataError">
+</sp-live-preview-loading>
+
 <sp-live-preview-table
-    *ngIf="runtimeInfo"
-    [showTitle]="showTitle"
+    *ngIf="runtimeData"
     [eventSchema]="streamDescription.eventSchema"
-    [runtimeInfo]="runtimeInfo"
+    [runtimeData]="runtimeData"
 >
 </sp-live-preview-table>
 

@@ -17,97 +17,99 @@
  */
 
 import { DataLakeUtils } from '../../support/utils/datalake/DataLakeUtils';
-import {
-    subDays,
-    subHours,
-    subMinutes,
-    subMonths,
-    subWeeks,
-    subYears,
-} from 'date-fns';
 
 describe('Test Time Range Selectors in Data Explorer', () => {
     const periods = [
-        {
-            selector: 'last-15-minutes',
-            start: (now: Date) => subMinutes(now, 15),
-        },
-        { selector: 'last-hour', start: (now: Date) => subHours(now, 1) },
-        { selector: 'last-day', start: (now: Date) => subDays(now, 1) },
-        { selector: 'last-week', start: (now: Date) => subWeeks(now, 1) },
-        { selector: 'last-month', start: (now: Date) => subMonths(now, 1) },
-        { selector: 'last-year', start: (now: Date) => subYears(now, 1) },
+        { selector: '15_min', offset: 15 },
+        { selector: '1_hour', offset: 60 },
+        { selector: '1_day', offset: 1440 },
+        { selector: '1_week', offset: 10080 },
+        { selector: '1_month', offset: 43200 },
+        { selector: '1_year', offset: 525600 },
     ];
 
-    const timeRangeFrom = 'time-selector-start-time';
-    const timeRangeTo = 'time-selector-end-time';
-    const dateRangeFrom = 'time-selector-start-date';
-    const dateRangeTo = 'time-selector-end-date';
+    const dateAttribute = 'ng-reflect-date';
+    const timeRangeFrom = 'time-range-from';
+    const timeRangeTo = 'time-range-to';
 
     before('Setup Tests', () => {
         cy.initStreamPipesTest();
         DataLakeUtils.loadDataIntoDataLake('datalake/sample.csv', false);
+        DataLakeUtils.goToDatalake();
+        DataLakeUtils.createAndEditDataView('TestView');
     });
 
     it('Perform Test', () => {
-        DataLakeUtils.goToDatalake();
-        DataLakeUtils.createAndEditDataView();
-
         periods.forEach(period => {
             cy.log('Testing period: ' + period.selector);
-            DataLakeUtils.openTimeSelectorMenu();
             // Choosing time period and saving initial start and end dates
-            cy.dataCy(`time-selector-quick-${period.selector}`).click();
-            const expectedEndDate = new Date();
-            DataLakeUtils.openTimeSelectorMenu();
-            // check if dates can differ from the selected dates
-            const expectedStartDate = getExpectedStartDate(
-                expectedEndDate,
-                period.start,
-            );
-            cy.dataCy(dateRangeFrom).should(
-                'have.text',
-                getLocalizedDateString(expectedStartDate),
-            );
-            cy.dataCy(dateRangeTo).should(
-                'have.text',
-                getLocalizedDateString(expectedEndDate),
-            );
-
-            cy.dataCy(timeRangeFrom)
-                .invoke('val')
-                .then(actualTime => {
-                    const expectedDate =
-                        getLocalizedTimeString(expectedStartDate);
-                    expect(
-                        isTimeWithinTolerance(
-                            actualTime as string,
-                            expectedDate,
-                            10,
-                        ),
-                    ).to.be.true;
-                });
+            cy.dataCy(period.selector).click();
             cy.dataCy(timeRangeTo)
-                .invoke('val')
-                .then(actualTime => {
-                    const expectedDate =
-                        getLocalizedTimeString(expectedEndDate);
-                    expect(
-                        isTimeWithinTolerance(
-                            actualTime as string,
-                            expectedDate,
-                            10,
-                        ),
-                    ).to.be.true;
-                });
+                .invoke('attr', dateAttribute)
+                .then(initialEndDateString => {
+                    cy.dataCy(timeRangeFrom)
+                        .invoke('attr', dateAttribute)
+                        .then(initialStartDateString => {
+                            const initialStartDate = parseDate(
+                                initialStartDateString,
+                            );
+                            const initialEndDate =
+                                parseDate(initialEndDateString);
 
-            DataLakeUtils.applyCustomTimeSelection();
+                            cy.wrap(initialStartDate).should(
+                                'deep.eq',
+                                getExpectedStartDate(
+                                    initialEndDate,
+                                    period.offset,
+                                ),
+                            );
+                            // Updating time range to previous one and checking start and end dates
+                            cy.dataCy('decrease-time-button').click({
+                                force: true,
+                            });
+                            cy.dataCy(timeRangeTo)
+                                .invoke('attr', dateAttribute)
+                                .then(updatedEndDateString => {
+                                    cy.dataCy(timeRangeFrom)
+                                        .invoke('attr', dateAttribute)
+                                        .then(updatedStartDateString => {
+                                            const updatedStartDate = parseDate(
+                                                updatedStartDateString,
+                                            );
+                                            const updatedEndDate =
+                                                parseDate(updatedEndDateString);
+
+                                            cy.wrap(updatedStartDate).should(
+                                                'deep.eq',
+                                                getExpectedStartDate(
+                                                    updatedEndDate,
+                                                    period.offset,
+                                                ),
+                                            );
+                                            cy.wrap(updatedEndDate).should(
+                                                'deep.eq',
+                                                initialStartDate,
+                                            );
+                                        });
+                                });
+                            // Updating time range to the next one and comparing start and end dates with initial values
+                            cy.dataCy('increase-time-button').click({
+                                force: true,
+                            });
+                            cy.dataCy(timeRangeFrom)
+                                .invoke('attr', dateAttribute)
+                                .should('eq', initialStartDateString);
+                            cy.dataCy(timeRangeTo)
+                                .invoke('attr', dateAttribute)
+                                .should('eq', initialEndDateString);
+                        });
+                });
         });
     });
 });
 
-function getExpectedStartDate(endDate: Date, startFn: (Date) => Date): Date {
-    const startDate = startFn(endDate);
+function getExpectedStartDate(endDate: Date, offset: number): Date {
+    const startDate = new Date(endDate.getTime() - offset * 60000);
     startDate.setMinutes(
         startDate.getMinutes() + getTimezoneDifference(endDate, startDate),
     );
@@ -118,28 +120,6 @@ function getTimezoneDifference(endDate: Date, startDate: Date): number {
     return endDate.getTimezoneOffset() - startDate.getTimezoneOffset();
 }
 
-function getLocalizedDateString(date: Date) {
-    return date.toLocaleDateString();
-}
-
-function getLocalizedTimeString(date: Date) {
-    return date.toLocaleTimeString().slice(0, 8);
-}
-
-function parseTimeStringToSeconds(timeString: string) {
-    const [hours, minutes, seconds] = timeString.split(':').map(Number);
-    return hours * 3600 + minutes * 60 + seconds || 0;
-}
-
-function isTimeWithinTolerance(
-    actualTimeString: string,
-    expectedTimeString: string,
-    toleranceInSeconds: number,
-) {
-    const actualTimeInSeconds = parseTimeStringToSeconds(actualTimeString);
-    const expectedTimeInSeconds = parseTimeStringToSeconds(expectedTimeString);
-    return (
-        Math.abs(actualTimeInSeconds - expectedTimeInSeconds) <=
-        toleranceInSeconds
-    );
+function parseDate(dateString: string): Date {
+    return new Date(Date.parse(dateString));
 }

@@ -29,7 +29,7 @@ public class StaticPropertyGroup extends StaticProperty {
 
   private Boolean showLabel;
 
-  private boolean horizontalRendering = true;
+  private boolean horizontalRendering;
 
   public StaticPropertyGroup() {
     super(StaticPropertyType.StaticPropertyGroup);

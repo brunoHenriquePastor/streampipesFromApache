@@ -20,7 +20,7 @@ import { UserBuilder } from '../../support/builder/UserBuilder';
 import { UserRole } from '../../../src/app/_enums/user-role.enum';
 import { UserUtils } from '../../support/utils/UserUtils';
 import { ConnectUtils } from '../../support/utils/connect/ConnectUtils';
-import { PipelineUtils } from '../../support/utils/pipeline/PipelineUtils';
+import { PipelineUtils } from '../../support/utils/PipelineUtils';
 import { PipelineElementBuilder } from '../../support/builder/PipelineElementBuilder';
 import { PipelineBuilder } from '../../support/builder/PipelineBuilder';
 
@@ -100,7 +100,7 @@ describe('Test Group Management for Pipelines', () => {
         cy.dataCy('sp-element-edit-user-save').click();
 
         // Login as first user which belongs to user group with pipeline admin role
-        UserUtils.switchUser(user);
+        cy.switchUser(user);
 
         cy.dataCy('navigation-icon', { timeout: 10000 }).should(
             'have.length',
@@ -119,22 +119,22 @@ describe('Test Group Management for Pipelines', () => {
         );
 
         // Login as user2
-        UserUtils.switchUser(user2);
+        cy.switchUser(user2);
 
         cy.dataCy('navigation-icon', { timeout: 10000 }).should(
             'have.length',
-            3,
+            2,
         );
 
         // Check if pipeline is invisible to user2
         PipelineUtils.goToPipelines();
         cy.get('sp-pipeline-overview', { timeout: 10000 }).should(
             'contain',
-            'No entries available',
+            '(no pipelines available)',
         );
 
         // Log in as admin and delete users
-        UserUtils.switchUser(UserUtils.adminUser);
+        cy.switchUser(UserUtils.adminUser);
         UserUtils.deleteUser(user);
         UserUtils.deleteUser(user2);
 

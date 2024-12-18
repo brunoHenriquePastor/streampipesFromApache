@@ -25,6 +25,7 @@ import org.apache.streampipes.model.schema.EventSchema;
 import org.apache.streampipes.sdk.helpers.EpProperties;
 import org.apache.streampipes.sdk.helpers.Labels;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -34,12 +35,9 @@ import static org.apache.streampipes.connect.shared.preprocessing.convert.Helper
 import static org.apache.streampipes.connect.shared.preprocessing.convert.Helpers.makeDeleteTransformationRule;
 import static org.apache.streampipes.connect.shared.preprocessing.convert.Helpers.makeMoveTransformationRule;
 import static org.apache.streampipes.connect.shared.preprocessing.convert.Helpers.makeNestedProperties;
-import static org.apache.streampipes.connect.shared.preprocessing.convert.Helpers.makeRegexTransformationRule;
 import static org.apache.streampipes.connect.shared.preprocessing.convert.Helpers.makeRenameTransformationRule;
 import static org.apache.streampipes.connect.shared.preprocessing.convert.Helpers.makeSimpleProperties;
 import static org.apache.streampipes.connect.shared.preprocessing.convert.Helpers.makeUnitTransformationRule;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ToTransformedSchemaConverterTest {
 
@@ -53,27 +51,8 @@ public class ToTransformedSchemaConverterTest {
 
     var resultProperties = executeAndReturnResult(properties, rules);
 
-    assertEquals(3, resultProperties.size());
-    assertEquals("targetUnit", getUnit(resultProperties.get(0)));
-  }
-
-
-  @Test
-  public void testRegexTransformationRule() {
-    List<EventProperty> properties = makeSimpleProperties(true);
-
-    var rules = new ArrayList<TransformationRuleDescription>();
-
-    rules.add(makeRegexTransformationRule("stringProp", ",", "", true));
-
-    var resultProperties = executeAndReturnResult(properties, rules);
-
-    assertEquals(3, resultProperties.size());
-
-    assertEquals(3, resultProperties.get(0).getAdditionalMetadata().size());
-    assertTrue(resultProperties.get(0).getAdditionalMetadata().containsKey("regex"));
-    assertTrue(resultProperties.get(0).getAdditionalMetadata().containsKey("replaceWith"));
-    assertTrue(resultProperties.get(0).getAdditionalMetadata().containsKey("replaceAll"));
+    Assertions.assertEquals(3, resultProperties.size());
+    Assertions.assertEquals("targetUnit", getUnit(resultProperties.get(0)));
   }
 
 
@@ -85,12 +64,9 @@ public class ToTransformedSchemaConverterTest {
     rules.add(makeRenameTransformationRule("stringProp", "newStringProp"));
 
     var result = executeAndReturnResult(properties, rules);
-    assertEquals(3, result.size());
-    assertEquals(
-        "newStringProp",
-        result.get(0)
-              .getRuntimeName()
-    );
+    Assertions.assertEquals(3, result.size());
+    Assertions.assertEquals("newStringProp",
+                            result.get(0).getRuntimeName());
   }
 
   @Test
@@ -101,12 +77,9 @@ public class ToTransformedSchemaConverterTest {
     rules.add(makeDeleteTransformationRule("stringProp"));
 
     var result = executeAndReturnResult(properties, rules);
-    assertEquals(2, result.size());
-    assertEquals(
-        "intProp",
-        result.get(0)
-              .getRuntimeName()
-    );
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals("intProp",
+                            result.get(0).getRuntimeName());
   }
 
   @Test
@@ -119,17 +92,11 @@ public class ToTransformedSchemaConverterTest {
     rules.add(makeMoveTransformationRule("epToBeMoved", "nested"));
 
     var result = executeAndReturnResult(properties, rules);
-    assertEquals(2, result.size());
-    assertEquals(
-        "timestamp",
-        result.get(0)
-              .getRuntimeName()
-    );
-    assertEquals(
-        3,
-        ((EventPropertyNested) result.get(1)).getEventProperties()
-                                             .size()
-    );
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals("timestamp",
+                            result.get(0).getRuntimeName());
+    Assertions.assertEquals(3,
+                            ((EventPropertyNested) result.get(1)).getEventProperties().size());
   }
 
   @Test
@@ -138,23 +105,21 @@ public class ToTransformedSchemaConverterTest {
 
     var rules = new ArrayList<TransformationRuleDescription>();
 
-    rules.add(makeUnitTransformationRule("nested<-=>stringProp"));
+    rules.add(makeUnitTransformationRule("nested.stringProp"));
 
     var resultProperties = executeAndReturnResult(properties, rules);
-    var nestedResultProperty = ((EventPropertyNested) resultProperties.get(1)).getEventProperties()
-                                                                              .get(0);
+    var nestedResultProperty = ((EventPropertyNested) resultProperties.get(1)).getEventProperties().get(0);
 
-    assertEquals(2, resultProperties.size());
-    assertEquals("targetUnit", getUnit(nestedResultProperty));
+    Assertions.assertEquals(2, resultProperties.size());
+    Assertions.assertEquals("targetUnit", getUnit(nestedResultProperty));
   }
 
-  private List<EventProperty> executeAndReturnResult(
-      List<EventProperty> properties,
-      List<TransformationRuleDescription> rules
-  ) {
+  private List<EventProperty> executeAndReturnResult(List<EventProperty> properties,
+                                                     List<TransformationRuleDescription> rules) {
     var result = new SchemaConverter().toTransformedSchema(new EventSchema(properties), rules);
     return result.getEventProperties();
   }
+
 
 
 }

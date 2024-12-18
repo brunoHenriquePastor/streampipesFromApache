@@ -23,6 +23,7 @@ import org.apache.streampipes.model.schema.EventSchema;
 import org.apache.streampipes.test.generator.grounding.EventGroundingGenerator;
 import org.apache.streampipes.vocabulary.XSD;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,7 @@ public class EventStreamGenerator {
         .getEventSchema()
         .setEventProperties(runtimeNames
             .stream()
-            .map(r -> new EventPropertyPrimitive(XSD.INTEGER.toString(), r, "", ""))
+            .map(r -> new EventPropertyPrimitive(XSD.INTEGER.toString(), r, "", new ArrayList<>()))
             .collect(Collectors.toList()));
 
     return stream;

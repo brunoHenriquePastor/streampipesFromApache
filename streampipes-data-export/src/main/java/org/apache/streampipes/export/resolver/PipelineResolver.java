@@ -30,7 +30,7 @@ public class PipelineResolver extends AbstractResolver<Pipeline> {
 
   @Override
   public Pipeline findDocument(String resourceId) {
-    return getNoSqlStore().getPipelineStorageAPI().getElementById(resourceId);
+    return getNoSqlStore().getPipelineStorageAPI().getPipeline(resourceId);
   }
 
   @Override
@@ -58,7 +58,7 @@ public class PipelineResolver extends AbstractResolver<Pipeline> {
 
   @Override
   public void writeDocument(String document) throws JsonProcessingException {
-    getNoSqlStore().getPipelineStorageAPI().persist(deserializeDocument(document));
+    getNoSqlStore().getPipelineStorageAPI().storePipeline(deserializeDocument(document));
   }
 
   public void writeDocument(String document,
@@ -81,7 +81,7 @@ public class PipelineResolver extends AbstractResolver<Pipeline> {
       }).collect(Collectors.toList()));
 
     }
-    getNoSqlStore().getPipelineStorageAPI().persist(pipeline);
+    getNoSqlStore().getPipelineStorageAPI().storePipeline(pipeline);
   }
 
   @Override

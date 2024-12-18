@@ -44,13 +44,13 @@ import java.util.List;
 @PreAuthorize(AuthConstants.IS_ADMIN_ROLE)
 public class ServiceConfigurationResource extends AbstractAuthGuardedRestResource {
 
-  private final CRUDStorage<SpServiceConfiguration> extensionsServicesConfigStorage =
+  private final CRUDStorage<String, SpServiceConfiguration> extensionsServicesConfigStorage =
       getNoSqlStorage().getExtensionsServiceConfigurationStorage();
 
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<SpServiceConfiguration>> getAllServiceConfigurations() {
-    return ok(extensionsServicesConfigStorage.findAll());
+    return ok(extensionsServicesConfigStorage.getAll());
   }
 
   @GetMapping(path = "{serviceGroup}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -67,7 +67,7 @@ public class ServiceConfigurationResource extends AbstractAuthGuardedRestResourc
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> registerServiceConfiguration(@RequestBody SpServiceConfiguration serviceConfiguration) {
     if (extensionsServicesConfigStorage.getElementById(serviceConfiguration.getServiceGroup()) == null) {
-      extensionsServicesConfigStorage.persist(serviceConfiguration);
+      extensionsServicesConfigStorage.createElement(serviceConfiguration);
       return created();
     } else {
       return ok();

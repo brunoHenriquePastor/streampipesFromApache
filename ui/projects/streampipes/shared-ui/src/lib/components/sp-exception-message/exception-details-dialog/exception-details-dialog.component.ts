@@ -35,6 +35,8 @@ export class SpExceptionDetailsDialogComponent implements OnInit {
     @Input()
     title: string;
 
+    showDetails = false;
+
     constructor(
         private dialogRef: DialogRef<SpExceptionDetailsDialogComponent>,
     ) {}

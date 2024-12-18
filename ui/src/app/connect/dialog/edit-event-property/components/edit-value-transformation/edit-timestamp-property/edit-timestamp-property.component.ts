@@ -16,25 +16,21 @@
  *
  */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
     selector: 'sp-edit-timestamp-property',
     templateUrl: './edit-timestamp-property.component.html',
     styleUrls: ['./edit-timestamp-property.component.scss'],
 })
-export class EditTimestampPropertyComponent implements OnInit {
-    @Input()
-    cachedProperty: any;
-    @Input()
-    showEditTimestampProperty: boolean;
+export class EditTimestampPropertyComponent {
+    @Input() cachedProperty: any;
+    @Input() showEditTimestampProperty: boolean;
 
-    selectedTimeMultiplier = 'seconds';
+    private selectedTimeMultiplier;
 
-    ngOnInit(): void {
-        // Change default if multiplier is 1
-        if (this.cachedProperty.additionalMetadata.multiplier == 0) {
-            this.selectedTimeMultiplier = 'milliseconds';
-        }
+    constructor() {
+        // Set preselected value
+        this.selectedTimeMultiplier = 'second';
     }
 }

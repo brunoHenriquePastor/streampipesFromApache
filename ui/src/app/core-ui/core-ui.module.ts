@@ -26,7 +26,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { ClipboardModule } from '@angular/cdk/clipboard';
 
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSliderModule } from '@angular/material/slider';
@@ -59,7 +58,7 @@ import { PipelineStartedStatusComponent } from './pipeline/pipeline-started-stat
 import { ObjectPermissionDialogComponent } from './object-permission-dialog/object-permission-dialog.component';
 import { StaticSlideToggleComponent } from './static-properties/static-slide-toggle/static-slide-toggle.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { StaticRuntimeResolvableTreeInputComponent } from './static-properties/static-runtime-resolvable-tree-input/static-runtime-resolvable-tree-input.component';
+import { StaticRuntimeResolvableTreeInputComponent } from './static-properties/static-runtime-resolvable-tree-input/static-tree-input.component';
 import { MatTreeModule } from '@angular/material/tree';
 import { PlatformServicesModule } from '@streampipes/platform-services';
 import { SharedUiModule } from '@streampipes/shared-ui';
@@ -82,6 +81,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { LivePreviewLoadingComponent } from './pipeline-element-runtime-info/live-preview-loading/live-preview-loading.component';
 import { LivePreviewTableComponent } from './pipeline-element-runtime-info/live-preview-table/live-preview-table.component';
 import { LivePreviewErrorComponent } from './pipeline-element-runtime-info/live-preview-error/live-preview-error.component';
+import { FieldNamesTableComponent } from './help/field-names-table/field-names-table.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -105,22 +105,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { StaticRuntimeResolvableGroupComponent } from './static-properties/static-runtime-resolvable-group/static-runtime-resolvable-group.component';
-import { LoadingIndicatorComponent } from './loading-indicator/loading-indicator.component';
-import { StatusIndicatorComponent } from './status-indicator/status-indicator.component';
-import { MultiStepStatusIndicatorComponent } from './multi-step-status-indicator/multi-step-status-indicator.component';
-import { PipelineOperationStatusComponent } from './pipeline/pipeline-operation-status/pipeline-operation-status.component';
-import { StaticTreeInputButtonMenuComponent } from './static-properties/static-runtime-resolvable-tree-input/static-tree-input-button-menu/static-tree-input-button-menu.component';
-import { StaticTreeInputSelectedNodesComponent } from './static-properties/static-runtime-resolvable-tree-input/static-tree-input-selected-nodes/static-tree-input-selected-nodes.component';
-import { StaticTreeInputBrowseNodesComponent } from './static-properties/static-runtime-resolvable-tree-input/static-tree-input-browse-nodes/static-tree-input-browse-nodes.component';
-import { StaticTreeInputNodeDetailsComponent } from './static-properties/static-runtime-resolvable-tree-input/static-tree-input-node-details/static-tree-input-node-details.component';
-import { SingleMarkerMapComponent } from './single-marker-map/single-marker-map.component';
-import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-import { StaticTreeInputTextEditorComponent } from './static-properties/static-runtime-resolvable-tree-input/static-tree-input-text-editor/static-tree-input-text-editor.component';
-import { PipelineElementTemplateConfigItemComponent } from './pipeline-element-template-config/pipeline-element-template-config-item/pipeline-element-template-config-item.component';
-import { ConfigurationCodePanelComponent } from './configuration-code-panel/configuration-code-panel.component';
-import { JsonPrettyPrintPipe } from './pipes/json-pretty-print.pipe';
-import { YamlPrettyPrintPipe } from './pipes/yaml-pretty-print.pipe';
-import { TopicsComponent } from './topics/topics.component';
 
 @NgModule({
     imports: [
@@ -153,7 +137,6 @@ import { TopicsComponent } from './topics/topics.component';
         ReactiveFormsModule,
         FormsModule,
         CdkTableModule,
-        ClipboardModule,
         MatAutocompleteModule,
         MatSnackBarModule,
         MatProgressSpinnerModule,
@@ -171,21 +154,17 @@ import { TopicsComponent } from './topics/topics.component';
         QuillModule.forRoot(),
         MatTreeModule,
         MarkdownModule.forRoot(),
-        LeafletModule,
     ],
     declarations: [
-        ConfigurationCodePanelComponent,
         DataDownloadDialogComponent,
         DateInputComponent,
         DisplayRecommendedPipe,
         ObjectPermissionDialogComponent,
         PipelineElementTemplateConfigComponent,
-        PipelineElementTemplateConfigItemComponent,
         PipelineElementTemplatePipe,
         PipelineElementRuntimeInfoComponent,
         PipelineElementDocumentationComponent,
         HelpComponent,
-        TopicsComponent,
         StaticAnyInputComponent,
         StaticPropertyComponent,
         StaticFreeInputComponent,
@@ -200,16 +179,10 @@ import { TopicsComponent } from './topics/topics.component';
         StaticCodeInputComponent,
         StaticOneOfInputComponent,
         StaticRuntimeResolvableAnyInputComponent,
-        StaticTreeInputButtonMenuComponent,
-        StaticTreeInputSelectedNodesComponent,
         StaticRuntimeResolvableGroupComponent,
         StaticRuntimeResolvableOneOfInputComponent,
         StaticRuntimeResolvableTreeInputComponent,
-        StaticTreeInputBrowseNodesComponent,
-        StaticTreeInputNodeDetailsComponent,
-        StaticTreeInputTextEditorComponent,
         StaticSlideToggleComponent,
-        SingleMarkerMapComponent,
         ErrorHintComponent,
         AddToCollectionComponent,
         PipelineStartedStatusComponent,
@@ -221,26 +194,19 @@ import { TopicsComponent } from './topics/topics.component';
         SpSimpleLogsComponent,
         SpSimpleMetricsComponent,
         StatusWidgetComponent,
+        FieldNamesTableComponent,
         LivePreviewLoadingComponent,
         LivePreviewTableComponent,
         LivePreviewErrorComponent,
-        LoadingIndicatorComponent,
-        StatusIndicatorComponent,
-        MultiStepStatusIndicatorComponent,
-        PipelineOperationStatusComponent,
-        JsonPrettyPrintPipe,
-        YamlPrettyPrintPipe,
     ],
     providers: [MatDatepickerModule, DisplayRecommendedPipe],
     exports: [
-        ConfigurationCodePanelComponent,
         DataDownloadDialogComponent,
         DateInputComponent,
         PipelineElementTemplateConfigComponent,
         PipelineElementRuntimeInfoComponent,
         PipelineElementDocumentationComponent,
         HelpComponent,
-        TopicsComponent,
         StaticAnyInputComponent,
         StaticPropertyComponent,
         StaticFreeInputComponent,
@@ -262,13 +228,6 @@ import { TopicsComponent } from './topics/topics.component';
         SpSimpleLogsComponent,
         SpSimpleMetricsComponent,
         StatusWidgetComponent,
-        LoadingIndicatorComponent,
-        StatusIndicatorComponent,
-        MultiStepStatusIndicatorComponent,
-        PipelineOperationStatusComponent,
-        SingleMarkerMapComponent,
-        JsonPrettyPrintPipe,
-        YamlPrettyPrintPipe,
     ],
 })
 export class CoreUiModule {}

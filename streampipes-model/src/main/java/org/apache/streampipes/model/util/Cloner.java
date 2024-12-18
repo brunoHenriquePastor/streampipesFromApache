@@ -30,6 +30,7 @@ import org.apache.streampipes.model.grounding.NatsTransportProtocol;
 import org.apache.streampipes.model.grounding.PulsarTransportProtocol;
 import org.apache.streampipes.model.grounding.SimpleTopicDefinition;
 import org.apache.streampipes.model.grounding.TopicDefinition;
+import org.apache.streampipes.model.grounding.TransportFormat;
 import org.apache.streampipes.model.grounding.TransportProtocol;
 import org.apache.streampipes.model.grounding.WildcardTopicDefinition;
 import org.apache.streampipes.model.grounding.WildcardTopicMapping;
@@ -55,6 +56,7 @@ import org.apache.streampipes.model.staticproperty.AnyStaticProperty;
 import org.apache.streampipes.model.staticproperty.CodeInputStaticProperty;
 import org.apache.streampipes.model.staticproperty.CollectionStaticProperty;
 import org.apache.streampipes.model.staticproperty.ColorPickerStaticProperty;
+import org.apache.streampipes.model.staticproperty.DomainStaticProperty;
 import org.apache.streampipes.model.staticproperty.FileStaticProperty;
 import org.apache.streampipes.model.staticproperty.FreeTextStaticProperty;
 import org.apache.streampipes.model.staticproperty.MappingPropertyNary;
@@ -62,6 +64,7 @@ import org.apache.streampipes.model.staticproperty.MappingPropertyUnary;
 import org.apache.streampipes.model.staticproperty.MatchingStaticProperty;
 import org.apache.streampipes.model.staticproperty.OneOfStaticProperty;
 import org.apache.streampipes.model.staticproperty.Option;
+import org.apache.streampipes.model.staticproperty.RemoteOneOfStaticProperty;
 import org.apache.streampipes.model.staticproperty.RuntimeResolvableAnyStaticProperty;
 import org.apache.streampipes.model.staticproperty.RuntimeResolvableGroupStaticProperty;
 import org.apache.streampipes.model.staticproperty.RuntimeResolvableOneOfStaticProperty;
@@ -73,6 +76,7 @@ import org.apache.streampipes.model.staticproperty.StaticPropertyAlternative;
 import org.apache.streampipes.model.staticproperty.StaticPropertyAlternatives;
 import org.apache.streampipes.model.staticproperty.StaticPropertyGroup;
 import org.apache.streampipes.model.staticproperty.SupportedProperty;
+import org.apache.streampipes.model.template.BoundPipelineElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,8 +120,12 @@ public class Cloner {
       return new RuntimeResolvableAnyStaticProperty((RuntimeResolvableAnyStaticProperty) o);
     } else if (o instanceof OneOfStaticProperty) {
       return new OneOfStaticProperty((OneOfStaticProperty) o);
+    } else if (o instanceof RemoteOneOfStaticProperty) {
+      return new RemoteOneOfStaticProperty((RemoteOneOfStaticProperty) o);
     } else if (o instanceof MappingPropertyNary) {
       return new MappingPropertyNary((MappingPropertyNary) o);
+    } else if (o instanceof DomainStaticProperty) {
+      return new DomainStaticProperty((DomainStaticProperty) o);
     } else if (o instanceof AnyStaticProperty) {
       return new AnyStaticProperty((AnyStaticProperty) o);
     } else if (o instanceof CollectionStaticProperty) {
@@ -220,6 +228,11 @@ public class Cloner {
     }
   }
 
+  public List<TransportFormat> transportFormats(
+      List<TransportFormat> transportFormats) {
+    return transportFormats.stream().map(t -> new TransportFormat(t)).collect(Collectors.toList());
+  }
+
   public List<EventProperty> properties(List<EventProperty> eventProperties) {
     return eventProperties.stream().map(o -> new Cloner().property(o)).collect(Collectors.toList());
   }
@@ -251,6 +264,13 @@ public class Cloner {
     } else {
       return new WildcardTopicDefinition((WildcardTopicDefinition) topicDefinition);
     }
+  }
+
+  public List<BoundPipelineElement> boundPipelineElements(List<BoundPipelineElement> boundPipelineElements) {
+    return boundPipelineElements
+        .stream()
+        .map(BoundPipelineElement::new)
+        .collect(Collectors.toList());
   }
 
   public List<NamedStreamPipesEntity> cloneDescriptions(List<NamedStreamPipesEntity> pipelineElementDescriptions) {

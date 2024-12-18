@@ -28,12 +28,9 @@ import { Observable } from 'rxjs';
 import { ShepherdService } from '../../../../../services/tour/shepherd.service';
 import {
     DataType,
-    EventPropertyPrimitive,
-    EventPropertyUnion,
     SemanticType,
     SemanticTypesRestService,
 } from '@streampipes/platform-services';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'sp-edit-schema-transformation',
@@ -42,7 +39,7 @@ import { Router } from '@angular/router';
 })
 export class EditSchemaTransformationComponent implements OnInit {
     @Input()
-    cachedProperty: EventPropertyUnion;
+    cachedProperty: any;
 
     @Input() isTimestampProperty: boolean;
     @Input() isNestedProperty: boolean;
@@ -55,12 +52,9 @@ export class EditSchemaTransformationComponent implements OnInit {
     domainPropertyControl = new UntypedFormControl();
     semanticTypes: Observable<string[]>;
 
-    adapterIsInEditMode: boolean;
-
     constructor(
         private semanticTypesRestService: SemanticTypesRestService,
         private shepherdService: ShepherdService,
-        private router: Router,
     ) {}
 
     ngOnInit(): void {
@@ -74,19 +68,16 @@ export class EditSchemaTransformationComponent implements OnInit {
                     : [];
             }),
         );
-
-        this.adapterIsInEditMode = this.router.url.includes('connect/edit');
     }
 
     editTimestampDomainProperty(checked: boolean) {
         if (checked) {
             this.isTimestampProperty = true;
-            this.cachedProperty.semanticType = SemanticType.TIMESTAMP;
+            this.cachedProperty.domainProperties = [SemanticType.TIMESTAMP];
             this.cachedProperty.propertyScope = 'HEADER_PROPERTY';
-            (this.cachedProperty as EventPropertyPrimitive).runtimeType =
-                DataType.LONG;
+            this.cachedProperty.runtimeType = DataType.LONG;
         } else {
-            this.cachedProperty.semanticType = undefined;
+            this.cachedProperty.domainProperties = [];
             this.cachedProperty.propertyScope = 'MEASUREMENT_PROPERTY';
             this.isTimestampProperty = false;
         }
@@ -94,6 +85,7 @@ export class EditSchemaTransformationComponent implements OnInit {
     }
 
     triggerTutorialStep(): void {
+        console.log('lu');
         if (this.cachedProperty.runtimeName === 'temp') {
             this.shepherdService.trigger('adapter-runtime-name-changed');
         }

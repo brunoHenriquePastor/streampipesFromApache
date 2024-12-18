@@ -26,7 +26,6 @@ import org.apache.streampipes.extensions.api.pe.context.EventProcessorRuntimeCon
 import org.apache.streampipes.extensions.api.pe.param.IDataProcessorParameters;
 import org.apache.streampipes.extensions.api.pe.routing.SpOutputCollector;
 import org.apache.streampipes.model.DataProcessorType;
-import org.apache.streampipes.model.extensions.ExtensionAssetType;
 import org.apache.streampipes.model.runtime.Event;
 import org.apache.streampipes.model.schema.PropertyScope;
 import org.apache.streampipes.sdk.builder.ProcessingElementBuilder;
@@ -38,6 +37,7 @@ import org.apache.streampipes.sdk.helpers.Labels;
 import org.apache.streampipes.sdk.helpers.Locales;
 import org.apache.streampipes.sdk.helpers.Options;
 import org.apache.streampipes.sdk.helpers.OutputStrategies;
+import org.apache.streampipes.sdk.utils.Assets;
 
 public class BooleanCounterProcessor implements IStreamPipesDataProcessor {
   public static final String FIELD_ID = "field";
@@ -62,11 +62,10 @@ public class BooleanCounterProcessor implements IStreamPipesDataProcessor {
   public IDataProcessorConfiguration declareConfig() {
     return DataProcessorConfiguration.create(
         BooleanCounterProcessor::new,
-        ProcessingElementBuilder
-            .create("org.apache.streampipes.processors.transformation.jvm.booloperator.counter", 0)
+        ProcessingElementBuilder.create("org.apache.streampipes.processors.transformation.jvm.booloperator.counter")
             .category(DataProcessorType.BOOLEAN_OPERATOR, DataProcessorType.COUNT_OPERATOR)
             .withLocales(Locales.EN)
-            .withAssets(ExtensionAssetType.DOCUMENTATION, ExtensionAssetType.ICON)
+            .withAssets(Assets.DOCUMENTATION, Assets.ICON)
             .requiredStream(StreamRequirementsBuilder.create()
                 .requiredPropertyWithUnaryMapping(
                     EpRequirements.booleanReq(),

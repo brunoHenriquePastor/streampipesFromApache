@@ -25,7 +25,6 @@ import org.apache.streampipes.extensions.api.pe.context.EventProcessorRuntimeCon
 import org.apache.streampipes.extensions.api.pe.param.IDataProcessorParameters;
 import org.apache.streampipes.extensions.api.pe.routing.SpOutputCollector;
 import org.apache.streampipes.model.DataProcessorType;
-import org.apache.streampipes.model.extensions.ExtensionAssetType;
 import org.apache.streampipes.model.runtime.Event;
 import org.apache.streampipes.model.schema.PropertyScope;
 import org.apache.streampipes.sdk.builder.ProcessingElementBuilder;
@@ -36,12 +35,13 @@ import org.apache.streampipes.sdk.helpers.Labels;
 import org.apache.streampipes.sdk.helpers.Locales;
 import org.apache.streampipes.sdk.helpers.Options;
 import org.apache.streampipes.sdk.helpers.OutputStrategies;
+import org.apache.streampipes.sdk.utils.Assets;
 
 public class NumericalFilterProcessor implements IStreamPipesDataProcessor {
 
-  protected static final String NUMBER_MAPPING = "number-mapping";
-  protected static final String VALUE = "value";
-  protected static final String OPERATION = "operation";
+  private static final String NUMBER_MAPPING = "number-mapping";
+  private static final String VALUE = "value";
+  private static final String OPERATION = "operation";
 
   private double threshold;
   private NumericalOperator numericalOperator;
@@ -51,10 +51,9 @@ public class NumericalFilterProcessor implements IStreamPipesDataProcessor {
   public IDataProcessorConfiguration declareConfig() {
     return DataProcessorConfiguration.create(
         NumericalFilterProcessor::new,
-        ProcessingElementBuilder
-            .create("org.apache.streampipes.processors.filters.jvm.numericalfilter", 0)
+        ProcessingElementBuilder.create("org.apache.streampipes.processors.filters.jvm.numericalfilter")
             .category(DataProcessorType.FILTER)
-            .withAssets(ExtensionAssetType.DOCUMENTATION, ExtensionAssetType.ICON)
+            .withAssets(Assets.DOCUMENTATION, Assets.ICON)
             .withLocales(Locales.EN)
             .requiredStream(StreamRequirementsBuilder
                 .create()

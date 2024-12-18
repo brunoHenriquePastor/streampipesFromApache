@@ -17,23 +17,18 @@
  */
 
 import { Injectable } from '@angular/core';
-import { IdGeneratorService } from '../../core-services/id-generator/id-generator.service';
 
 @Injectable({ providedIn: 'root' })
 export class StaticValueTransformService {
     prefix = 'http://eventProperty.de/staticValue/';
     placeholderValue = 'placeholder';
 
-    constructor(private idGeneratorService: IdGeneratorService) {}
-
     makeDefaultElementId(): string {
-        return this.getPrefix() + this.placeholderValue;
+        return this.prefix + this.placeholderValue;
     }
 
     makeElementId(value: string) {
-        const lastSlashIndex = this.prefix.lastIndexOf('/');
-        const prefixWithId = this.prefix.substring(0, lastSlashIndex + 1);
-        return prefixWithId + value;
+        return this.prefix + value;
     }
 
     isStaticValueProperty(elementId: string) {
@@ -41,11 +36,6 @@ export class StaticValueTransformService {
     }
 
     getStaticValue(elementId: string) {
-        const lastSlashIndex = elementId.lastIndexOf('/');
-        return elementId.substring(lastSlashIndex + 1);
-    }
-
-    private getPrefix(): string {
-        return `${this.prefix + this.idGeneratorService.generate(10)}/`;
+        return elementId.replaceAll(this.prefix, '');
     }
 }

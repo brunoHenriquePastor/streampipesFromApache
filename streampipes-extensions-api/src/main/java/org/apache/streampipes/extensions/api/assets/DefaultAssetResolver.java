@@ -34,24 +34,23 @@ public class DefaultAssetResolver implements AssetResolver {
   }
 
   @Override
-  public byte[] getAsset(ClassLoader classLoader,
-                         String assetName) throws IOException {
-    return getResourceFile(classLoader, assetName).readAllBytes();
+  public byte[] getAsset(String assetName) throws IOException {
+    return getResourceFile(assetName).readAllBytes();
   }
 
   @Override
-  public Properties getLocale(ClassLoader classLoader,
-                              String localeName) throws IOException {
+  public Properties getLocale(String localeName) throws IOException {
     Properties props = new Properties();
-    props.load(new InputStreamReader(getResourceFile(classLoader, localeName), StandardCharsets.UTF_8));
+    props.load(new InputStreamReader(getResourceFile(localeName), StandardCharsets.UTF_8));
     return props;
   }
 
-  protected InputStream getResourceFile(ClassLoader classLoader,
-                                        String filename) throws IOException {
+  protected InputStream getResourceFile(String filename) throws IOException {
     if (existsFile(filename)) {
       var path = makePath(filename);
-      return classLoader.getResourceAsStream(path);
+      return this.getClass()
+          .getClassLoader()
+          .getResourceAsStream(path);
     } else {
       throw new IOException(String.format("Could not read file %s", filename));
     }

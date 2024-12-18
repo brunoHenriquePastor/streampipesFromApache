@@ -19,10 +19,11 @@
 package org.apache.streampipes.extensions.connectors.influx.shared;
 
 import org.apache.streampipes.commons.exceptions.SpRuntimeException;
-import org.apache.streampipes.dataexplorer.influx.client.InfluxClientProvider;
-import org.apache.streampipes.dataexplorer.influx.client.InfluxConnectionSettings;
+import org.apache.streampipes.dataexplorer.commons.influx.InfluxClientProvider;
+import org.apache.streampipes.dataexplorer.commons.influx.InfluxConnectionSettings;
 
 import org.influxdb.InfluxDB;
+import org.influxdb.dto.Pong;
 
 public abstract class SharedInfluxClient {
 
@@ -41,14 +42,12 @@ public abstract class SharedInfluxClient {
 
 
   protected void initClient() throws SpRuntimeException {
-    InfluxClientProvider influxClientProvider = new InfluxClientProvider();
-    this.influxDb = influxClientProvider.getInitializedInfluxDBClient(connectionSettings);
-  }
+    this.influxDb = InfluxClientProvider.getInfluxDBClient(connectionSettings);
 
-  /**
-   * Shuts down the connection to the InfluxDB server
-   */
-  public void disconnect() {
-    influxDb.close();
+    // Checking, if server is available
+    Pong response = influxDb.ping();
+    if (response.getVersion().equalsIgnoreCase("unknown")) {
+      throw new SpRuntimeException("Could not connect to InfluxDb Server: " + connectionSettings.getConnectionUrl());
+    }
   }
 }

@@ -22,7 +22,8 @@ import org.apache.streampipes.commons.exceptions.SpRuntimeException;
 import org.apache.streampipes.commons.exceptions.connect.AdapterException;
 import org.apache.streampipes.commons.prometheus.adapter.AdapterMetricsManager;
 import org.apache.streampipes.connect.management.management.AdapterMasterManagement;
-import org.apache.streampipes.dataexplorer.management.DataExplorerDispatcher;
+import org.apache.streampipes.dataexplorer.DataExplorerQueryManagement;
+import org.apache.streampipes.dataexplorer.DataExplorerSchemaManagement;
 import org.apache.streampipes.manager.file.FileManager;
 import org.apache.streampipes.manager.pipeline.PipelineCacheManager;
 import org.apache.streampipes.manager.pipeline.PipelineCanvasMetadataCacheManager;
@@ -33,6 +34,9 @@ import org.apache.streampipes.model.file.FileMetadata;
 import org.apache.streampipes.model.pipeline.Pipeline;
 import org.apache.streampipes.resource.management.SpResourceManager;
 import org.apache.streampipes.resource.management.UserResourceManager;
+import org.apache.streampipes.storage.api.IDashboardStorage;
+import org.apache.streampipes.storage.api.IDashboardWidgetStorage;
+import org.apache.streampipes.storage.api.IDataExplorerWidgetStorage;
 import org.apache.streampipes.storage.api.IGenericStorage;
 import org.apache.streampipes.storage.management.StorageDispatcher;
 
@@ -83,8 +87,6 @@ public class ResetManagement {
 
     removeAllPipelineTemplates();
 
-    clearGenericStorage();
-
     logger.info("Resetting the system was completed");
   }
 
@@ -108,7 +110,7 @@ public class ResetManagement {
   private static void stopAndDeleteAllAdapters() {
     AdapterMasterManagement adapterMasterManagement = new AdapterMasterManagement(
         StorageDispatcher.INSTANCE.getNoSqlStore()
-            .getAdapterInstanceStorage(),
+                                  .getAdapterInstanceStorage(),
         new SpResourceManager().manageAdapters(),
         new SpResourceManager().manageDataStreams(),
         AdapterMetricsManager.INSTANCE.getAdapterMetrics()
@@ -135,12 +137,12 @@ public class ResetManagement {
   }
 
   private static void removeAllDataInDataLake() {
-    var dataLakeMeasureManagement = new DataExplorerDispatcher()
-        .getDataExplorerManager()
-        .getSchemaManagement();
-    var dataExplorerQueryManagement = new DataExplorerDispatcher()
-        .getDataExplorerManager()
-        .getQueryManagement(dataLakeMeasureManagement);
+    var dataLakeStorage = StorageDispatcher.INSTANCE
+        .getNoSqlStore()
+        .getDataLakeStorage();
+    var dataLakeMeasureManagement = new DataExplorerSchemaManagement(dataLakeStorage);
+    var dataExplorerQueryManagement =
+        new DataExplorerQueryManagement(dataLakeMeasureManagement);
     List<DataLakeMeasure> allMeasurements = dataLakeMeasureManagement.getAllMeasurements();
     allMeasurements.forEach(measurement -> {
       boolean isSuccessDataLake = dataExplorerQueryManagement.deleteData(measurement.getMeasureName());
@@ -152,39 +154,39 @@ public class ResetManagement {
   }
 
   private static void removeAllDataViewWidgets() {
-    var widgetStorage =
+    IDataExplorerWidgetStorage widgetStorage =
         StorageDispatcher.INSTANCE.getNoSqlStore()
-            .getDataExplorerWidgetStorage();
-    widgetStorage.findAll()
-        .forEach(widget -> widgetStorage.deleteElementById(widget.getElementId()));
+                                  .getDataExplorerWidgetStorage();
+    widgetStorage.getAllDataExplorerWidgets()
+                 .forEach(widget -> widgetStorage.deleteDataExplorerWidget(widget.getId()));
   }
 
   private static void removeAllDataViews() {
-    var dataLakeDashboardStorage =
+    IDashboardStorage dataLakeDashboardStorage =
         StorageDispatcher.INSTANCE.getNoSqlStore()
-            .getDataExplorerDashboardStorage();
-    dataLakeDashboardStorage.findAll()
-        .forEach(dashboard -> dataLakeDashboardStorage.deleteElementById(dashboard.getElementId()));
+                                  .getDataExplorerDashboardStorage();
+    dataLakeDashboardStorage.getAllDashboards()
+                            .forEach(dashboard -> dataLakeDashboardStorage.deleteDashboard(dashboard.getCouchDbId()));
   }
 
   private static void removeAllDashboardWidgets() {
-    var dashboardWidgetStorage =
+    IDashboardWidgetStorage dashobardWidgetStorage =
         StorageDispatcher.INSTANCE.getNoSqlStore()
-            .getDashboardWidgetStorage();
-    dashboardWidgetStorage.findAll()
-        .forEach(widget -> dashboardWidgetStorage.deleteElementById(widget.getElementId()));
+                                  .getDashboardWidgetStorage();
+    dashobardWidgetStorage.getAllDashboardWidgets()
+                          .forEach(widget -> dashobardWidgetStorage.deleteDashboardWidget(widget.getId()));
   }
 
   private static void removeAllDashboards() {
-    var dashboardStorage = StorageDispatcher.INSTANCE.getNoSqlStore()
-        .getDashboardStorage();
-    dashboardStorage.findAll()
-        .forEach(dashboard -> dashboardStorage.deleteElementById(dashboard.getElementId()));
+    IDashboardStorage dashboardStorage = StorageDispatcher.INSTANCE.getNoSqlStore()
+                                                                   .getDashboardStorage();
+    dashboardStorage.getAllDashboards()
+                    .forEach(dashboard -> dashboardStorage.deleteDashboard(dashboard.getCouchDbId()));
   }
 
   private static void removeAllAssets(String username) {
     IGenericStorage genericStorage = StorageDispatcher.INSTANCE.getNoSqlStore()
-        .getGenericStorage();
+                                                               .getGenericStorage();
     try {
       for (Map<String, Object> asset : genericStorage.findAll("asset-management")) {
         genericStorage.delete((String) asset.get("_id"), (String) asset.get("_rev"));
@@ -201,28 +203,8 @@ public class ResetManagement {
         .getPipelineElementTemplateStorage();
 
     pipelineElementTemplateStorage
-        .findAll()
+        .getAll()
         .forEach(pipelineElementTemplateStorage::deleteElement);
-
-  }
-
-  private static void clearGenericStorage() {
-    var appDocTypesToDelete = List.of(
-        "asset-management",
-        "asset-sites"
-    );
-    var genericStorage = StorageDispatcher.INSTANCE.getNoSqlStore().getGenericStorage();
-
-    appDocTypesToDelete.forEach(docType -> {
-      try {
-        var allDocs = genericStorage.findAll(docType);
-        for (var doc : allDocs) {
-          genericStorage.delete(doc.get("_id").toString(), doc.get("_rev").toString());
-        }
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
 
   }
 }

@@ -62,6 +62,7 @@ import { EditValueTransformationComponent } from './dialog/edit-event-property/c
 import { SpEpSettingsSectionComponent } from './dialog/edit-event-property/components/ep-settings-section/ep-settings-section.component';
 import { SpAdapterOptionsPanelComponent } from './components/adapter-configuration/start-adapter-configuration/adapter-options-panel/adapter-options-panel.component';
 import { SpAdapterTemplateDialogComponent } from './dialog/adapter-template/adapter-template-dialog.component';
+import { JsonPrettyPrintPipe } from './filter/json-pretty-print.pipe';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AdapterConfigurationHeaderComponent } from './components/adapter-configuration/adapter-configuration-header/adapter-configuration-header.component';
 import { NewAdapterComponent } from './components/new-adapter/new-adapter.component';
@@ -100,12 +101,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { AdapterStatusLightComponent } from './components/existing-adapters/adapter-status-light/adapter-status-light.component';
-import { SpAdapterDeploymentSettingsComponent } from './components/adapter-configuration/adapter-settings/adapter-deployment-settings/adapter-deployment-settings.component';
-import { SpAdapterDocumentationDialogComponent } from './dialog/adapter-documentation/adapter-documentation-dialog.component';
-import { AdapterDetailsDataComponent } from './components/adapter-details/adapter-details-data/adapter-details-data.component';
-import { EditRegexTransformationComponent } from './dialog/edit-event-property/components/edit-regex-transformation/edit-regex-transformation.component';
-import { AdapterCodePanelComponent } from './components/adapter-code-panel/adapter-code-panel.component';
-import { AdapterDetailsCodeComponent } from './components/adapter-details/adapter-details-code/adapter-details-code.component';
 
 @NgModule({
     imports: [
@@ -167,30 +162,12 @@ import { AdapterDetailsCodeComponent } from './components/adapter-details/adapte
                         component: EditAdapterComponent,
                     },
                     {
-                        path: 'details/:elementId',
-                        children: [
-                            {
-                                path: '',
-                                pathMatch: 'full',
-                                redirectTo: 'data',
-                            },
-                            {
-                                path: 'data',
-                                component: AdapterDetailsDataComponent,
-                            },
-                            {
-                                path: 'metrics',
-                                component: SpAdapterDetailsMetricsComponent,
-                            },
-                            {
-                                path: 'logs',
-                                component: SpAdapterDetailsLogsComponent,
-                            },
-                            {
-                                path: 'code',
-                                component: AdapterDetailsCodeComponent,
-                            },
-                        ],
+                        path: 'details/:elementId/metrics',
+                        component: SpAdapterDetailsMetricsComponent,
+                    },
+                    {
+                        path: 'details/:elementId/logs',
+                        component: SpAdapterDetailsLogsComponent,
                     },
                 ],
             },
@@ -199,12 +176,9 @@ import { AdapterDetailsCodeComponent } from './components/adapter-details/adapte
     ],
     exports: [ErrorMessageComponent],
     declarations: [
-        AdapterCodePanelComponent,
         AdapterConfigurationHeaderComponent,
         AdapterConfigurationComponent,
         AdapterDescriptionComponent,
-        AdapterDetailsCodeComponent,
-        AdapterDetailsDataComponent,
         AdapterStartedDialog,
         AdapterStatusLightComponent,
         AdapterSettingsComponent,
@@ -212,7 +186,6 @@ import { AdapterDetailsCodeComponent } from './components/adapter-details/adapte
         DeleteAdapterDialogComponent,
         EventSchemaComponent,
         EditEventPropertyComponent,
-        EditRegexTransformationComponent,
         EventPropertyRowComponent,
         EditUnitTransformationComponent,
         EditSchemaTransformationComponent,
@@ -222,6 +195,7 @@ import { AdapterDetailsCodeComponent } from './components/adapter-details/adapte
         EventSchemaPreviewComponent,
         ExistingAdaptersComponent,
         AdapterFilterPipe,
+        JsonPrettyPrintPipe,
         AdapterConfigurationComponent,
         TimestampPipe,
         EditCorrectionValueComponent,
@@ -232,10 +206,8 @@ import { AdapterDetailsCodeComponent } from './components/adapter-details/adapte
         SchemaEditorHeaderComponent,
         SpEpSettingsSectionComponent,
         StartAdapterConfigurationComponent,
-        SpAdapterDeploymentSettingsComponent,
         SpAdapterDetailsLogsComponent,
         SpAdapterDetailsMetricsComponent,
-        SpAdapterDocumentationDialogComponent,
         SpAdapterOptionsPanelComponent,
         SpAdapterStartedPreviewComponent,
         SpAdapterStartedLoadingComponent,

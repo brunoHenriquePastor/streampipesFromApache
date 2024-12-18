@@ -18,60 +18,43 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserInfo } from '@streampipes/platform-services';
-import { StatusBox } from '../models/home.model';
-import { UserRole } from '../../_enums/user-role.enum';
-import { zip } from 'rxjs';
+import { NotificationCountService } from '../../services/notification-count-service';
+import {
+    PipelineElementService,
+    PipelineService,
+} from '@streampipes/platform-services';
 
 @Component({
     selector: 'sp-status',
     templateUrl: './status.component.html',
-    styleUrls: ['./status.component.scss'],
+    styleUrls: ['./status.component.css'],
 })
 export class StatusComponent implements OnInit {
-    @Input()
-    statusBox: StatusBox;
+    unreadNotificationCount = 0;
 
     @Input()
-    resourceCount: number = 0;
+    availablePipelines = 0;
 
     @Input()
-    currentUser: UserInfo;
+    availablePipelineElements = 0;
 
-    showCreateLink = true;
+    @Input()
+    runningPipelines = 0;
 
-    constructor(private router: Router) {}
+    constructor(
+        private pipelineElementService: PipelineElementService,
+        private router: Router,
+        public notificationCountService: NotificationCountService,
+        private pipelineService: PipelineService,
+    ) {}
 
     ngOnInit() {
-        zip(this.statusBox.dataFns).subscribe(res => {
-            let totalLength = 0;
-            res.forEach(response => {
-                totalLength += response.length;
-            });
-
-            this.resourceCount = totalLength;
-        });
-        this.showCreateLink = this.shouldShowCreateLink();
+        this.notificationCountService.unreadNotificationCount$.subscribe(
+            count => (this.unreadNotificationCount = count),
+        );
     }
 
-    shouldShowCreateLink(): boolean {
-        if (this.statusBox.createRoles.length === 0) {
-            return false;
-        } else if (this.hasRole(UserRole.ROLE_ADMIN)) {
-            return true;
-        } else {
-            const userRoles = this.currentUser.roles;
-            return userRoles.some(role =>
-                this.statusBox.createRoles.includes(role as UserRole),
-            );
-        }
-    }
-
-    hasRole(role: UserRole): boolean {
-        return this.currentUser.roles.indexOf(role) > -1;
-    }
-
-    navigate(command: string[]) {
-        this.router.navigate(command);
+    navigate(url: string) {
+        this.router.navigate([url]);
     }
 }

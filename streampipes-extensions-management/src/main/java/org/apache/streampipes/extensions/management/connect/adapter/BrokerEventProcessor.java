@@ -23,10 +23,11 @@ import org.apache.streampipes.extensions.api.connect.IEventCollector;
 import org.apache.streampipes.extensions.api.connect.IParser;
 import org.apache.streampipes.messaging.InternalEventProcessor;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 public record BrokerEventProcessor(
     IParser parser,
@@ -38,7 +39,7 @@ public record BrokerEventProcessor(
   @Override
   public void onEvent(byte[] payload) {
     try {
-      parser.parse(new ByteArrayInputStream(payload), collector::collect);
+      parser.parse(IOUtils.toInputStream(new String(payload), StandardCharsets.UTF_8), collector::collect);
     } catch (ParseException e) {
       LOG.error("Error while parsing: " + e.getMessage());
     }

@@ -29,7 +29,7 @@ public class DefaultSpCoreConfiguration {
   public SpCoreConfiguration make() {
     var coreCfg = new SpCoreConfiguration();
 
-    coreCfg.setGeneralConfig(new DefaultGeneralConfig().make());
+    coreCfg.setGeneralConfig(new GeneralConfig());
     coreCfg.setMessagingSettings(new DefaultMessagingSettings().make());
     coreCfg.setEmailConfig(EmailConfig.fromDefaults());
     coreCfg.setEmailTemplateConfig(new DefaultEmailTemplateConfiguration().getDefaultTemplates());

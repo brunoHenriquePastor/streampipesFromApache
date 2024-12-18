@@ -30,6 +30,7 @@ import org.apache.streampipes.sdk.helpers.EpRequirements;
 import org.apache.streampipes.sdk.helpers.Labels;
 import org.apache.streampipes.sdk.helpers.Locales;
 import org.apache.streampipes.sdk.helpers.OutputStrategies;
+import org.apache.streampipes.sdk.utils.Assets;
 import org.apache.streampipes.wrapper.flink.FlinkDataProcessorDeclarer;
 import org.apache.streampipes.wrapper.flink.FlinkDataProcessorProgram;
 
@@ -48,7 +49,7 @@ public class PeakDetectionController extends FlinkDataProcessorDeclarer<PeakDete
     return ProcessingElementBuilder.create("org.apache.streampipes.processors.pattern-detection.flink.peak-detection")
         .category(DataProcessorType.ALGORITHM)
         .withLocales(Locales.EN)
-        .withAssets(ExtensionAssetType.DOCUMENTATION, ExtensionAssetType.ICON)
+        .withAssets(Assets.DOCUMENTATION, Assets.ICON)
         .requiredStream(StreamRequirementsBuilder.create().requiredPropertyWithUnaryMapping(EpRequirements
                     .numberReq(),
                 Labels.withId(VALUE_TO_OBSERVE), PropertyScope.MEASUREMENT_PROPERTY)

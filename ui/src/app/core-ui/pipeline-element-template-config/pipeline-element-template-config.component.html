@@ -16,7 +16,7 @@
   ~
   -->
 
-<div class="p-15" *ngIf="templateConfigs">
+<div class="p-15">
     <div fxFlex="100" fxLayout="column">
         <h4>Basics</h4>
         <mat-form-field fxFlex color="accent">
@@ -58,11 +58,16 @@
                     {{ config.label }}
                 </div>
                 <div fxFlex="50">
-                    <sp-pipeline-element-template-config-item
-                        [sp]="config"
-                        [templateConfigs]="templateConfigs"
-                    >
-                    </sp-pipeline-element-template-config-item>
+                    <div fxLayout="column">
+                        <mat-checkbox
+                            [checked]="templateConfigs.has(config.internalName)"
+                            (change)="handleSelection(config)"
+                            name="store"
+                            class="sp"
+                            color="accent"
+                            >Store as template
+                        </mat-checkbox>
+                    </div>
                 </div>
             </div>
         </div>
@@ -81,7 +86,7 @@
                     <button
                         mat-icon-button
                         color="accent"
-                        (click)="deleteTemplate(template.elementId)"
+                        (click)="deleteTemplate(template._id)"
                         data-cy="delete-pipeline-element-template"
                     >
                         <mat-icon>delete</mat-icon>

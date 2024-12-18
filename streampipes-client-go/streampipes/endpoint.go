@@ -18,11 +18,9 @@
 package streampipes
 
 import (
-	"bytes"
-	"fmt"
+	"errors"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/config"
 	headers "github.com/apache/streampipes/streampipes-client-go/streampipes/internal/http_headers"
-	"io"
 	"net/http"
 )
 
@@ -30,13 +28,9 @@ type endpoint struct {
 	config config.StreamPipesClientConfig
 }
 
-func (e *endpoint) executeRequest(method string, endPointUrl string, body []byte) (*http.Response, error) {
+func (e *endpoint) executeRequest(method string, endPointUrl string) (*http.Response, error) {
 
-	var reader io.Reader
-	if body != nil {
-		reader = bytes.NewReader(body)
-	}
-	req, err := http.NewRequest(method, endPointUrl, reader)
+	req, err := http.NewRequest(method, endPointUrl, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -58,23 +52,23 @@ func (e *endpoint) handleStatusCode(resp *http.Response) error {
 
 	switch resp.StatusCode {
 	case http.StatusUnauthorized:
-		return fmt.Errorf("response code %d:"+"The streamPipes Backend returned an unauthorized error.\nplease check your ApiUser and/or Apikey to be correct.", resp.StatusCode)
+		return errors.New("The streamPipes Backend returned an unauthorized error.\nplease check your ApiUser and/or Apikey to be correct.")
 	case http.StatusForbidden:
-		return fmt.Errorf("response code %d:"+"There seems to be an issue with the access rights of the given user and the resource you queried.\n"+
-			"Apparently, this user is not allowed to query the resource.\n"+
-			"Please check the user's permissions or contact your StreamPipes admin.", resp.StatusCode)
+		return errors.New("There seems to be an issue with the access rights of the given user and the resource you queried.\n" +
+			"Apparently, this user is not allowed to query the resource.\n" +
+			"Please check the user's permissions or contact your StreamPipes admin.")
 	case http.StatusNotFound:
-		return fmt.Errorf("response code %d:"+"There seems to be an issue with the Go Client calling the API inappropriately.\n"+
-			"This should not happen, but unfortunately did.\n"+
-			"If you don't mind, it would be awesome to let us know by creating an issue at https://github.com/apache/streampipes.\n", resp.StatusCode)
+		return errors.New("There seems to be an issue with the Go Client calling the API inappropriately.\n" +
+			"This should not happen, but unfortunately did.\n" +
+			"If you don't mind, it would be awesome to let us know by creating an issue at https://github.com/apache/streampipes.\n")
 	case http.StatusMethodNotAllowed:
-		return fmt.Errorf("response code %d:"+"There seems to be an issue with the Go Client calling the API inappropriately.\n"+
-			"This should not happen, but unfortunately did.\n"+
-			"If you don't mind, it would be awesome to let us know by creating an issue at https://github.com/apache/streampipes.\n", resp.StatusCode)
+		return errors.New("There seems to be an issue with the Go Client calling the API inappropriately.\n" +
+			"This should not happen, but unfortunately did.\n" +
+			"If you don't mind, it would be awesome to let us know by creating an issue at https://github.com/apache/streampipes.\n")
 	case http.StatusInternalServerError:
-		return fmt.Errorf("response code %d:"+"streamPipes internal error", resp.StatusCode)
+		return errors.New("streamPipes internal error")
 	default:
-		return fmt.Errorf(resp.Status)
+		return errors.New(resp.Status)
 	}
 
 }

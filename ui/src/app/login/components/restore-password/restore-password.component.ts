@@ -16,7 +16,7 @@
  *
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
     UntypedFormBuilder,
     UntypedFormControl,
@@ -24,14 +24,13 @@ import {
     Validators,
 } from '@angular/forms';
 import { LoginService } from '../../services/login.service';
-import { BaseLoginPageDirective } from '../base-login-page.directive';
 
 @Component({
     selector: 'sp-restore-password',
     templateUrl: './restore-password.component.html',
     styleUrls: ['../login/login.component.scss'],
 })
-export class RestorePasswordComponent extends BaseLoginPageDirective {
+export class RestorePasswordComponent implements OnInit {
     parentForm: UntypedFormGroup;
     restoreSuccess = false;
     restoreCompleted = false;
@@ -40,9 +39,19 @@ export class RestorePasswordComponent extends BaseLoginPageDirective {
 
     constructor(
         private fb: UntypedFormBuilder,
-        protected loginService: LoginService,
-    ) {
-        super(loginService);
+        private loginService: LoginService,
+    ) {}
+
+    ngOnInit(): void {
+        this.parentForm = this.fb.group({});
+        this.parentForm.addControl(
+            'username',
+            new UntypedFormControl('', Validators.required),
+        );
+
+        this.parentForm.valueChanges.subscribe(result => {
+            this.username = result.username;
+        });
     }
 
     sendRestorePasswordLink() {
@@ -57,17 +66,5 @@ export class RestorePasswordComponent extends BaseLoginPageDirective {
                 this.restoreCompleted = true;
             },
         );
-    }
-
-    onSettingsAvailable(): void {
-        this.parentForm = this.fb.group({});
-        this.parentForm.addControl(
-            'username',
-            new UntypedFormControl('', Validators.required),
-        );
-
-        this.parentForm.valueChanges.subscribe(result => {
-            this.username = result.username;
-        });
     }
 }

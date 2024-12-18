@@ -19,7 +19,6 @@
 import { UserInput } from '../model/UserInput';
 import { UserInputType } from '../model/UserInputType';
 import { AdapterInput } from '../model/AdapterInput';
-import { TreeNodeUserInputBuilder } from './TreeNodeUserInputBuilder';
 
 export class AdapterBuilder {
     adapterInput: AdapterInput;
@@ -45,11 +44,6 @@ export class AdapterBuilder {
         return this;
     }
 
-    public setAutoAddTimestampPropery() {
-        this.adapterInput.autoAddTimestamp = true;
-        return this;
-    }
-
     public addDimensionProperty(dimensionPropertyName: string) {
         this.adapterInput.dimensionProperties.push(dimensionPropertyName);
         return this;
@@ -65,16 +59,6 @@ export class AdapterBuilder {
         userInput.type = type;
         userInput.selector = selector;
         userInput.value = value;
-
-        this.adapterInput.adapterConfiguration.push(userInput);
-
-        return this;
-    }
-
-    public addTreeNode(treeNode: TreeNodeUserInputBuilder) {
-        const userInput = new UserInput();
-        userInput.type = 'tree';
-        userInput.treeNode = treeNode.build();
 
         this.adapterInput.adapterConfiguration.push(userInput);
 
@@ -101,7 +85,9 @@ export class AdapterBuilder {
         return this;
     }
 
-    public setFormat(format: 'csv' | 'json' | 'json_array' | 'xml') {
+    public setFormat(
+        format: 'csv' | 'json' | 'json_array' | 'json_object' | 'xml',
+    ) {
         this.adapterInput.format = format;
         return this;
     }

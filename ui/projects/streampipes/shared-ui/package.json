@@ -10,8 +10,7 @@
     "@angular/material": "^17.3.3",
     "@angular/router": "^17.3.3",
     "@streampipes/platform-services": "0.0.1",
-    "rxjs": "^7.5.7",
-    "date-fns": "^3.6.0"
+    "rxjs": "^7.5.7"
   },
   "dependencies": {
     "tslib": "^2.6.2"

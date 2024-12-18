@@ -27,16 +27,19 @@ import java.util.List;
 public class PipelineExecutor {
 
   private final Pipeline pipeline;
+  private final boolean forceStop;
 
-  public PipelineExecutor(Pipeline pipeline) {
+  public PipelineExecutor(Pipeline pipeline,
+                          boolean forceStop) {
     this.pipeline = pipeline;
+    this.forceStop = forceStop;
   }
 
   public PipelineOperationStatus startPipeline() {
     return executeOperation(PipelineExecutionTaskFactory.makeStartPipelineTasks(pipeline));
   }
 
-  public PipelineOperationStatus stopPipeline(boolean forceStop) {
+  public PipelineOperationStatus stopPipeline() {
     return executeOperation(PipelineExecutionTaskFactory.makeStopPipelineTasks(pipeline, forceStop));
   }
 

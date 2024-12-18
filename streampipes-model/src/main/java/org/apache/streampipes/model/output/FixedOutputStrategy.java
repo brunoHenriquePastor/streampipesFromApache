@@ -50,9 +50,5 @@ public class FixedOutputStrategy extends OutputStrategy {
     this.eventProperties = eventProperties;
   }
 
-  @Override
-  public void accept(OutputStrategyVisitor visitor) {
-    visitor.visit(this);
-  }
 
 }

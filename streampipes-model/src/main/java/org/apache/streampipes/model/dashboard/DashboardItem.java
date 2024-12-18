@@ -18,7 +18,6 @@
 package org.apache.streampipes.model.dashboard;
 
 import java.util.List;
-import java.util.Map;
 
 public class DashboardItem {
 
@@ -32,7 +31,6 @@ public class DashboardItem {
   private Integer rows;
   private Integer x;
   private Integer y;
-  private Map<String, Object> timeSettings;
 
   public DashboardItem() {
 
@@ -100,13 +98,5 @@ public class DashboardItem {
 
   public void setY(Integer y) {
     this.y = y;
-  }
-
-  public Map<String, Object> getTimeSettings() {
-    return timeSettings;
-  }
-
-  public void setTimeSettings(Map<String, Object> timeSettings) {
-    this.timeSettings = timeSettings;
   }
 }

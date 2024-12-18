@@ -32,9 +32,6 @@ export class PipelineStartedStatusComponent implements OnInit {
     @Input()
     action: PipelineAction;
 
-    @Input()
-    forceStopDisabled = false;
-
     @Output()
     forceStopPipelineEmitter = new EventEmitter();
 

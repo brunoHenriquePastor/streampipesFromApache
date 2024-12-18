@@ -17,7 +17,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpContext, HttpEvent } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import {
     DataProcessorInvocation,
     DataSinkInvocation,
@@ -40,7 +40,6 @@ import { DialogService, PanelType } from '@streampipes/shared-ui';
 import { map } from 'rxjs/operators';
 import { NGX_LOADING_BAR_IGNORED } from '@ngx-loading-bar/http-client';
 import { HelpComponent } from '../../core-ui/help/help.component';
-import { TopicsComponent } from 'src/app/core-ui/topics/topics.component';
 
 @Injectable({ providedIn: 'root' })
 export class EditorService {
@@ -176,17 +175,6 @@ export class EditorService {
         });
     }
 
-    openTopicsDialog(pipelineElementConfig: PipelineElementConfig) {
-        this.dialogService.open(TopicsComponent, {
-            panelType: PanelType.STANDARD_PANEL,
-            title: 'View Topics of ' + pipelineElementConfig.payload.name,
-            width: '70vw',
-            data: {
-                pipelineElement: pipelineElementConfig.payload,
-            },
-        });
-    }
-
     initiatePipelinePreview(
         pipeline: Pipeline,
     ): Observable<PipelinePreviewModel> {
@@ -201,13 +189,18 @@ export class EditorService {
         return this.http.delete(this.pipelinePreviewBasePath + '/' + previewId);
     }
 
-    getPipelinePreviewResult(previewId: string): Observable<HttpEvent<string>> {
-        return this.http.get(`${this.pipelinePreviewBasePath}/${previewId}`, {
-            responseType: 'text',
-            observe: 'events',
-            reportProgress: true,
-            context: new HttpContext().set(NGX_LOADING_BAR_IGNORED, true),
-        });
+    getPipelinePreviewResult(
+        previewId: string,
+        pipelineElementDomId: string,
+    ): Observable<any> {
+        return this.http.get(
+            this.pipelinePreviewBasePath +
+                '/' +
+                previewId +
+                '/' +
+                pipelineElementDomId,
+            { context: new HttpContext().set(NGX_LOADING_BAR_IGNORED, true) },
+        );
     }
 
     get pipelinePreviewBasePath() {

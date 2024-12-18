@@ -96,11 +96,12 @@ public class SpKafkaProducer implements EventProducer, Serializable {
     LOG.info("Kafka producer: Connecting to " + protocol.getTopicDefinition().getActualTopicName());
     this.brokerUrl = protocol.getBrokerHostname() + ":" + protocol.getKafkaPort();
     this.topic = protocol.getTopicDefinition().getActualTopicName();
+    String zookeeperHost = protocol.getZookeeperHost() + ":" + protocol.getZookeeperPort();
 
     try {
       createKafkaTopic(protocol);
     } catch (ExecutionException | InterruptedException e) {
-      LOG.error("Could not create topic: " + topic + " on broker " + brokerUrl);
+      LOG.error("Could not create topic: " + topic + " on broker " + zookeeperHost);
     }
 
     this.producer = new KafkaProducer<>(makeProperties(protocol, Collections.emptyList()));

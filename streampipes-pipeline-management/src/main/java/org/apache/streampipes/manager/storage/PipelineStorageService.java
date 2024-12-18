@@ -20,6 +20,7 @@ package org.apache.streampipes.manager.storage;
 
 import org.apache.streampipes.manager.data.PipelineGraph;
 import org.apache.streampipes.manager.data.PipelineGraphBuilder;
+import org.apache.streampipes.manager.matching.ConnectionStorageHandler;
 import org.apache.streampipes.model.base.InvocableStreamPipesEntity;
 import org.apache.streampipes.model.graph.DataProcessorInvocation;
 import org.apache.streampipes.model.graph.DataSinkInvocation;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class PipelineStorageService {
 
-  private final Pipeline pipeline;
+  private Pipeline pipeline;
 
   public PipelineStorageService(Pipeline pipeline) {
     this.pipeline = pipeline;
@@ -40,12 +41,12 @@ public class PipelineStorageService {
 
   public void updatePipeline() {
     preparePipeline();
-    StorageDispatcher.INSTANCE.getNoSqlStore().getPipelineStorageAPI().updateElement(pipeline);
+    StorageDispatcher.INSTANCE.getNoSqlStore().getPipelineStorageAPI().updatePipeline(pipeline);
   }
 
   public void addPipeline() {
     preparePipeline();
-    StorageDispatcher.INSTANCE.getNoSqlStore().getPipelineStorageAPI().persist(pipeline);
+    StorageDispatcher.INSTANCE.getNoSqlStore().getPipelineStorageAPI().store(pipeline);
   }
 
   private void preparePipeline() {
@@ -62,6 +63,8 @@ public class PipelineStorageService {
 
     pipeline.setSepas(sepas);
     pipeline.setActions(secs);
+
+    new ConnectionStorageHandler(pipeline).storeConnections();
   }
 
   private void encryptSecrets(List<InvocableStreamPipesEntity> graphs) {

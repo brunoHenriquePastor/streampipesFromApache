@@ -33,7 +33,7 @@ public class ServiceAccount extends Principal {
 
   public static ServiceAccount from(String serviceAccountName,
                                     String clientSecret,
-                                    Set<String> roles) {
+                                    Set<Role> roles) {
     ServiceAccount account = new ServiceAccount();
     account.setUsername(serviceAccountName);
     account.setClientSecret(clientSecret);

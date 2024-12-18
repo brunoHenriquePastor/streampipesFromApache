@@ -18,7 +18,7 @@
 
 import { ConnectUtils } from './connect/ConnectUtils';
 import { PipelineBuilder } from '../builder/PipelineBuilder';
-import { PipelineUtils } from './pipeline/PipelineUtils';
+import { PipelineUtils } from './PipelineUtils';
 import { PipelineElementInput } from '../model/PipelineElementInput';
 import { AdapterInput } from '../model/AdapterInput';
 import { AdapterBuilder } from '../builder/AdapterBuilder';

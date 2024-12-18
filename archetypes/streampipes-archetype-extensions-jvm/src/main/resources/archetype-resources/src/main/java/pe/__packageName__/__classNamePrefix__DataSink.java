@@ -26,7 +26,6 @@ import org.apache.streampipes.extensions.api.pe.config.IDataSinkConfiguration;
 import org.apache.streampipes.extensions.api.pe.context.EventSinkRuntimeContext;
 import org.apache.streampipes.extensions.api.pe.param.IDataSinkParameters;
 import org.apache.streampipes.model.DataSinkType;
-import org.apache.streampipes.model.extensions.ExtensionAssetType;
 import org.apache.streampipes.model.runtime.Event;
 import org.apache.streampipes.sdk.builder.DataSinkBuilder;
 import org.apache.streampipes.sdk.builder.StreamRequirementsBuilder;
@@ -34,8 +33,7 @@ import org.apache.streampipes.sdk.builder.sink.DataSinkConfiguration;
 import org.apache.streampipes.sdk.helpers.EpRequirements;
 import org.apache.streampipes.sdk.helpers.Labels;
 import org.apache.streampipes.sdk.helpers.Locales;
-import org.apache.streampipes.model.AdapterType;
-
+import org.apache.streampipes.sdk.utils.Assets;
 
 
 public class ${classNamePrefix}DataSink implements IStreamPipesDataSink {
@@ -50,7 +48,7 @@ public class ${classNamePrefix}DataSink implements IStreamPipesDataSink {
     return DataSinkConfiguration.create(
       ${classNamePrefix}DataSink::new,
       DataSinkBuilder.create("${package}.pe.${packageName}.sink")
-        .withAssets(ExtensionAssetType.DOCUMENTATION, ExtensionAssetType.ICON)
+        .withAssets(Assets.DOCUMENTATION, Assets.ICON)
         .withLocales(Locales.EN)
         .category(DataSinkType.UNCATEGORIZED)
         .requiredStream(StreamRequirementsBuilder

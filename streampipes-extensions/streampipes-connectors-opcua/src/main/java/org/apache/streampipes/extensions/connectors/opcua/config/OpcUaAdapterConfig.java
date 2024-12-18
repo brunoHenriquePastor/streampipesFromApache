@@ -21,7 +21,6 @@ package org.apache.streampipes.extensions.connectors.opcua.config;
 public class OpcUaAdapterConfig extends OpcUaConfig {
 
   private Integer pullIntervalMilliSeconds;
-  private String incompleteEventStrategy;
 
   public Integer getPullIntervalMilliSeconds() {
     return pullIntervalMilliSeconds;
@@ -33,13 +32,5 @@ public class OpcUaAdapterConfig extends OpcUaConfig {
 
   public boolean inPullMode() {
     return pullIntervalMilliSeconds != null;
-  }
-
-  public String getIncompleteEventStrategy() {
-    return incompleteEventStrategy;
-  }
-
-  public void setIncompleteEventStrategy(String incompleteEventStrategy) {
-    this.incompleteEventStrategy = incompleteEventStrategy;
   }
 }

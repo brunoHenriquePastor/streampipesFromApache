@@ -23,10 +23,9 @@ import org.apache.streampipes.model.SpDataStream;
 import org.apache.streampipes.model.extensions.ExtensionAssetType;
 import org.apache.streampipes.model.extensions.ExtensionItemDescription;
 import org.apache.streampipes.model.shared.annotation.TsModel;
-import org.apache.streampipes.model.shared.api.Storable;
 import org.apache.streampipes.model.util.ServiceDefinitionUtil;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.gson.annotations.SerializedName;
 
@@ -41,19 +40,20 @@ import java.util.Objects;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
 @TsModel
-public abstract class NamedStreamPipesEntity implements Storable, Serializable {
+public abstract class NamedStreamPipesEntity implements Serializable {
 
   private static final long serialVersionUID = -98951691820519795L;
 
   protected @SerializedName("_id") String elementId;
 
-  @JsonAlias("_rev")
+  @JsonProperty("_rev")
   protected @SerializedName("_rev") String rev;
 
   protected String dom;
   protected List<String> connectedTo;
   private String name;
   private String description;
+  private String iconUrl;
   private String appId;
   private boolean includesAssets;
   private boolean includesLocales;
@@ -73,11 +73,26 @@ public abstract class NamedStreamPipesEntity implements Storable, Serializable {
     this.elementId = elementId;
   }
 
+  public NamedStreamPipesEntity(String elementId, String name, String description, String iconUrl) {
+    this(elementId, name, description);
+    this.iconUrl = iconUrl;
+  }
+
+  public NamedStreamPipesEntity(String elementId, String name, String description) {
+    super();
+    this.elementId = elementId;
+    this.name = name;
+    this.description = description;
+    this.includedAssets = new ArrayList<>();
+    this.includedLocales = new ArrayList<>();
+  }
+
   public NamedStreamPipesEntity(NamedStreamPipesEntity other) {
     this.elementId = other.getElementId();
     this.rev = other.getRev();
     this.description = other.getDescription();
     this.name = other.getName();
+    this.iconUrl = other.getIconUrl();
     this.elementId = other.getElementId();
     this.dom = other.getDom();
     this.internallyManaged = other.isInternallyManaged();
@@ -107,6 +122,14 @@ public abstract class NamedStreamPipesEntity implements Storable, Serializable {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getIconUrl() {
+    return iconUrl;
+  }
+
+  public void setIconUrl(String iconUrl) {
+    this.iconUrl = iconUrl;
   }
 
   public String getDom() {
@@ -173,22 +196,18 @@ public abstract class NamedStreamPipesEntity implements Storable, Serializable {
     this.internallyManaged = internallyManaged;
   }
 
-  @Override
   public String getRev() {
     return rev;
   }
 
-  @Override
   public void setRev(String rev) {
     this.rev = rev;
   }
 
-  @Override
   public String getElementId() {
     return elementId;
   }
 
-  @Override
   public void setElementId(String elementId) {
     this.elementId = elementId;
   }

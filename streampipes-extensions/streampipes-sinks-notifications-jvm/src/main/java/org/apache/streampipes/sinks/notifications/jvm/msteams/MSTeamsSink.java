@@ -21,7 +21,6 @@ package org.apache.streampipes.sinks.notifications.jvm.msteams;
 import org.apache.streampipes.commons.exceptions.SpRuntimeException;
 import org.apache.streampipes.extensions.api.pe.context.EventSinkRuntimeContext;
 import org.apache.streampipes.model.DataSinkType;
-import org.apache.streampipes.model.extensions.ExtensionAssetType;
 import org.apache.streampipes.model.runtime.Event;
 import org.apache.streampipes.pe.shared.PlaceholderExtractor;
 import org.apache.streampipes.sdk.StaticProperties;
@@ -31,18 +30,17 @@ import org.apache.streampipes.sdk.helpers.Alternatives;
 import org.apache.streampipes.sdk.helpers.EpRequirements;
 import org.apache.streampipes.sdk.helpers.Labels;
 import org.apache.streampipes.sdk.helpers.Locales;
+import org.apache.streampipes.sdk.utils.Assets;
 import org.apache.streampipes.wrapper.params.compat.SinkParams;
 import org.apache.streampipes.wrapper.standalone.StreamPipesNotificationSink;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
 import java.io.IOException;
@@ -51,26 +49,18 @@ import java.net.URL;
 
 public class MSTeamsSink extends StreamPipesNotificationSink {
 
-  public static final String ID = "org.apache.streampipes.sinks.notifications.jvm.msteams";
-
   private static final String KEY_MESSAGE_ADVANCED = "messageAdvanced";
   private static final String KEY_MESSAGE_ADVANCED_CONTENT = "messageContentAdvanced";
   private static final String KEY_MESSAGE_SIMPLE = "messageSimple";
   private static final String KEY_MESSAGE_SIMPLE_CONTENT = "messageContentSimple";
   private static final String KEY_MESSAGE_TYPE_ALTERNATIVES = "messageType";
   private static final String KEY_WEBHOOK_URL = "webhookUrl";
-  public static final String KEY_PROXY_ALTERNATIVES = "proxy";
-  public static final String KEY_PROXY_DISABLED = "proxyDisabled";
-  public static final String KEY_PROXY_ENABLED = "proxyEnabled";
-  public static final String KEY_PROXY_GROUP = "proxyConfigurationGroup";
-  public static final String KEY_PROXY_URL = "proxyUrl";
   protected static final String SIMPLE_MESSAGE_TEMPLATE = "{\"text\": \"%s\"}";
 
   private String messageContent;
   private boolean isSimpleMessageMode;
   private String webhookUrl;
   private ObjectMapper objectMapper;
-  private HttpClient httpClient;
 
   public MSTeamsSink() {
     super();
@@ -99,17 +89,6 @@ public class MSTeamsSink extends StreamPipesNotificationSink {
       isSimpleMessageMode = true;
       messageContent = extractor.singleValueParameter(KEY_MESSAGE_SIMPLE_CONTENT, String.class);
     }
-
-    var selectedProxyAlternative = extractor.selectedAlternativeInternalId(KEY_PROXY_ALTERNATIVES);
-    if (selectedProxyAlternative.equals(KEY_PROXY_DISABLED)) {
-      this.httpClient = HttpClients.createDefault();
-    } else {
-      var proxyUrl = extractor.singleValueParameter(KEY_PROXY_URL, String.class);
-      this.httpClient = HttpClientBuilder
-          .create()
-          .setProxy(HttpHost.create(proxyUrl))
-          .build();
-    }
   }
 
   @Override
@@ -125,15 +104,16 @@ public class MSTeamsSink extends StreamPipesNotificationSink {
     } else {
       teamsMessageContent = createMessageFromAdvancedContent(processedMessageContent);
     }
-    sendPayloadToWebhook(httpClient, teamsMessageContent, webhookUrl);
+
+    sendPayloadToWebhook(HttpClients.createDefault(), teamsMessageContent, webhookUrl);
   }
 
   @Override
   public DataSinkBuilder declareModelWithoutSilentPeriod() {
     return DataSinkBuilder
-        .create(ID, 1)
+        .create("org.apache.streampipes.sinks.notifications.jvm.msteams", 0)
         .withLocales(Locales.EN)
-        .withAssets(ExtensionAssetType.DOCUMENTATION, ExtensionAssetType.ICON)
+        .withAssets(Assets.DOCUMENTATION, Assets.ICON)
         .category(DataSinkType.NOTIFICATION)
         .requiredStream(
             StreamRequirementsBuilder
@@ -142,14 +122,6 @@ public class MSTeamsSink extends StreamPipesNotificationSink {
                 .build()
         )
         .requiredSecret(Labels.withId(KEY_WEBHOOK_URL))
-        .requiredAlternatives(
-            Labels.withId(KEY_PROXY_ALTERNATIVES),
-            Alternatives.from(Labels.withId(KEY_PROXY_DISABLED)),
-            Alternatives.from(Labels.withId(KEY_PROXY_ENABLED),
-                StaticProperties.group(Labels.withId(KEY_PROXY_GROUP),
-                    StaticProperties.stringFreeTextProperty(Labels.withId(KEY_PROXY_URL))
-                )
-            ))
         .requiredAlternatives(
             Labels.withId(KEY_MESSAGE_TYPE_ALTERNATIVES),
             Alternatives.from(
@@ -236,7 +208,7 @@ public class MSTeamsSink extends StreamPipesNotificationSink {
 
       var result = httpClient.execute(postRequest);
       if (result.getStatusLine()
-          .getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
+                .getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
         throw new SpRuntimeException(
             "The provided message payload was not accepted by the MS Teams API: %s"
                 .formatted(payload)

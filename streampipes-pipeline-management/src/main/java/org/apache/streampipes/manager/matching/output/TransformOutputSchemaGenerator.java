@@ -36,6 +36,7 @@ import org.apache.streampipes.model.util.Cloner;
 import org.apache.streampipes.sdk.helpers.Tuple2;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +158,7 @@ public class TransformOutputSchemaGenerator extends OutputSchemaGenerator<Transf
       }
 
     } else if (transformOperationType == TransformOperationType.DOMAIN_PROPERTY_TRANSFORMATION) {
-      eventProperty.setSemanticType(value);
+      eventProperty.setDomainProperties(Collections.singletonList(URI.create(value)));
 
     } else if (transformOperationType == TransformOperationType.RUNTIME_NAME_TRANSFORMATION) {
       eventProperty.setRuntimeName(value);

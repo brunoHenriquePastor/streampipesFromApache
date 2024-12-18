@@ -31,7 +31,6 @@ export interface AssetType {
     assetIconColor: string;
     assetTypeCategory: string;
     assetTypeLabel: string;
-    isa95AssetType?: Isa95Type;
 }
 
 export interface AssetLink {
@@ -43,45 +42,14 @@ export interface AssetLink {
     navigationActive: boolean;
 }
 
-export interface Isa95TypeDesc {
-    label: string;
-    type: Isa95Type;
-}
-
-export interface AssetLocation {
-    coordinates: LatLng;
-    zoom?: number;
-}
-
-export interface AssetSiteDesc {
-    _id: string;
-    _rev?: string;
-    appDocType: string;
-    label: string;
-    location?: AssetLocation;
-    areas: string[];
-}
-
-export interface LatLng {
-    latitude: number;
-    longitude: number;
-}
-
-export interface AssetSite {
-    siteId: string;
-    area: string;
-    hasExactLocation: boolean;
-    location?: AssetLocation;
-}
-
 export interface SpAsset {
     assetId: string;
     assetName: string;
     assetDescription: string;
+
     assetType: AssetType;
-    labelIds?: string[];
     assetLinks: AssetLink[];
-    assetSite?: AssetSite;
+
     assets: SpAsset[];
 }
 
@@ -93,13 +61,3 @@ export interface SpAssetModel extends SpAsset {
 
     removable: boolean;
 }
-
-export type Isa95Type =
-    | 'PROCESS_CELL'
-    | 'PRODUCTION_UNIT'
-    | 'PRODUCTION_LINE'
-    | 'STORAGE_ZONE'
-    | 'UNIT'
-    | 'WORK_CELL'
-    | 'STORAGE_UNIT'
-    | 'OTHER';

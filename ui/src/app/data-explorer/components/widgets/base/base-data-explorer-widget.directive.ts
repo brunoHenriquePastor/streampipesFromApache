@@ -45,10 +45,10 @@ import {
 } from '../../../models/dataview-dashboard.model';
 import { Observable, Subject, Subscription, zip } from 'rxjs';
 import { DataExplorerFieldProviderService } from '../../../services/data-explorer-field-provider-service';
+import { TimeSelectionService } from '../../../services/time-selection.service';
 import { catchError, switchMap } from 'rxjs/operators';
 import { DataExplorerWidgetRegistry } from '../../../registry/data-explorer-widget-registry';
 import { SpFieldUpdateService } from '../../../services/field-update.service';
-import { TimeSelectionService } from '@streampipes/shared-ui';
 
 @Directive()
 export abstract class BaseDataExplorerWidgetDirective<
@@ -82,9 +82,6 @@ export abstract class BaseDataExplorerWidgetDirective<
 
     @Input() dataViewDashboardItem: DashboardItem;
     @Input() dataExplorerWidget: T;
-
-    @Input()
-    widgetIndex: number;
 
     @HostBinding('class') className = 'h-100';
 
@@ -150,41 +147,51 @@ export abstract class BaseDataExplorerWidgetDirective<
                 this.timerCallback.emit(false);
                 setTimeout(() => {
                     this.validateReceivedData(results);
+                    this.refreshView();
                 });
             });
 
         this.widgetConfigurationSub =
             this.widgetConfigurationService.configurationChangedSubject.subscribe(
                 refreshMessage => {
-                    if (refreshMessage.refreshData) {
-                        const newFieldsProvider =
-                            this.fieldService.generateFieldLists(sourceConfigs);
-                        const addedFields = this.fieldService.getAddedFields(
-                            this.fieldProvider.allFields,
-                            newFieldsProvider.allFields,
-                        );
-                        const removedFields =
-                            this.fieldService.getRemovedFields(
-                                this.fieldProvider.allFields,
-                                newFieldsProvider.allFields,
+                    if (
+                        refreshMessage.widgetId === this.dataExplorerWidget._id
+                    ) {
+                        if (refreshMessage.refreshData) {
+                            const newFieldsProvider =
+                                this.fieldService.generateFieldLists(
+                                    sourceConfigs,
+                                );
+                            const addedFields =
+                                this.fieldService.getAddedFields(
+                                    this.fieldProvider.allFields,
+                                    newFieldsProvider.allFields,
+                                );
+                            const removedFields =
+                                this.fieldService.getRemovedFields(
+                                    this.fieldProvider.allFields,
+                                    newFieldsProvider.allFields,
+                                );
+                            this.fieldProvider =
+                                this.fieldService.generateFieldLists(
+                                    sourceConfigs,
+                                );
+                            this.handleUpdatedFields(
+                                addedFields,
+                                removedFields,
                             );
-                        this.fieldProvider =
-                            this.fieldService.generateFieldLists(sourceConfigs);
-                        this.handleUpdatedFields(addedFields, removedFields);
-                        this.updateData();
-                    }
-                    if (refreshMessage.refreshView) {
-                        this.refreshView();
+                            this.updateData();
+                        }
+                        if (refreshMessage.refreshView) {
+                            this.refreshView();
+                        }
                     }
                 },
             );
         if (!this.previewMode) {
             this.resizeSub = this.resizeService.resizeSubject.subscribe(
                 info => {
-                    if (
-                        info.gridsterItem.id ===
-                        this.dataExplorerWidget.elementId
-                    ) {
+                    if (info.gridsterItem.id === this.dataExplorerWidget._id) {
                         this.onResize(
                             this.gridsterItemComponent.width - this.widthOffset,
                             this.gridsterItemComponent.height -
@@ -196,23 +203,9 @@ export abstract class BaseDataExplorerWidgetDirective<
         }
         this.timeSelectionSub =
             this.timeSelectionService.timeSelectionChangeSubject.subscribe(
-                widgetTimeSettings => {
-                    if (
-                        widgetTimeSettings.widgetIndex === undefined ||
-                        widgetTimeSettings.widgetIndex === this.widgetIndex
-                    ) {
-                        if (widgetTimeSettings.timeSettings) {
-                            this.timeSettings = widgetTimeSettings.timeSettings;
-                        } else {
-                            this.timeSelectionService.updateTimeSettings(
-                                this.timeSelectionService
-                                    .defaultQuickTimeSelections,
-                                this.timeSettings,
-                                new Date(),
-                            );
-                        }
-                        this.updateData();
-                    }
+                ts => {
+                    this.timeSettings = ts;
+                    this.updateData();
                 },
             );
         this.updateData();
@@ -223,10 +216,16 @@ export abstract class BaseDataExplorerWidgetDirective<
     }
 
     public cleanupSubscriptions(): void {
-        this.widgetConfigurationSub?.unsubscribe();
-        this.resizeSub?.unsubscribe();
-        this.timeSelectionSub?.unsubscribe();
-        this.requestQueue$?.unsubscribe();
+        this.widgetConfigurationSub.unsubscribe();
+        if (this.resizeSub) {
+            this.resizeSub.unsubscribe();
+        }
+        this.timeSelectionSub.unsubscribe();
+        this.requestQueue$.unsubscribe();
+    }
+
+    public removeWidget() {
+        this.removeWidgetCallback.emit(true);
     }
 
     public setShownComponents(
@@ -243,6 +242,7 @@ export abstract class BaseDataExplorerWidgetDirective<
 
     public updateData(includeTooMuchEventsParameter: boolean = true) {
         this.beforeDataFetched();
+
         this.loadData(includeTooMuchEventsParameter);
     }
 

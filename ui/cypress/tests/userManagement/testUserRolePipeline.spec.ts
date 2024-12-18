@@ -20,7 +20,7 @@ import { UserBuilder } from '../../support/builder/UserBuilder';
 import { UserRole } from '../../../src/app/_enums/user-role.enum';
 import { UserUtils } from '../../support/utils/UserUtils';
 import { ConnectUtils } from '../../support/utils/connect/ConnectUtils';
-import { PipelineUtils } from '../../support/utils/pipeline/PipelineUtils';
+import { PipelineUtils } from '../../support/utils/PipelineUtils';
 import { PipelineElementBuilder } from '../../support/builder/PipelineElementBuilder';
 import { PipelineBuilder } from '../../support/builder/PipelineBuilder';
 
@@ -79,11 +79,11 @@ describe('Test User Roles for Pipelines', () => {
         cy.dataCy('sp-element-edit-user-save').click();
 
         // Login as user and check if pipeline is visible to user
-        UserUtils.switchUser(user);
+        cy.switchUser(user);
 
         cy.dataCy('navigation-icon', { timeout: 10000 }).should(
             'have.length',
-            3,
+            2,
         );
 
         PipelineUtils.goToPipelines();
@@ -97,7 +97,7 @@ describe('Test User Roles for Pipelines', () => {
         );
 
         // Delete user
-        UserUtils.switchUser(UserUtils.adminUser);
+        cy.switchUser(UserUtils.adminUser);
         UserUtils.deleteUser(user);
     });
 });

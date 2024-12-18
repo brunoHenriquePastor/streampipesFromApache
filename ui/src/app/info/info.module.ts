@@ -30,9 +30,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { InfoComponent } from './info.component';
+import { LicenseComponent } from './license/license.component';
+import { AboutComponent } from './about/about.component';
 import { VersionsComponent } from './versions/versions.component';
 import { MatTabsModule } from '@angular/material/tabs';
-import { SharedUiModule } from '@streampipes/shared-ui';
 
 @NgModule({
     imports: [
@@ -47,9 +48,13 @@ import { SharedUiModule } from '@streampipes/shared-ui';
         MatTooltipModule,
         FormsModule,
         MatDividerModule,
-        SharedUiModule,
     ],
-    declarations: [InfoComponent, VersionsComponent],
+    declarations: [
+        InfoComponent,
+        LicenseComponent,
+        VersionsComponent,
+        AboutComponent,
+    ],
     providers: [],
 })
 export class InfoModule {}

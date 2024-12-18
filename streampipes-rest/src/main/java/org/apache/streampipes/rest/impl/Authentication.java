@@ -18,7 +18,6 @@
 
 package org.apache.streampipes.rest.impl;
 
-import org.apache.streampipes.commons.environment.Environments;
 import org.apache.streampipes.commons.exceptions.UserNotFoundException;
 import org.apache.streampipes.commons.exceptions.UsernameAlreadyTakenException;
 import org.apache.streampipes.model.client.user.JwtAuthenticationResponse;
@@ -51,7 +50,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -65,10 +63,10 @@ public class Authentication extends AbstractRestResource {
       path = "/login",
       produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
       consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> doLogin(@RequestBody LoginRequest login) {
+  public ResponseEntity<?> doLogin(@RequestBody LoginRequest token) {
     try {
       org.springframework.security.core.Authentication authentication = authenticationManager.authenticate(
-          new UsernamePasswordAuthenticationToken(login.username(), login.password()));
+          new UsernamePasswordAuthenticationToken(token.getUsername(), token.getPassword()));
       SecurityContextHolder.getContext().setAuthentication(authentication);
       return processAuth(authentication);
     } catch (BadCredentialsException e) {
@@ -100,8 +98,8 @@ public class Authentication extends AbstractRestResource {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
     var enrichedUserRegistrationData = new UserRegistrationData(
-        userRegistrationData.getUsername(),
-        userRegistrationData.getPassword(),
+        userRegistrationData.username(),
+        userRegistrationData.password(),
         config.getDefaultUserRoles()
     );
     try {
@@ -140,8 +138,6 @@ public class Authentication extends AbstractRestResource {
     Map<String, Object> response = new HashMap<>();
     response.put("allowSelfRegistration", config.isAllowSelfRegistration());
     response.put("allowPasswordRecovery", config.isAllowPasswordRecovery());
-    response.put("linkSettings", config.getLinkSettings());
-    response.put("oAuthSettings", makeOAuthSettings());
 
     return ok(response);
   }
@@ -158,30 +154,6 @@ public class Authentication extends AbstractRestResource {
 
   private JwtAuthenticationResponse makeJwtResponse(org.springframework.security.core.Authentication auth) {
     String jwt = new JwtTokenProvider().createToken(auth);
-    return new JwtAuthenticationResponse(jwt);
-  }
-
-  private UiOAuthSettings makeOAuthSettings() {
-    var env = Environments.getEnvironment();
-    var oAuthConfigs = env.getOAuthConfigurations();
-    return new UiOAuthSettings(
-        env.getOAuthEnabled().getValueOrDefault(),
-        env.getOAuthRedirectUri().getValueOrDefault(),
-        oAuthConfigs.stream().map(c -> new OAuthProvider(c.getRegistrationName(), c.getRegistrationId())).toList()
-    );
-  }
-
-  /**
-   * Record which contains information on the configured OAuth providers required by the login page
-   * @param enabled indicates if an OAuth provider is configured
-   * @param redirectUri the redirect URI
-   * @param supportedProviders A list of configured OAuth providers
-   */
-  private record UiOAuthSettings(boolean enabled,
-                                 String redirectUri,
-                                 List<OAuthProvider> supportedProviders) {
-  }
-
-  private record OAuthProvider(String name, String registrationId) {
+    return JwtAuthenticationResponse.from(jwt);
   }
 }

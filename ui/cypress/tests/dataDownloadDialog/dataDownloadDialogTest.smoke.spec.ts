@@ -21,7 +21,7 @@ import { DataDownloadDialogUtils } from '../../support/utils/DataDownloadDialogU
 import { DataLakeUtils } from '../../support/utils/datalake/DataLakeUtils';
 import { PrepareTestDataUtils } from '../../support/utils/PrepareTestDataUtils';
 
-describe('Test data explorer data download dialog', () => {
+describe('Test live data download dialog', () => {
     before('Setup Test', () => {
         cy.initStreamPipesTest();
         PrepareTestDataUtils.loadDataIntoDataLake(
@@ -30,7 +30,7 @@ describe('Test data explorer data download dialog', () => {
         );
 
         DataLakeUtils.addDataViewAndTableWidget(dataViewName, 'Persist');
-        DataLakeUtils.saveDataViewConfiguration();
+        DataLakeUtils.saveDataExplorerWidgetConfiguration();
     });
 
     beforeEach('Setup Test', () => {
@@ -38,7 +38,7 @@ describe('Test data explorer data download dialog', () => {
         cy.login();
     });
 
-    const dataViewName = 'NewWidget';
+    const dataViewName = 'TestView';
 
     const formatTestsExportConfig: ExportConfig = {
         formatExportConfig: undefined,

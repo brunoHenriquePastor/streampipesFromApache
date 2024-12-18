@@ -21,6 +21,9 @@ import { MatSort } from '@angular/material/sort';
 import { BaseDataExplorerWidgetDirective } from '../base/base-data-explorer-widget.directive';
 import {
     DataExplorerField,
+    DatalakeQueryParameterBuilder,
+    DatalakeQueryParameters,
+    EventPropertyUnion,
     SpQueryResult,
 } from '@streampipes/platform-services';
 import { ImageWidgetModel } from './model/image-widget.model';
@@ -29,7 +32,7 @@ import { SecurePipe } from '../../../../services/secure.pipe';
 @Component({
     selector: 'sp-data-explorer-image-widget',
     templateUrl: './image-widget.component.html',
-    styleUrls: ['./image-widget.component.scss'],
+    styleUrls: ['./image-widget.component.css'],
 })
 export class ImageWidgetComponent
     extends BaseDataExplorerWidgetDirective<ImageWidgetModel>
@@ -39,6 +42,9 @@ export class ImageWidgetComponent
 
     imageBaseUrl: string;
     imagePaths = [];
+
+    availableColumns: EventPropertyUnion[];
+    selectedColumn: EventPropertyUnion;
 
     canvasHeight;
     canvasWidth;
@@ -52,17 +58,24 @@ export class ImageWidgetComponent
         super.ngOnInit();
         this.onResize(
             this.gridsterItemComponent.width,
-            this.gridsterItemComponent.height - 53,
+            this.gridsterItemComponent.height - 40,
         );
         this.imageBaseUrl = this.dataLakeRestService.dataLakeUrl + '/images/';
     }
 
     refreshView() {}
 
+    buildQuery(): DatalakeQueryParameters {
+        return DatalakeQueryParameterBuilder.create(
+            this.timeSettings.startTime,
+            this.timeSettings.endTime,
+        ).build();
+    }
+
     onResize(width: number, height: number) {
-        this.canvasHeight = height * 0.8;
-        this.canvasWidth = width;
-        this.imagePreviewHeight = height * 0.2;
+        this.canvasHeight = height - 50;
+        this.canvasWidth = width - 20;
+        this.imagePreviewHeight = width / 14;
     }
 
     beforeDataFetched() {

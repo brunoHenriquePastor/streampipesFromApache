@@ -24,6 +24,7 @@ import org.apache.streampipes.extensions.api.pe.routing.SpOutputCollector;
 import org.apache.streampipes.extensions.management.monitoring.ExtensionsLogger;
 import org.apache.streampipes.messaging.EventProducer;
 import org.apache.streampipes.messaging.InternalEventProcessor;
+import org.apache.streampipes.model.grounding.TransportFormat;
 import org.apache.streampipes.model.grounding.TransportProtocol;
 import org.apache.streampipes.model.runtime.Event;
 import org.apache.streampipes.model.runtime.EventConverter;
@@ -45,8 +46,9 @@ public class StandaloneSpOutputCollector<T extends TransportProtocol> extends
   private final ExtensionsLogger extensionsLogger;
 
   public StandaloneSpOutputCollector(T protocol,
+                                     TransportFormat format,
                                      String resourceId) throws SpRuntimeException {
-    super(protocol);
+    super(protocol, format);
     this.producer = protocolDefinition.getProducer(protocol);
     this.resourceId = resourceId;
     this.extensionsLogger = new ExtensionsLogger(resourceId);

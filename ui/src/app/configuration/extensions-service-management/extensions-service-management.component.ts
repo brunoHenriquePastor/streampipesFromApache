@@ -17,8 +17,8 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { SpConfigurationTabsService } from '../configuration-tabs.service';
-import { SpBreadcrumbService, SpNavigationItem } from '@streampipes/shared-ui';
+import { SpConfigurationTabs } from '../configuration-tabs';
+import { SpBreadcrumbService } from '@streampipes/shared-ui';
 import { SpConfigurationRoutes } from '../configuration.routes';
 
 @Component({
@@ -26,18 +26,14 @@ import { SpConfigurationRoutes } from '../configuration.routes';
     templateUrl: './extensions-service-management.component.html',
 })
 export class ExtensionsServiceManagementComponent implements OnInit {
-    tabs: SpNavigationItem[] = [];
+    tabs = SpConfigurationTabs.getTabs();
 
-    constructor(
-        private breadcrumbService: SpBreadcrumbService,
-        private tabService: SpConfigurationTabsService,
-    ) {}
+    constructor(private breadcrumbService: SpBreadcrumbService) {}
 
     ngOnInit() {
-        this.tabs = this.tabService.getTabs();
         this.breadcrumbService.updateBreadcrumb([
             SpConfigurationRoutes.BASE,
-            { label: this.tabService.getTabTitle('extensions-services') },
+            { label: SpConfigurationTabs.getTabs()[3].itemTitle },
         ]);
     }
 }

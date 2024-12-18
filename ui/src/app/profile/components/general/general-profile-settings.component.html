@@ -27,13 +27,9 @@
             title="Main Settings"
             subtitle="Manage your basic profile settings here."
         >
-            <sp-warning-box *ngIf="isExternalUser">
-                Settings for externally-managed users can't be changed.
-            </sp-warning-box>
             <div fxLayout="row" fxLayoutAlign="start center">
                 <span>{{ userData.username }}</span>
                 <button
-                    [disabled]="isExternalUser"
                     mat-button
                     mat-raised-button
                     color="accent"
@@ -45,15 +41,10 @@
             </div>
             <mat-form-field fxFlex color="accent" class="mt-10 mb-10">
                 <mat-label>Full Name</mat-label>
-                <input
-                    [disabled]="isExternalUser"
-                    [(ngModel)]="userData.fullName"
-                    matInput
-                />
+                <input [(ngModel)]="userData.fullName" matInput />
             </mat-form-field>
             <div fxLayout="row" fxLayoutAlign="start center">
                 <button
-                    [disabled]="isExternalUser"
                     mat-button
                     mat-raised-button
                     color="accent"
@@ -62,7 +53,6 @@
                     Update profile
                 </button>
                 <button
-                    [disabled]="isExternalUser"
                     mat-button
                     mat-raised-button
                     color="accent"

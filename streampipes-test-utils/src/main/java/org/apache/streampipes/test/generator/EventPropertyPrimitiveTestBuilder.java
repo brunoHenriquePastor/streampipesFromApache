@@ -21,6 +21,7 @@ import org.apache.streampipes.model.schema.EventPropertyPrimitive;
 import org.apache.streampipes.model.schema.PropertyScope;
 
 import java.net.URI;
+import java.util.List;
 
 public class EventPropertyPrimitiveTestBuilder
     extends EventPropertyTestBuilder<EventPropertyPrimitive, EventPropertyPrimitiveTestBuilder> {
@@ -40,7 +41,7 @@ public class EventPropertyPrimitiveTestBuilder
   }
 
   public EventPropertyPrimitiveTestBuilder withSemanticType(String semanticType) {
-    this.eventProperty.setSemanticType(semanticType);
+    this.eventProperty.setDomainProperties(List.of(URI.create(semanticType)));
     return this;
   }
 

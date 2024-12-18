@@ -16,9 +16,8 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { AppConstants } from '../../../services/app.constants';
-import { LinkSettings } from '@streampipes/platform-services';
 
 @Component({
     selector: 'sp-auth-box',
@@ -26,8 +25,5 @@ import { LinkSettings } from '@streampipes/platform-services';
     styleUrls: ['./auth-box.component.scss'],
 })
 export class AuthBoxComponent {
-    @Input()
-    linkSettings: LinkSettings;
-
     constructor(public appConstants: AppConstants) {}
 }

@@ -43,25 +43,29 @@ public class PropertyDuplicateRemover {
       int i = 1;
       EventProperty newProperty = p;
       while (isAlreadyDefined(existingProperties, newProperty)) {
-        if (newProperty instanceof EventPropertyPrimitive primitive) {
+        if (newProperty instanceof EventPropertyPrimitive) {
+          EventPropertyPrimitive primitive = (EventPropertyPrimitive) newProperty;
           newProperty = new EventPropertyPrimitive(primitive.getRuntimeType(), primitive.getRuntimeName() + i, "",
-              primitive.getSemanticType());
+              primitive.getDomainProperties());
         }
-        if (newProperty instanceof EventPropertyNested nested) {
+        if (newProperty instanceof EventPropertyNested) {
+          EventPropertyNested nested = (EventPropertyNested) newProperty;
 
           //TODO: hack
           List<EventProperty> nestedProperties = new ArrayList<>();
 
           for (EventProperty np : nested.getEventProperties()) {
-            if (np instanceof EventPropertyPrimitive thisPrimitive) {
+            if (np instanceof EventPropertyPrimitive) {
+              EventPropertyPrimitive thisPrimitive = (EventPropertyPrimitive) np;
               EventProperty newNested =
                   new EventPropertyPrimitive(thisPrimitive.getRuntimeType(), thisPrimitive.getRuntimeName(), "",
-                      thisPrimitive.getSemanticType());
+                      thisPrimitive.getDomainProperties());
               nestedProperties.add(newNested);
             }
 
           }
           newProperty = new EventPropertyNested(nested.getRuntimeName() + i, nestedProperties);
+          //newProperty = new EventPropertyNested(nested.getPropertyName() +i, nested.getEventProperties());
         }
         i++;
       }

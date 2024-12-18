@@ -31,11 +31,7 @@ public class PermissionResourceManager extends AbstractResourceManager<IPermissi
   }
 
   public List<Permission> findAll() {
-    return db.findAll();
-  }
-
-  public Permission find(String elementId) {
-    return db.getElementById(elementId);
+    return db.getAllPermissions();
   }
 
   public List<Permission> findForObjectId(String objectInstanceId) {
@@ -43,7 +39,7 @@ public class PermissionResourceManager extends AbstractResourceManager<IPermissi
   }
 
   public void create(Permission permission) {
-    db.persist(permission);
+    db.addPermission(permission);
   }
 
   public void createDefault(String objectInstanceId,
@@ -59,10 +55,10 @@ public class PermissionResourceManager extends AbstractResourceManager<IPermissi
   }
 
   public void update(Permission permission) {
-    db.updateElement(permission);
+    db.updatePermission(permission);
   }
 
   public void delete(Permission permission) {
-    db.deleteElementById(permission.getPermissionId());
+    db.deletePermission(permission.getPermissionId());
   }
 }

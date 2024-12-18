@@ -23,6 +23,7 @@ import {
 } from '@streampipes/platform-services';
 import { Component, Input, OnInit } from '@angular/core';
 import { PipelineAction } from '../../model/pipeline-model';
+import { ShepherdService } from '../../../services/tour/shepherd.service';
 
 @Component({
     selector: 'sp-pipeline-status-dialog',
@@ -43,6 +44,7 @@ export class PipelineStatusDialogComponent implements OnInit {
     constructor(
         private dialogRef: DialogRef<PipelineStatusDialogComponent>,
         private pipelineService: PipelineService,
+        private shepherdService: ShepherdService,
     ) {}
 
     ngOnInit(): void {
@@ -62,6 +64,9 @@ export class PipelineStatusDialogComponent implements OnInit {
             msg => {
                 this.pipelineOperationStatus = msg;
                 this.operationInProgress = false;
+                if (this.shepherdService.isTourActive()) {
+                    this.shepherdService.trigger('pipeline-started');
+                }
             },
             error => {
                 this.operationInProgress = false;

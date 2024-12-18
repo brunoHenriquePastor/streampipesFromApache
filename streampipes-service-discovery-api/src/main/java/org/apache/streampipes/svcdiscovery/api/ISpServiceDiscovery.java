@@ -17,19 +17,16 @@
  */
 package org.apache.streampipes.svcdiscovery.api;
 
-import org.apache.streampipes.model.extensions.svcdiscovery.SpServiceTag;
-
 import java.util.List;
-import java.util.Set;
 
 public interface ISpServiceDiscovery {
 
   /**
-   * Get custom service tags
+   * Get active pipeline element service endpoints
    *
-   * @return set of service tags
+   * @return list of pipeline element endpoints
    */
-  Set<SpServiceTag> getCustomServiceTags(boolean restrictToHealthy);
+  List<String> getActivePipelineElementEndpoints();
 
   /**
    * Get service endpoints

@@ -16,7 +16,7 @@
  *
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
     UntypedFormBuilder,
     UntypedFormControl,
@@ -26,14 +26,13 @@ import {
 import { RegistrationModel } from './registration.model';
 import { LoginService } from '../../services/login.service';
 import { checkPasswords } from '../../utils/check-password';
-import { BaseLoginPageDirective } from '../base-login-page.directive';
 
 @Component({
     selector: 'sp-register-user',
     templateUrl: './register.component.html',
     styleUrls: ['../login/login.component.scss'],
 })
-export class RegisterComponent extends BaseLoginPageDirective {
+export class RegisterComponent implements OnInit {
     parentForm: UntypedFormGroup;
 
     registrationData: RegistrationModel;
@@ -44,28 +43,10 @@ export class RegisterComponent extends BaseLoginPageDirective {
 
     constructor(
         private fb: UntypedFormBuilder,
-        loginService: LoginService,
-    ) {
-        super(loginService);
-    }
+        private loginService: LoginService,
+    ) {}
 
-    registerUser() {
-        this.registrationError = undefined;
-        this.registrationInProcess = true;
-        this.loginService.registerUser(this.registrationData).subscribe(
-            response => {
-                this.registrationInProcess = false;
-                this.registrationSuccess = true;
-            },
-            error => {
-                this.registrationInProcess = false;
-                this.registrationSuccess = false;
-                this.registrationError = error.error.notifications[0].title;
-            },
-        );
-    }
-
-    onSettingsAvailable(): void {
+    ngOnInit(): void {
         this.parentForm = this.fb.group({});
         this.parentForm.addControl(
             'username',
@@ -87,5 +68,21 @@ export class RegisterComponent extends BaseLoginPageDirective {
                 password: v.password,
             };
         });
+    }
+
+    registerUser() {
+        this.registrationError = undefined;
+        this.registrationInProcess = true;
+        this.loginService.registerUser(this.registrationData).subscribe(
+            response => {
+                this.registrationInProcess = false;
+                this.registrationSuccess = true;
+            },
+            error => {
+                this.registrationInProcess = false;
+                this.registrationSuccess = false;
+                this.registrationError = error.error.notifications[0].title;
+            },
+        );
     }
 }

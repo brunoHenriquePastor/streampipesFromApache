@@ -88,7 +88,7 @@ export abstract class BaseStreamPipesWidget
         const widthOffset = 0;
         const heightOffset = 0;
         this.resizeSub = this.resizeService.resizeSubject.subscribe(info => {
-            if (info.gridsterItem.id === this.widgetConfig.elementId) {
+            if (info.gridsterItem.id === this.widgetConfig._id) {
                 this.onSizeChanged(
                     this.computeCurrentWidth(
                         this.gridsterItemComponent.width - widthOffset,
@@ -266,7 +266,7 @@ export abstract class BaseStreamPipesWidget
 
         if (includeMeasure) {
             queryParams.measureName = this.widgetDataConfig.measureName;
-            queryParams.forId = this.widgetConfig.elementId;
+            queryParams.forId = this.widgetConfig._id;
         }
 
         return queryParams;

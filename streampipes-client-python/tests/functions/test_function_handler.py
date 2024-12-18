@@ -373,7 +373,7 @@ class TestFunctionHandler(TestCase):
             )
         )
 
-        output_stream = create_data_stream("test", attributes={"number": RuntimeType.INTEGER.value}, stream_id="a1d")
+        output_stream = create_data_stream("test", attributes={"number": RuntimeType.INTEGER.value})
         test_function = TestFunctionOutput(
             function_definition=FunctionDefinition(
                 consumed_streams=["urn:streampipes.apache.org:eventstream:uPDKLI"]
@@ -436,7 +436,7 @@ class TestFunctionHandler(TestCase):
         )
 
         output_stream = create_data_stream(
-            "test", stream_id="a1c", attributes={"number": RuntimeType.INTEGER.value}, broker=SupportedBroker.KAFKA
+            "test", attributes={"number": RuntimeType.INTEGER.value}, broker=SupportedBroker.KAFKA
         )
         test_function = TestFunctionOutput(
             function_definition=FunctionDefinition(

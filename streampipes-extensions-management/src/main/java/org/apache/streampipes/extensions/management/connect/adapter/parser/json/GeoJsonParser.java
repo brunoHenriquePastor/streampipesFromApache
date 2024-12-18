@@ -23,6 +23,7 @@ import org.apache.streampipes.extensions.api.connect.IParserEventHandler;
 import org.apache.streampipes.extensions.management.connect.adapter.parser.util.JsonEventProperty;
 import org.apache.streampipes.model.connect.guess.GuessSchema;
 import org.apache.streampipes.model.schema.EventProperty;
+import org.apache.streampipes.model.schema.EventPropertyPrimitive;
 import org.apache.streampipes.sdk.builder.adapter.GuessSchemaBuilder;
 import org.apache.streampipes.vocabulary.Geo;
 import org.apache.streampipes.vocabulary.SO;
@@ -40,6 +41,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -143,8 +147,12 @@ public class GeoJsonParser extends JsonParser {
 
   private EventProperty getEventPropertyGeoJson(String name, Object value, String domain) {
     EventProperty eventProperty = JsonEventProperty.getEventProperty(name, value);
-    eventProperty.setSemanticType(domain);
+    try {
+      ((EventPropertyPrimitive) eventProperty).setDomainProperties(Arrays.asList(new URI(domain)));
 
+    } catch (URISyntaxException e) {
+      LOG.error(e.getMessage());
+    }
     return eventProperty;
   }
 

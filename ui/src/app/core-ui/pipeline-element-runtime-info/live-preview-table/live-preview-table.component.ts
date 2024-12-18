@@ -17,12 +17,7 @@
  */
 
 import { Component, Input } from '@angular/core';
-import {
-    DataType,
-    EventSchema,
-    SemanticType,
-} from '@streampipes/platform-services';
-import { RuntimeInfo } from '../pipeline-element-runtime-info.model';
+import { EventSchema, SemanticType } from '@streampipes/platform-services';
 
 @Component({
     selector: 'sp-live-preview-table',
@@ -34,18 +29,29 @@ export class LivePreviewTableComponent {
     eventSchema: EventSchema;
 
     @Input()
-    runtimeInfo: RuntimeInfo[];
+    runtimeData: { runtimeName: string; value: any }[];
 
-    @Input()
-    showTitle = true;
-
-    displayedColumns: string[] = [
-        'runtimeName',
-        'label',
-        'description',
-        'runtimeType',
-        'value',
-    ];
+    displayedColumns: string[] = ['runtimeName', 'value'];
 
     constructor() {}
+
+    isImage(runtimeName: string) {
+        const property = this.getProperty(runtimeName);
+        return SemanticType.isImage(property);
+    }
+
+    isTimestamp(runtimeName: string) {
+        const property = this.getProperty(runtimeName);
+        return SemanticType.isTimestamp(property);
+    }
+
+    hasNoDomainProperty(runtimeName: string) {
+        return !(this.isTimestamp(runtimeName) || this.isImage(runtimeName));
+    }
+
+    getProperty(runtimeName: string) {
+        return this.eventSchema.eventProperties.find(
+            property => property.runtimeName === runtimeName,
+        );
+    }
 }

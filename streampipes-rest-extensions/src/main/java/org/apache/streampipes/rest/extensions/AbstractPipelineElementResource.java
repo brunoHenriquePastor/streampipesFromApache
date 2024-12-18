@@ -26,6 +26,7 @@ import org.apache.streampipes.extensions.management.locales.LabelGenerator;
 import org.apache.streampipes.model.base.ConsumableStreamPipesEntity;
 import org.apache.streampipes.model.base.NamedStreamPipesEntity;
 import org.apache.streampipes.model.grounding.EventGrounding;
+import org.apache.streampipes.model.grounding.TransportFormat;
 import org.apache.streampipes.model.grounding.TransportProtocol;
 
 import com.google.common.base.Charsets;
@@ -124,11 +125,13 @@ public abstract class AbstractPipelineElementResource<
       if (desc instanceof ConsumableStreamPipesEntity) {
         Collection<TransportProtocol> supportedProtocols =
             DeclarersSingleton.getInstance().getSupportedProtocols();
+        Collection<TransportFormat> supportedFormats =
+            DeclarersSingleton.getInstance().getSupportedFormats();
 
-        if (!supportedProtocols.isEmpty()) {
+        if (supportedProtocols.size() > 0 && supportedFormats.size() > 0) {
           // Overwrite existing grounding from default provided by declarers singleton
           ((ConsumableStreamPipesEntity) desc)
-              .setSupportedGrounding(makeGrounding(supportedProtocols));
+              .setSupportedGrounding(makeGrounding(supportedProtocols, supportedFormats));
         }
       }
     }
@@ -136,9 +139,11 @@ public abstract class AbstractPipelineElementResource<
     return desc;
   }
 
-  private EventGrounding makeGrounding(Collection<TransportProtocol> supportedProtocols) {
+  private EventGrounding makeGrounding(Collection<TransportProtocol> supportedProtocols,
+                                       Collection<TransportFormat> supportedFormats) {
     EventGrounding grounding = new EventGrounding();
     grounding.setTransportProtocols(new ArrayList<>(supportedProtocols));
+    grounding.setTransportFormats(new ArrayList<>(supportedFormats));
 
     return grounding;
   }

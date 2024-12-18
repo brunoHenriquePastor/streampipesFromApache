@@ -19,7 +19,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SpLogEntry, SpMetricsEntry } from '../model/gen/streampipes-model';
+import {
+    PipelineMonitoringInfo,
+    SpLogEntry,
+    SpMetricsEntry,
+} from '../model/gen/streampipes-model';
 import { PlatformServicesCommons } from './commons.service';
 import { map } from 'rxjs/operators';
 import { AbstractMonitoringService } from './abstract-monitoring.service';
@@ -45,16 +49,6 @@ export class AdapterMonitoringService extends AbstractMonitoringService {
         return this.http
             .get(this.metricsUrl(elementId))
             .pipe(map(response => response as SpMetricsEntry));
-    }
-
-    getMetricsInfoForAdapters(
-        elementIds: string[],
-    ): Observable<Record<string, SpMetricsEntry>> {
-        return this.http
-            .get(`${this.monitoringBasePath}/metrics`, {
-                params: { filter: elementIds.toString() },
-            })
-            .pipe(map(response => response as Record<string, SpMetricsEntry>));
     }
 
     protected get monitoringBasePath(): string {

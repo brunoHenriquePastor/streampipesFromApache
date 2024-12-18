@@ -29,6 +29,7 @@ import org.apache.streampipes.model.grounding.SimpleTopicDefinition;
 import org.apache.streampipes.model.grounding.TopicDefinition;
 import org.apache.streampipes.model.grounding.TransportProtocol;
 
+import java.util.Collections;
 import java.util.UUID;
 
 public class GroundingUtils {
@@ -80,6 +81,9 @@ public class GroundingUtils {
           )
       );
     }
+
+    eventGrounding.setTransportFormats(Collections
+        .singletonList(TransportFormatGenerator.getTransportFormat()));
 
     return eventGrounding;
   }

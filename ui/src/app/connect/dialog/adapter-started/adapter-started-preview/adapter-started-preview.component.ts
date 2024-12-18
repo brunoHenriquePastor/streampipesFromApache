@@ -24,12 +24,14 @@ import { RestService } from '../../../services/rest.service';
     selector: 'sp-adapter-started-preview',
     templateUrl: './adapter-started-preview.component.html',
 })
-export class SpAdapterStartedPreviewComponent implements OnInit {
+export class SpAdapterStartedPreviewComponent implements OnInit, OnDestroy {
     @Input()
     streamDescription: SpDataStream;
 
     @Input()
     adapterElementId: string;
+
+    pollingActive = false;
 
     constructor(
         private adapterService: AdapterService,
@@ -48,7 +50,12 @@ export class SpAdapterStartedPreviewComponent implements OnInit {
                     .getSourceDetails(adapter.correspondingDataStreamElementId)
                     .subscribe(st => {
                         this.streamDescription = st;
+                        this.pollingActive = true;
                     });
             });
+    }
+
+    ngOnDestroy(): void {
+        this.pollingActive = false;
     }
 }

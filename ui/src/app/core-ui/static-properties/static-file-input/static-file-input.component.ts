@@ -16,28 +16,36 @@
  *
  */
 
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    NgModule,
+    OnInit,
+    Output,
+} from '@angular/core';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import {
-    FileMetadata,
     FilesService,
     FileStaticProperty,
+    FileMetadata,
 } from '@streampipes/platform-services';
 import { ConfigurationInfo } from '../../../connect/model/ConfigurationInfo';
 import { AbstractValidatedStaticPropertyRenderer } from '../base/abstract-validated-static-property';
 import { UntypedFormControl, ValidatorFn, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { FileRenameDialogComponent } from '../../../configuration/dialog/file-rename/file-rename-dialog.component';
+import { FileRenameDialogComponent } from '../../../files/dialog/file-rename/file-rename-dialog.component';
 
 @Component({
     selector: 'sp-static-file-input',
     templateUrl: './static-file-input.component.html',
-    styleUrls: ['./static-file-input.component.scss'],
+    styleUrls: ['./static-file-input.component.css'],
 })
 export class StaticFileInputComponent
     extends AbstractValidatedStaticPropertyRenderer<FileStaticProperty>
     implements OnInit
 {
+    @Output() inputEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
+
     public chooseExistingFileControl = new UntypedFormControl();
 
     dialogRef: MatDialogRef<FileRenameDialogComponent>;
@@ -72,12 +80,6 @@ export class StaticFileInputComponent
         this.enableValidators();
 
         this.chooseExistingFileControl.setValue(true);
-
-        if (this.staticProperty.label) {
-            this.parentForm.controls[this.fieldName].setValue(
-                this.staticProperty.label,
-            );
-        }
     }
 
     collectValidators() {
@@ -97,7 +99,7 @@ export class StaticFileInputComponent
                         fmi => fmi.filename === filenameToSelect,
                     );
                     this.selectOption(this.selectedFile);
-                    this.applyCompletedConfiguration(true);
+                    this.emitUpdate(true);
                     this.parentForm.controls[this.fieldName].setValue(
                         this.selectedFile,
                     );
@@ -112,7 +114,7 @@ export class StaticFileInputComponent
                     if (this.fileMetadata.length > 0) {
                         this.selectedFile = this.fileMetadata[0];
                         this.selectOption(this.selectedFile);
-                        this.applyCompletedConfiguration(true);
+                        this.emitUpdate(true);
                         this.parentForm.controls[this.fieldName].setValue(
                             this.selectedFile,
                         );
@@ -170,7 +172,9 @@ export class StaticFileInputComponent
         this.staticProperty.locationPath = fileMetadata.filename;
         const valid: boolean =
             fileMetadata.filename !== '' || fileMetadata.filename !== undefined;
-        this.applyCompletedConfiguration(valid);
+        this.updateEmitter.emit(
+            new ConfigurationInfo(this.staticProperty.internalName, valid),
+        );
     }
 
     displayFn(fileMetadata: FileMetadata) {

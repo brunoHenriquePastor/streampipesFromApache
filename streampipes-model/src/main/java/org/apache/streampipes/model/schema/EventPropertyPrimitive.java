@@ -21,12 +21,17 @@ package org.apache.streampipes.model.schema;
 import org.apache.streampipes.model.util.Cloner;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 
 public class EventPropertyPrimitive extends EventProperty {
 
+  private static final long serialVersionUID = 665989638281665875L;
+
   private String runtimeType;
+
   private URI measurementUnit;
+
   private ValueSpecification valueSpecification;
 
   public EventPropertyPrimitive() {
@@ -43,11 +48,13 @@ public class EventPropertyPrimitive extends EventProperty {
     }
   }
 
-  public EventPropertyPrimitive(String runtimeType,
-                                String runtimeName,
-                                String measurementUnit,
-                                String semanticType) {
-    super(runtimeName, semanticType);
+  public EventPropertyPrimitive(List<URI> subClassOf) {
+    super(subClassOf);
+  }
+
+  public EventPropertyPrimitive(String runtimeType, String runtimeName,
+                                String measurementUnit, List<URI> subClassOf) {
+    super(runtimeName, subClassOf);
     this.runtimeType = runtimeType;
     //this.measurementUnit = measurementUnit;
   }
@@ -89,8 +96,8 @@ public class EventPropertyPrimitive extends EventProperty {
     }
     EventPropertyPrimitive that = (EventPropertyPrimitive) o;
     return Objects.equals(runtimeType, that.runtimeType)
-        && Objects.equals(measurementUnit, that.measurementUnit)
-        && Objects.equals(valueSpecification, that.valueSpecification);
+           && Objects.equals(measurementUnit, that.measurementUnit)
+           && Objects.equals(valueSpecification, that.valueSpecification);
   }
 
   @Override
@@ -101,9 +108,9 @@ public class EventPropertyPrimitive extends EventProperty {
   @Override
   public String toString() {
     return "EventPropertyPrimitive{"
-        + "runtimeType='" + runtimeType + '\''
-        + ", measurementUnit=" + measurementUnit
-        + ", valueSpecification=" + valueSpecification
-        + '}';
+           + "runtimeType='" + runtimeType + '\''
+           + ", measurementUnit=" + measurementUnit
+           + ", valueSpecification=" + valueSpecification
+           + '}';
   }
 }

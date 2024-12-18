@@ -18,7 +18,6 @@
 
 import { AbstractStaticPropertyRenderer } from '../base/abstract-static-property';
 import {
-    ExtensionDeploymentConfiguration,
     RuntimeOptionsRequest,
     RuntimeOptionsResponse,
     RuntimeResolvableAnyStaticProperty,
@@ -47,18 +46,32 @@ export abstract class BaseRuntimeResolvableInput<
     extends AbstractStaticPropertyRenderer<T>
     implements OnChanges
 {
-    @Input() deploymentConfiguration: ExtensionDeploymentConfiguration;
+    @Input()
+    completedStaticProperty: ConfigurationInfo;
 
     showOptions = false;
     loading = false;
     error = false;
     errorMessage: SpLogMessage;
+    dependentStaticProperties: Map<string, boolean> = new Map<
+        string,
+        boolean
+    >();
 
     constructor(private runtimeResolvableService: RuntimeResolvableService) {
         super();
     }
 
-    onInit() {}
+    onInit() {
+        if (
+            this.staticProperty.dependsOn &&
+            this.staticProperty.dependsOn.length > 0
+        ) {
+            this.staticProperty.dependsOn.forEach(dp => {
+                this.dependentStaticProperties.set(dp, false);
+            });
+        }
+    }
 
     loadOptionsFromRestApi(node?: TreeInputNode) {
         const resolvableOptionsParameterRequest = new RuntimeOptionsRequest();
@@ -74,9 +87,6 @@ export abstract class BaseRuntimeResolvableInput<
                 this.pipelineElement.appId;
             resolvableOptionsParameterRequest.belongsTo =
                 this.pipelineElement.belongsTo;
-        } else {
-            resolvableOptionsParameterRequest.deploymentConfiguration =
-                this.deploymentConfiguration;
         }
         this.showOptions = false;
         this.loading = true;
@@ -121,14 +131,31 @@ export abstract class BaseRuntimeResolvableInput<
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['completedConfigurations']) {
+        if (changes['completedStaticProperty']) {
             if (
-                this.staticPropertyUtils.allDependenciesSatisfied(
-                    this.staticProperty.dependsOn,
-                    this.completedConfigurations,
+                this.completedStaticProperty !== undefined &&
+                !(
+                    this.completedStaticProperty.staticPropertyInternalName ===
+                    this.staticProperty.internalName
                 )
             ) {
-                this.loadOptionsFromRestApi();
+                if (
+                    this.dependentStaticProperties.has(
+                        this.completedStaticProperty.staticPropertyInternalName,
+                    )
+                ) {
+                    this.dependentStaticProperties.set(
+                        this.completedStaticProperty.staticPropertyInternalName,
+                        this.completedStaticProperty.configured,
+                    );
+                }
+                if (
+                    Array.from(this.dependentStaticProperties.values()).every(
+                        v => v === true,
+                    )
+                ) {
+                    this.loadOptionsFromRestApi();
+                }
             }
         }
     }

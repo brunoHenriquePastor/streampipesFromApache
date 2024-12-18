@@ -18,6 +18,7 @@
 
 package org.apache.streampipes.sdk.helpers;
 
+import org.apache.streampipes.commons.Utils;
 import org.apache.streampipes.model.schema.EventProperty;
 import org.apache.streampipes.model.schema.EventPropertyList;
 import org.apache.streampipes.model.schema.EventPropertyNested;
@@ -123,48 +124,28 @@ public class EpRequirements {
     return appendDomainProperty(datatypeReq(SO.NUMBER), domainProperty);
   }
 
-  private static <T extends EventProperty> EventProperty semanticTypeReq(String semanticType,
-                                                                         Class<T> eventProperty) {
+  private static <T extends EventProperty> EventProperty domainPropertyReq(String domainProperty,
+                                                                           Class<T> eventProperty) {
     EventProperty ep = null;
     try {
       ep = eventProperty.newInstance();
-      ep.setSemanticType(semanticType);
     } catch (InstantiationException | IllegalAccessException e) {
       e.printStackTrace();
     }
+    ep.setDomainProperties(Utils.createURI(domainProperty));
     return ep;
   }
 
-  public static EventPropertyPrimitive semanticTypeReq(String semanticType) {
-    return (EventPropertyPrimitive) semanticTypeReq(semanticType, EventPropertyPrimitive.class);
-  }
-
-  public static EventPropertyList semanticTypeReqList(String semanticType) {
-    return (EventPropertyList) semanticTypeReq(semanticType, EventPropertyList.class);
-  }
-
-  /**
-   * @param domainProperty the semantic type
-   * @return EventPropertyPrimitive
-   * @deprecated Use {@link EpRequirements#semanticTypeReq(String)} instead
-   */
-  @Deprecated(forRemoval = true, since = "0.97.0")
   public static EventPropertyPrimitive domainPropertyReq(String domainProperty) {
-    return (EventPropertyPrimitive) semanticTypeReq(domainProperty, EventPropertyPrimitive.class);
+    return (EventPropertyPrimitive) domainPropertyReq(domainProperty, EventPropertyPrimitive.class);
   }
 
-  /**
-   * @param domainProperty the semantic type
-   * @return EventPropertyList
-   * @deprecated Use {@link EpRequirements#semanticTypeReqList(String)} instead
-   */
-  @Deprecated(forRemoval = true, since = "0.97.0")
   public static EventPropertyList domainPropertyReqList(String domainProperty) {
-    return (EventPropertyList) semanticTypeReq(domainProperty, EventPropertyList.class);
+    return (EventPropertyList) domainPropertyReq(domainProperty, EventPropertyList.class);
   }
 
-  private static EventPropertyPrimitive appendDomainProperty(EventPropertyPrimitive property, String semanticType) {
-    property.setSemanticType(semanticType);
+  private static EventPropertyPrimitive appendDomainProperty(EventPropertyPrimitive property, String domainProperty) {
+    property.setDomainProperties(Utils.createURI(domainProperty));
     return property;
   }
 

@@ -50,6 +50,7 @@ public class DefaultMessagingSettings {
         5000012,
         20,
         2,
+        Arrays.asList(SpDataFormat.JSON, SpDataFormat.CBOR, SpDataFormat.FST, SpDataFormat.SMILE),
         protocolList);
 
     defaultSettings.setJmsHost("activemq");

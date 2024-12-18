@@ -49,7 +49,7 @@ import { BaseStreamPipesWidget } from '../widgets/base/base-widget';
 @Component({
     selector: 'sp-dashboard-widget',
     templateUrl: './dashboard-widget.component.html',
-    styleUrls: ['./dashboard-widget.component.scss'],
+    styleUrls: ['./dashboard-widget.component.css'],
 })
 export class DashboardWidgetComponent implements OnInit {
     @Input() widget: DashboardItem;

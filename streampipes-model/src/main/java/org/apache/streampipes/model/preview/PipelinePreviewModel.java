@@ -19,18 +19,16 @@ package org.apache.streampipes.model.preview;
 
 import org.apache.streampipes.model.shared.annotation.TsModel;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @TsModel
 public class PipelinePreviewModel {
 
   private String previewId;
 
-  private Map<String, String> elementIdMappings;
+  private List<String> supportedPipelineElementDomIds;
 
   public PipelinePreviewModel() {
-    this.elementIdMappings = new HashMap<>();
   }
 
   public String getPreviewId() {
@@ -41,11 +39,11 @@ public class PipelinePreviewModel {
     this.previewId = previewId;
   }
 
-  public Map<String, String> getElementIdMappings() {
-    return elementIdMappings;
+  public List<String> getSupportedPipelineElementDomIds() {
+    return supportedPipelineElementDomIds;
   }
 
-  public void setElementIdMappings(Map<String, String> elementIdMappings) {
-    this.elementIdMappings = elementIdMappings;
+  public void setSupportedPipelineElementDomIds(List<String> supportedPipelineElementDomIds) {
+    this.supportedPipelineElementDomIds = supportedPipelineElementDomIds;
   }
 }

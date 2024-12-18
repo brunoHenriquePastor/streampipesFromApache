@@ -89,7 +89,6 @@ export class StartAdapterConfigurationComponent implements OnInit {
     dataLakeTimestampField: string;
 
     startAdapterNow = true;
-    showCode = false;
 
     constructor(
         private dialogService: DialogService,

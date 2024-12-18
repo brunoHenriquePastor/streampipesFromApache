@@ -16,7 +16,14 @@
  *
  */
 
-import { Directive, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+    Directive,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    SimpleChanges,
+} from '@angular/core';
 import {
     DataExplorerWidgetModel,
     SourceConfig,
@@ -53,9 +60,11 @@ export abstract class BaseWidgetConfig<
         this.configChangedSubject =
             this.widgetConfigurationService.configurationChangedSubject.subscribe(
                 res => {
-                    if (res.refreshData) {
-                        this.makeFields();
-                        this.checkAndInitialize();
+                    if (res.widgetId === this.currentlyConfiguredWidget._id) {
+                        if (res.refreshData) {
+                            this.makeFields();
+                            this.checkAndInitialize();
+                        }
                     }
                 },
             );
@@ -88,6 +97,7 @@ export abstract class BaseWidgetConfig<
 
     triggerDataRefresh() {
         this.widgetConfigurationService.notify({
+            widgetId: this.currentlyConfiguredWidget._id,
             refreshData: true,
             refreshView: true,
         });
@@ -95,6 +105,7 @@ export abstract class BaseWidgetConfig<
 
     triggerViewRefresh() {
         this.widgetConfigurationService.notify({
+            widgetId: this.currentlyConfiguredWidget._id,
             refreshData: false,
             refreshView: true,
         });

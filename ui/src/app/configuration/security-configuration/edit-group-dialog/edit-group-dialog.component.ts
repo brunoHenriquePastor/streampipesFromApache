@@ -26,9 +26,8 @@ import {
 } from '@angular/forms';
 import { DialogRef } from '@streampipes/shared-ui';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { RoleDescription } from '../../../_models/auth.model';
 import { AvailableRolesService } from '../../../services/available-roles.service';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'sp-edit-group-dialog',
@@ -44,7 +43,7 @@ export class EditGroupDialogComponent implements OnInit {
     editMode: boolean;
 
     parentForm: UntypedFormGroup;
-    availableRoles$: Observable<Role[]>;
+    availableRoles: RoleDescription[];
     clonedGroup: Group;
 
     constructor(
@@ -55,13 +54,7 @@ export class EditGroupDialogComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.availableRoles$ = this.availableRolesService
-            .getAvailableRoles()
-            .pipe(
-                map(roles =>
-                    roles.sort((a, b) => a.label.localeCompare(b.label)),
-                ),
-            );
+        this.availableRoles = this.availableRolesService.getAvailableRoles();
         this.clonedGroup = Group.fromData(this.group, new Group());
         this.parentForm = this.fb.group({});
         this.parentForm.addControl(
@@ -94,7 +87,7 @@ export class EditGroupDialogComponent implements OnInit {
     }
 
     changeRoleAssignment(event: MatCheckboxChange) {
-        if (this.clonedGroup.roles.indexOf(event.source.value) > -1) {
+        if (this.clonedGroup.roles.indexOf(event.source.value as Role) > -1) {
             this.removeRole(event.source.value);
         } else {
             this.addRole(event.source.value);
@@ -102,10 +95,13 @@ export class EditGroupDialogComponent implements OnInit {
     }
 
     removeRole(role: string) {
-        this.clonedGroup.roles.splice(this.clonedGroup.roles.indexOf(role), 1);
+        this.clonedGroup.roles.splice(
+            this.clonedGroup.roles.indexOf(role as Role),
+            1,
+        );
     }
 
     addRole(role: string) {
-        this.clonedGroup.roles.push(role);
+        this.clonedGroup.roles.push(role as Role);
     }
 }

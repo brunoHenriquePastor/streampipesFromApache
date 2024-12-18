@@ -22,12 +22,13 @@ import org.apache.streampipes.model.base.NamedStreamPipesEntity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public enum ActivePipelinePreviews {
 
   INSTANCE;
 
-  private final Map<String, List<NamedStreamPipesEntity>> activePreviews;
+  private Map<String, List<NamedStreamPipesEntity>> activePreviews;
 
   ActivePipelinePreviews() {
     this.activePreviews = new HashMap<>();
@@ -44,5 +45,19 @@ public enum ActivePipelinePreviews {
 
   public List<NamedStreamPipesEntity> getInvocationGraphs(String previewId) {
     return this.activePreviews.get(previewId);
+  }
+
+  public Optional<NamedStreamPipesEntity> getInvocationGraphForPipelineELement(String previewId,
+                                                                               String pipelineElementDomId) {
+    List<NamedStreamPipesEntity> graphs = this.activePreviews.get(previewId);
+
+    if (graphs == null || graphs.size() == 0) {
+      return Optional.empty();
+    } else {
+      return graphs
+          .stream()
+          .filter(g -> g.getDom().equals(pipelineElementDomId))
+          .findFirst();
+    }
   }
 }

@@ -64,10 +64,8 @@ public class CustomTransformOutputSchemaGenerator extends OutputSchemaGenerator<
   private EventSchema makeRequest() {
     try {
       String httpRequestBody = JacksonSerializer.getObjectMapper().writeValueAsString(dataProcessorInvocation);
-      String endpointUrl = new ExtensionsServiceEndpointGenerator().getEndpointResourceUrl(
-          dataProcessorInvocation.getAppId(),
-          SpServiceUrlProvider.DATA_PROCESSOR
-      );
+      String endpointUrl = new ExtensionsServiceEndpointGenerator(dataProcessorInvocation.getAppId(),
+          SpServiceUrlProvider.DATA_PROCESSOR).getEndpointResourceUrl();
       Response httpResp = Request.Post(endpointUrl + "/output").bodyString(httpRequestBody,
           ContentType
               .APPLICATION_JSON).execute();

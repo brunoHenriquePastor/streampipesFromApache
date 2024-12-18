@@ -20,7 +20,6 @@ package org.apache.streampipes.manager.matching;
 
 import org.apache.streampipes.manager.data.PipelineGraph;
 import org.apache.streampipes.manager.data.PipelineGraphHelpers;
-import org.apache.streampipes.manager.matching.v2.pipeline.IPipelineValidationStep;
 import org.apache.streampipes.manager.matching.v2.pipeline.PipelineValidator;
 import org.apache.streampipes.manager.matching.v2.pipeline.SpValidationException;
 import org.apache.streampipes.model.SpDataStream;
@@ -34,7 +33,6 @@ import org.apache.streampipes.model.message.PipelineEdgeValidation;
 import org.apache.streampipes.model.message.PipelineModificationMessage;
 import org.apache.streampipes.model.pipeline.PipelineElementValidationInfo;
 import org.apache.streampipes.model.pipeline.PipelineModification;
-import org.apache.streampipes.model.pipeline.ValidationInfoLevel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,11 +49,10 @@ public class PipelineModificationGenerator {
   private final Map<String, PipelineEdgeValidation> edgeValidations;
   private final PipelineValidator pipelineValidator;
 
-  public PipelineModificationGenerator(PipelineGraph pipelineGraph,
-                                       List<IPipelineValidationStep> steps) {
+  public PipelineModificationGenerator(PipelineGraph pipelineGraph) {
     this.pipelineGraph = pipelineGraph;
     this.pipelineModifications = new HashMap<>();
-    this.pipelineValidator = new PipelineValidator(steps);
+    this.pipelineValidator = new PipelineValidator();
     this.edgeValidations = new HashMap<>();
   }
 
@@ -100,7 +97,7 @@ public class PipelineModificationGenerator {
       modification.setElementId(t.getElementId());
       try {
         pipelineValidator.apply(source, t, targets, validationInfos);
-        buildModification(modification, t, t.getInputStreams(), !hasValidationError(modification));
+        buildModification(modification, t, t.getInputStreams(), true);
         edgeValidations.put(makeKey(source, t), PipelineEdgeValidation.complete(source.getDom(), t.getDom()));
       } catch (SpValidationException e) {
         e.getErrorLog().forEach(log -> validationInfos.add(PipelineElementValidationInfo.error(log.toString())));
@@ -113,10 +110,6 @@ public class PipelineModificationGenerator {
 
       addModification(t, getConnections(t));
     });
-  }
-
-  private boolean hasValidationError(PipelineModification modification) {
-    return modification.getValidationInfos().stream().anyMatch(v -> v.getLevel() == ValidationInfoLevel.ERROR);
   }
 
   private String makeKey(NamedStreamPipesEntity source,
@@ -154,6 +147,6 @@ public class PipelineModificationGenerator {
     return matchingResultMessages
         .stream()
         .map(m -> new Notification(m.getTitle(), m.toString()))
-        .toList();
+        .collect(Collectors.toList());
   }
 }

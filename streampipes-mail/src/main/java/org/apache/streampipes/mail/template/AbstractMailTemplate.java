@@ -23,10 +23,7 @@ import org.apache.streampipes.mail.template.part.BaseUrlPart;
 import org.apache.streampipes.mail.template.part.LogoPart;
 import org.apache.streampipes.storage.management.StorageDispatcher;
 
-import com.google.common.base.Charsets;
-
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,9 +57,5 @@ public abstract class AbstractMailTemplate {
 
     configureTemplate(builder);
     return builder.generateHtmlTemplate();
-  }
-
-  protected String encodeUrlPart(String content) {
-    return URLEncoder.encode(content, Charsets.UTF_8);
   }
 }

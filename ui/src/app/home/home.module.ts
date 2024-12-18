@@ -29,7 +29,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { PlatformServicesModule } from '@streampipes/platform-services';
 import { WelcomeTourComponent } from './dialog/welcome-tour/welcome-tour.component';
-import { SharedUiModule } from '@streampipes/shared-ui';
 
 @NgModule({
     imports: [
@@ -41,7 +40,6 @@ import { SharedUiModule } from '@streampipes/shared-ui';
         MatDividerModule,
         MatListModule,
         PlatformServicesModule,
-        SharedUiModule,
     ],
     declarations: [HomeComponent, StatusComponent, WelcomeTourComponent],
     providers: [HomeService],

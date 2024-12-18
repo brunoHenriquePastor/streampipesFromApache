@@ -24,6 +24,7 @@ import org.apache.streampipes.model.schema.EventPropertyPrimitive;
 import org.apache.streampipes.model.schema.EventSchema;
 import org.apache.streampipes.vocabulary.SO;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +47,7 @@ public class EventSchemaUtils {
 
   private static Optional<EventPropertyPrimitive> getTimstampProperty(List<EventProperty> eventProperties) {
     for (EventProperty ep : eventProperties) {
-      if (ep instanceof EventPropertyPrimitive && SO.DATE_TIME.equalsIgnoreCase(ep.getSemanticType())) {
+      if (ep instanceof EventPropertyPrimitive && ep.getDomainProperties().contains(URI.create(SO.DATE_TIME))) {
         return Optional.of((EventPropertyPrimitive) ep);
       }
 

@@ -28,6 +28,9 @@ export class SpEchartsWidgetAppearanceConfigComponent implements OnInit {
     @Input()
     appearanceConfig: WidgetEchartsAppearanceConfig;
 
+    @Input()
+    widgetId: string;
+
     constructor(
         private widgetConfigurationService: WidgetConfigurationService,
     ) {}
@@ -42,6 +45,7 @@ export class SpEchartsWidgetAppearanceConfigComponent implements OnInit {
 
     triggerViewUpdate() {
         this.widgetConfigurationService.notify({
+            widgetId: this.widgetId,
             refreshView: true,
             refreshData: false,
         });

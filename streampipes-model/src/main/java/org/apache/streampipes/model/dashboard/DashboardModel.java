@@ -19,9 +19,8 @@
 package org.apache.streampipes.model.dashboard;
 
 import org.apache.streampipes.model.shared.annotation.TsModel;
-import org.apache.streampipes.model.shared.api.Storable;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
@@ -29,15 +28,13 @@ import java.util.List;
 import java.util.Map;
 
 @TsModel
-public class DashboardModel implements Storable {
+public class DashboardModel {
 
-  @JsonAlias("_id")
-  @SerializedName("_id")
-  private String elementId;
+  @JsonProperty("_id")
+  private @SerializedName("_id") String couchDbId;
 
-  @JsonAlias("_rev")
-  @SerializedName("_rev")
-  private String rev;
+  @JsonProperty("_rev")
+  private @SerializedName("_rev") String couchDbRev;
 
   private String id;
   private String name;
@@ -46,14 +43,28 @@ public class DashboardModel implements Storable {
 
   private Map<String, Object> dashboardTimeSettings;
   private Map<String, Object> dashboardGeneralSettings;
-  private Map<String, Object> dashboardLiveSettings;
 
   private List<DashboardItem> widgets;
 
   public DashboardModel() {
     this.dashboardTimeSettings = new HashMap<>();
     this.dashboardGeneralSettings = new HashMap<>();
-    this.dashboardLiveSettings = new HashMap<>();
+  }
+
+  public String getCouchDbId() {
+    return couchDbId;
+  }
+
+  public void setCouchDbId(String couchDbId) {
+    this.couchDbId = couchDbId;
+  }
+
+  public String getCouchDbRev() {
+    return couchDbRev;
+  }
+
+  public void setCouchDbRev(String couchDbRev) {
+    this.couchDbRev = couchDbRev;
   }
 
   public String getId() {
@@ -110,37 +121,5 @@ public class DashboardModel implements Storable {
 
   public void setDashboardGeneralSettings(Map<String, Object> dashboardGeneralSettings) {
     this.dashboardGeneralSettings = dashboardGeneralSettings;
-  }
-
-  @Override
-  public String getRev() {
-    return this.rev;
-  }
-
-  @Override
-  public void setRev(String rev) {
-    this.rev = rev;
-  }
-
-  @Override
-  public String getElementId() {
-    return this.elementId;
-  }
-
-  @Override
-  public void setElementId(String elementId) {
-    this.elementId = elementId;
-  }
-
-  public String getCouchDbId() {
-    return this.elementId;
-  }
-
-  public Map<String, Object> getDashboardLiveSettings() {
-    return dashboardLiveSettings;
-  }
-
-  public void setDashboardLiveSettings(Map<String, Object> dashboardLiveSettings) {
-    this.dashboardLiveSettings = dashboardLiveSettings;
   }
 }

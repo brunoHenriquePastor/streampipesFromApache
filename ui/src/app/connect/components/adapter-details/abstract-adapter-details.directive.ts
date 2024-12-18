@@ -28,9 +28,7 @@ import {
     SpBreadcrumbService,
 } from '@streampipes/shared-ui';
 import { SpAdapterDetailsTabs } from './adapter-details-tabs';
-import { Directive } from '@angular/core';
 
-@Directive()
 export abstract class SpAbstractAdapterDetailsDirective {
     currentAdapterId: string;
     tabs: SpNavigationItem[] = [];

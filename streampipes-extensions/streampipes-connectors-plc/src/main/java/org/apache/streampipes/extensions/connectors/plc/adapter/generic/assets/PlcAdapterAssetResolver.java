@@ -40,9 +40,8 @@ public class PlcAdapterAssetResolver extends DefaultAssetResolver {
   }
 
   @Override
-  public Properties getLocale(ClassLoader classLoader,
-                              String localeName) throws IOException {
-    var properties = super.getLocale(classLoader, localeName);
+  public Properties getLocale(String localeName) throws IOException {
+    var properties = super.getLocale(localeName);
     properties.put(appId + ".title", driver.getProtocolName());
     properties.put(appId + ".description", "");
 
@@ -50,13 +49,12 @@ public class PlcAdapterAssetResolver extends DefaultAssetResolver {
   }
 
   @Override
-  public byte[] getAsset(ClassLoader classLoader,
-                         String assetName) throws IOException {
+  public byte[] getAsset(String assetName) throws IOException {
     if (assetName.equals(GlobalStreamPipesConstants.STD_DOCUMENTATION_NAME)) {
-      var docsTemplate = new String(getResourceFile(classLoader, assetName).readAllBytes());
+      var docsTemplate = new String(getResourceFile(assetName).readAllBytes());
       return new DocumentationGenerator(driver, docsTemplate).generateDocumentation();
     } else {
-      return super.getAsset(classLoader, assetName);
+      return super.getAsset(assetName);
     }
   }
 }

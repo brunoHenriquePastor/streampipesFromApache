@@ -52,16 +52,11 @@ public class Quantity {
 		if (unit.getResource().equals(newUnit.getResource())) return this; // nothing to be done
 
 		if (!unit.getType().equals(newUnit.getType())) {
-      LOG.error(
-          "The new unit does not have the same parent type (source: {}; target: {})",
-          unit.getType(),
-          newUnit.getType()
-      );
+			LOG.error("The new unit does not have the same parent type " +
+					"(source: " + unit.getType() + "; target: " + newUnit.getType() + ")");
 			throw new IllegalAccessException(
-          "The new unit does not have the same parent type (source: %s; target: %s)".formatted(
-              unit.getType(),
-              newUnit.getType()
-          )
+					"The new unit does not have the same parent type " +
+							"(source: " + unit.getType() + "; target: " + newUnit.getType() + ")"
 			);
 		}
 
@@ -78,11 +73,8 @@ public class Quantity {
 		return newMeasurement;
 	}
 
-	@Override
 	public String toString() {
-		return "Quantity{" +
-				"value=" + value +
-				", unit=" + unit +
-				'}';
+		return "" + getValue() + " " + getUnit().toString();
 	}
+
 }

@@ -30,8 +30,7 @@ public class Parsers {
         new JsonParsers(),
         new CsvParser(),
         new XmlParser(),
-        new ImageParser(),
-        new AvroParser()
+        new ImageParser()
     );
   }
 }

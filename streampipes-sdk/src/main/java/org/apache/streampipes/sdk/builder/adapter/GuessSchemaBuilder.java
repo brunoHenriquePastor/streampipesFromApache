@@ -87,10 +87,14 @@ public class GuessSchemaBuilder {
     GuessSchema guessSchema = new GuessSchema();
     EventSchema eventSchema = new EventSchema();
 
+    for (int i = 0; i < eventProperties.size(); i++) {
+      eventProperties.get(i).setIndex(i);
+    }
+
     eventSchema.setEventProperties(eventProperties);
     guessSchema.setEventSchema(eventSchema);
 
-    if (!fieldStatusInfos.isEmpty()) {
+    if (fieldStatusInfos.size() > 0) {
       guessSchema.setFieldStatusInfo(fieldStatusInfos);
     }
 

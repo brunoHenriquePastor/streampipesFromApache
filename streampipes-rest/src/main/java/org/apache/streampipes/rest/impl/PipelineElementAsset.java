@@ -61,7 +61,7 @@ public class PipelineElementAsset extends AbstractRestResource {
         var adapterDescription = StorageDispatcher.INSTANCE
             .getNoSqlStore()
             .getAdapterInstanceStorage()
-            .getElementById(dataStream.getCorrespondingAdapterId());
+            .getAdapter(dataStream.getCorrespondingAdapterId());
         appId = adapterDescription.getAppId();
       }
       return ok(AssetManager.getAssetDocumentation(appId));

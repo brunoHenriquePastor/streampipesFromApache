@@ -97,7 +97,9 @@ export class StaticFreeInputComponent
             this.staticProperty.value !== undefined &&
             this.staticProperty.value !== '' &&
             this.staticProperty.value !== null;
-        this.applyCompletedConfiguration(valid);
+        this.updateEmitter.emit(
+            new ConfigurationInfo(this.staticProperty.internalName, valid),
+        );
     }
 
     onStatusChange(status: any) {}

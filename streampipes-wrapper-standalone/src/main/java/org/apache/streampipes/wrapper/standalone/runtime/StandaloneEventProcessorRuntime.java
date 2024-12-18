@@ -58,6 +58,12 @@ public class StandaloneEventProcessorRuntime extends StandalonePipelineElementRu
             .getOutputStream()
             .getEventGrounding()
             .getTransportProtocol(),
+        runtimeParameters
+            .getModel()
+            .getOutputStream()
+            .getEventGrounding()
+            .getTransportFormats()
+            .get(0),
         this.instanceId);
   }
 
@@ -68,9 +74,6 @@ public class StandaloneEventProcessorRuntime extends StandalonePipelineElementRu
       var event = this.internalRuntimeParameters.makeEvent(runtimeParameters, rawEvent, sourceInfo);
       pipelineElement
           .onEvent(event, outputCollector);
-    } catch (IllegalArgumentException e) {
-      LOG.warn("A key could not be found - this can be due to an operation on a missing field.");
-      addLogEntry(e);
     } catch (RuntimeException e) {
       LOG.error("RuntimeException while processing event in {}", pipelineElement.getClass().getCanonicalName(), e);
       addLogEntry(e);

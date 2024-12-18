@@ -20,6 +20,8 @@ package org.apache.streampipes.model.schema;
 
 import org.apache.streampipes.model.util.Cloner;
 
+import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 
 public class EventPropertyList extends EventProperty {
@@ -49,9 +51,10 @@ public class EventPropertyList extends EventProperty {
     this.eventProperty = listProperty;
   }
 
-  public EventPropertyList(String propertyName, EventProperty eventProperty, String semanticType) {
-    super(propertyName, semanticType);
+  public EventPropertyList(String propertyName, EventProperty eventProperty, List<URI> domainProperties) {
+    super(propertyName);
     this.eventProperty = eventProperty;
+    this.setDomainProperties(domainProperties);
   }
 
   public EventProperty getEventProperty() {

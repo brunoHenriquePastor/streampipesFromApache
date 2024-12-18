@@ -25,7 +25,7 @@ import { DatalakeRestService } from '@streampipes/platform-services';
 @Component({
     selector: 'sp-html-widget',
     templateUrl: './html-widget.component.html',
-    styleUrls: ['./html-widget.component.scss'],
+    styleUrls: ['./html-widget.component.css'],
 })
 export class HtmlWidgetComponent
     extends BaseStreamPipesWidget

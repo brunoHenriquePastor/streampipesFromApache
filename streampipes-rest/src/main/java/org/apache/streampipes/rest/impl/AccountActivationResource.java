@@ -35,6 +35,7 @@ public class AccountActivationResource extends AbstractAuthGuardedRestResource {
 
   @GetMapping(
       path = "{recoveryCode}",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> activateUserAccount(@PathVariable("recoveryCode") String recoveryCode) {
     try {

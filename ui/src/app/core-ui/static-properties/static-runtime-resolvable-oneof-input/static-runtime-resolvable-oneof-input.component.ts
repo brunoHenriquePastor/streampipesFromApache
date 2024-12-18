@@ -18,8 +18,6 @@
 
 import { Component, OnChanges, OnInit } from '@angular/core';
 import {
-    Option,
-    RuntimeResolvableAnyStaticProperty,
     RuntimeResolvableOneOfStaticProperty,
     StaticPropertyUnion,
 } from '@streampipes/platform-services';
@@ -30,7 +28,7 @@ import { UntypedFormControl } from '@angular/forms';
 @Component({
     selector: 'sp-app-static-runtime-resolvable-oneof-input',
     templateUrl: './static-runtime-resolvable-oneof-input.component.html',
-    styleUrls: ['./static-runtime-resolvable-oneof-input.component.scss'],
+    styleUrls: ['./static-runtime-resolvable-oneof-input.component.css'],
 })
 export class StaticRuntimeResolvableOneOfInputComponent
     extends BaseRuntimeResolvableSelectionInput<RuntimeResolvableOneOfStaticProperty>
@@ -50,39 +48,14 @@ export class StaticRuntimeResolvableOneOfInputComponent
     }
 
     afterOptionsLoaded(staticProperty: RuntimeResolvableOneOfStaticProperty) {
-        if (
-            this.staticProperty.options?.length > 0 &&
-            this.isOptionSelected()
-        ) {
-            const selectedOption = this.staticProperty.options.find(
-                o => o.selected,
-            );
-            this.addSelectedOption(staticProperty, selectedOption);
-        } else {
-            if (staticProperty.options?.length > 0) {
-                staticProperty.options[0].selected = true;
-            }
-        }
         this.staticProperty.options = staticProperty.options;
-    }
-
-    isOptionSelected(): boolean {
-        return this.staticProperty.options.find(o => o.selected) !== undefined;
-    }
-
-    addSelectedOption(
-        staticProperty: RuntimeResolvableOneOfStaticProperty,
-        selectedOption: Option,
-    ): void {
-        staticProperty.options
-            .filter(o => {
-                return o.internalName !== null
-                    ? o.internalName === selectedOption.internalName
-                    : o.name === selectedOption.name;
-            })
-            .forEach(o => {
-                o.selected = true;
-            });
+        if (
+            this.staticProperty.options &&
+            this.staticProperty.options.length > 0
+        ) {
+            this.staticProperty.options[0].selected = true;
+            this.emitUpdate(true);
+        }
     }
 
     select(id) {
@@ -93,6 +66,7 @@ export class StaticRuntimeResolvableOneOfInputComponent
             option => option.elementId === id,
         ).selected = true;
         this.performValidation();
+        this.emitUpdate(true);
     }
 
     parse(

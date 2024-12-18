@@ -19,6 +19,7 @@
 import '@angular/compiler';
 import { UserUtils } from '../utils/UserUtils';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { User } from '../model/User';
 
 declare global {
     namespace Cypress {
@@ -32,10 +33,13 @@ declare global {
     }
 }
 
-export const login = (user = UserUtils.adminUser) => {
+export const login = (user?: User) => {
+    let _user;
+    _user = !user ? UserUtils.adminUser : user;
+
     cy.request('POST', '/streampipes-backend/api/v2/auth/login', {
-        username: user.email,
-        password: user.password,
+        username: _user.email,
+        password: _user.password,
     }).then(res => {
         const decodedToken = new JwtHelperService({}).decodeToken(
             res.body.accessToken,
@@ -45,5 +49,6 @@ export const login = (user = UserUtils.adminUser) => {
             JSON.stringify(decodedToken.user),
         );
         window.localStorage.setItem('auth-token', res.body.accessToken);
+        console.log(user);
     });
 };

@@ -33,9 +33,6 @@ public class AssetLinkType {
   @JsonProperty("_id")
   private @SerializedName("_id") String id;
 
-  @JsonProperty("_rev")
-  private @SerializedName("_rev") String rev;
-
   private String linkType;
   private String linkLabel;
   private String linkColor;
@@ -130,13 +127,5 @@ public class AssetLinkType {
 
   public void setNavigationActive(boolean navigationActive) {
     this.navigationActive = navigationActive;
-  }
-
-  public String getRev() {
-    return rev;
-  }
-
-  public void setRev(String rev) {
-    this.rev = rev;
   }
 }

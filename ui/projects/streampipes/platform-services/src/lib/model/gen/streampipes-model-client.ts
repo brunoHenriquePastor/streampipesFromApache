@@ -19,27 +19,63 @@
 /* tslint:disable */
 /* eslint-disable */
 // @ts-nocheck
-// Generated using typescript-generator version 3.2.1263 on 2024-10-07 13:58:29.
+// Generated using typescript-generator version 3.2.1263 on 2023-12-04 13:14:26.
 
-import { Storable } from './streampipes-model';
-
-export class Group implements Storable {
+export class ExtensionsServiceEndpointItem {
+    appId: string;
+    available: boolean;
+    description: string;
+    editable: boolean;
     elementId: string;
+    includesDocs: boolean;
+    includesIcon: boolean;
+    installed: boolean;
+    name: string;
+    streams: ExtensionsServiceEndpointItem[];
+    type: string;
+    uri: string;
+
+    static fromData(
+        data: ExtensionsServiceEndpointItem,
+        target?: ExtensionsServiceEndpointItem,
+    ): ExtensionsServiceEndpointItem {
+        if (!data) {
+            return data;
+        }
+        const instance = target || new ExtensionsServiceEndpointItem();
+        instance.appId = data.appId;
+        instance.available = data.available;
+        instance.description = data.description;
+        instance.editable = data.editable;
+        instance.elementId = data.elementId;
+        instance.includesDocs = data.includesDocs;
+        instance.includesIcon = data.includesIcon;
+        instance.installed = data.installed;
+        instance.name = data.name;
+        instance.streams = __getCopyArrayFn(
+            ExtensionsServiceEndpointItem.fromData,
+        )(data.streams);
+        instance.type = data.type;
+        instance.uri = data.uri;
+        return instance;
+    }
+}
+
+export class Group {
     groupId: string;
     groupName: string;
     rev: string;
-    roles: string[];
+    roles: Role[];
 
     static fromData(data: Group, target?: Group): Group {
         if (!data) {
             return data;
         }
         const instance = target || new Group();
-        instance.elementId = data.elementId;
         instance.groupId = data.groupId;
         instance.groupName = data.groupName;
         instance.rev = data.rev;
-        instance.roles = __getCopyArrayFn(__identity<string>())(data.roles);
+        instance.roles = __getCopyArrayFn(__identity<Role>())(data.roles);
         return instance;
     }
 }
@@ -70,8 +106,7 @@ export class MatchingResultMessage {
     }
 }
 
-export class Permission implements Storable {
-    elementId: string;
+export class Permission {
     grantedAuthorities: PermissionEntry[];
     objectClassName: string;
     objectInstanceId: string;
@@ -85,7 +120,6 @@ export class Permission implements Storable {
             return data;
         }
         const instance = target || new Permission();
-        instance.elementId = data.elementId;
         instance.grantedAuthorities = __getCopyArrayFn(
             PermissionEntry.fromData,
         )(data.grantedAuthorities);
@@ -126,7 +160,7 @@ export class Principal {
     principalId: string;
     principalType: PrincipalType;
     rev: string;
-    roles: string[];
+    roles: Role[];
     username: string;
 
     static fromData(data: Principal, target?: Principal): Principal {
@@ -144,23 +178,8 @@ export class Principal {
         instance.principalId = data.principalId;
         instance.principalType = data.principalType;
         instance.rev = data.rev;
-        instance.roles = __getCopyArrayFn(__identity<string>())(data.roles);
+        instance.roles = __getCopyArrayFn(__identity<Role>())(data.roles);
         instance.username = data.username;
-        return instance;
-    }
-}
-
-export class Privilege implements Storable {
-    elementId: string;
-    rev: string;
-
-    static fromData(data: Privilege, target?: Privilege): Privilege {
-        if (!data) {
-            return data;
-        }
-        const instance = target || new Privilege();
-        instance.elementId = data.elementId;
-        instance.rev = data.rev;
         return instance;
     }
 }
@@ -183,29 +202,6 @@ export class RawUserApiToken {
         instance.rawToken = data.rawToken;
         instance.tokenId = data.tokenId;
         instance.tokenName = data.tokenName;
-        return instance;
-    }
-}
-
-export class Role implements Storable {
-    defaultRole: boolean;
-    elementId: string;
-    label: string;
-    privilegeIds: string[];
-    rev: string;
-
-    static fromData(data: Role, target?: Role): Role {
-        if (!data) {
-            return data;
-        }
-        const instance = target || new Role();
-        instance.defaultRole = data.defaultRole;
-        instance.elementId = data.elementId;
-        instance.label = data.label;
-        instance.privilegeIds = __getCopyArrayFn(__identity<string>())(
-            data.privilegeIds,
-        );
-        instance.rev = data.rev;
         return instance;
     }
 }
@@ -237,7 +233,6 @@ export class UserAccount extends Principal {
     preferredDataProcessors: string[];
     preferredDataSinks: string[];
     preferredDataStreams: string[];
-    provider: string;
     userApiTokens: UserApiToken[];
 
     static fromData(data: UserAccount, target?: UserAccount): UserAccount {
@@ -259,7 +254,6 @@ export class UserAccount extends Principal {
         instance.preferredDataStreams = __getCopyArrayFn(__identity<string>())(
             data.preferredDataStreams,
         );
-        instance.provider = data.provider;
         instance.userApiTokens = __getCopyArrayFn(UserApiToken.fromData)(
             data.userApiTokens,
         );
@@ -282,47 +276,54 @@ export class UserApiToken {
     }
 }
 
-export type DefaultPrivilege =
+export type PrincipalType = 'USER_ACCOUNT' | 'SERVICE_ACCOUNT' | 'GROUP';
+
+export type Privilege =
     | 'PRIVILEGE_READ_PIPELINE'
     | 'PRIVILEGE_WRITE_PIPELINE'
+    | 'PRIVILEGE_DELETE_PIPELINE'
     | 'PRIVILEGE_READ_ADAPTER'
     | 'PRIVILEGE_WRITE_ADAPTER'
+    | 'PRIVILEGE_DELETE_ADAPTER'
     | 'PRIVILEGE_READ_PIPELINE_ELEMENT'
     | 'PRIVILEGE_WRITE_PIPELINE_ELEMENT'
+    | 'PRIVILEGE_DELETE_PIPELINE_ELEMENT'
     | 'PRIVILEGE_READ_DASHBOARD'
     | 'PRIVILEGE_WRITE_DASHBOARD'
+    | 'PRIVILEGE_DELETE_DASHBOARD'
     | 'PRIVILEGE_READ_DASHBOARD_WIDGET'
     | 'PRIVILEGE_WRITE_DASHBOARD_WIDGET'
+    | 'PRIVILEGE_DELETE_DASHBOARD_WIDGET'
     | 'PRIVILEGE_READ_DATA_EXPLORER_VIEW'
     | 'PRIVILEGE_WRITE_DATA_EXPLORER_VIEW'
+    | 'PRIVILEGE_DELETE_DATA_EXPLORER_VIEW'
     | 'PRIVILEGE_READ_DATA_EXPLORER_WIDGET'
     | 'PRIVILEGE_WRITE_DATA_EXPLORER_WIDGET'
+    | 'PRIVILEGE_DELETE_DATA_EXPLORER_WIDGET'
     | 'PRIVILEGE_READ_APPS'
     | 'PRIVILEGE_WRITE_APPS'
     | 'PRIVILEGE_READ_NOTIFICATIONS'
     | 'PRIVILEGE_READ_FILES'
     | 'PRIVILEGE_WRITE_FILES'
+    | 'PRIVILEGE_DELETE_FILES'
     | 'PRIVILEGE_READ_ASSETS'
     | 'PRIVILEGE_WRITE_ASSETS'
     | 'PRIVILEGE_READ_GENERIC_STORAGE'
-    | 'PRIVILEGE_WRITE_GENERIC_STORAGE'
-    | 'PRIVILEGE_READ_LABELS'
-    | 'PRIVILEGE_WRITE_LABELS';
+    | 'PRIVILEGE_WRITE_GENERIC_STORAGE';
 
-export type DefaultRole =
+export type Role =
     | 'ROLE_ADMIN'
     | 'ROLE_SERVICE_ADMIN'
     | 'ROLE_PIPELINE_ADMIN'
-    | 'ROLE_PIPELINE_USER'
     | 'ROLE_DASHBOARD_ADMIN'
-    | 'ROLE_DASHBOARD_USER'
     | 'ROLE_DATA_EXPLORER_ADMIN'
-    | 'ROLE_DATA_EXPLORER_USER'
     | 'ROLE_CONNECT_ADMIN'
+    | 'ROLE_DASHBOARD_USER'
+    | 'ROLE_DATA_EXPLORER_USER'
+    | 'ROLE_PIPELINE_USER'
+    | 'ROLE_APP_USER'
     | 'ROLE_ASSET_USER'
     | 'ROLE_ASSET_ADMIN';
-
-export type PrincipalType = 'USER_ACCOUNT' | 'SERVICE_ACCOUNT' | 'GROUP';
 
 function __getCopyArrayFn<T>(itemCopyFn: (item: T) => T): (array: T[]) => T[] {
     return (array: T[]) => __copyArray(array, itemCopyFn);

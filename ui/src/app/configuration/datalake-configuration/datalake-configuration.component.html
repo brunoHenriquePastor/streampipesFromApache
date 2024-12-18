@@ -36,8 +36,7 @@
                             <button
                                 color="accent"
                                 mat-icon-button
-                                matTooltip="Refresh"
-                                data-cy="refresh-data-lake-measures"
+                                matTooltip="Refresh Schema"
                                 (click)="loadAvailableMeasurements()"
                             >
                                 <mat-icon>refresh</mat-icon>
@@ -98,7 +97,6 @@
                                     fxLayoutAlign="center"
                                     style="margin: 10px 0 5px 0"
                                     color="accent"
-                                    data-cy="datalake-number-of-events-spinner"
                                     *ngIf="configurationEntry.events < 0"
                                     >Loading
                                 </mat-spinner>

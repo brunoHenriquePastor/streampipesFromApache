@@ -37,8 +37,19 @@ public class PipelineModification {
   private List<SpDataStream> inputStreams;
   private SpDataStream outputStream;
 
+  public PipelineModification(String domId, String elementId,
+                              List<StaticProperty> staticProperties) {
+    super();
+    this.domId = domId;
+    this.elementId = elementId;
+    this.staticProperties = staticProperties;
+    this.inputStreams = new ArrayList<>();
+    this.outputStrategies = new ArrayList<>();
+    this.validationInfos = new ArrayList<>();
+  }
+
   public PipelineModification() {
-    validationInfos = new ArrayList<>();
+
   }
 
   public String getDomId() {
@@ -79,6 +90,10 @@ public class PipelineModification {
 
   public void setInputStreams(List<SpDataStream> inputStreams) {
     this.inputStreams = inputStreams;
+  }
+
+  public void addInputStream(SpDataStream inputStream) {
+    this.inputStreams.add(inputStream);
   }
 
   public boolean isPipelineElementValid() {

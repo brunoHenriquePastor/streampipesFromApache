@@ -30,6 +30,8 @@ export class TimestampPipe implements PipeTransform {
     constructor() {}
 
     transform(items: EventPropertyUnion[]): EventPropertyUnion[] {
-        return items.filter(item => SemanticType.isTimestamp(item));
+        return items.filter(item =>
+            item.domainProperties.some(dp => dp === SemanticType.TIMESTAMP),
+        );
     }
 }

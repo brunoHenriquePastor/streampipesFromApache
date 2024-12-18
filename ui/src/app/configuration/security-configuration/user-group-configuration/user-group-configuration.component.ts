@@ -16,8 +16,10 @@
  *
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Group, UserGroupService } from '@streampipes/platform-services';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import {
     ConfirmDialogComponent,
@@ -33,6 +35,10 @@ import { MatDialog } from '@angular/material/dialog';
     styleUrls: ['./user-group-configuration.component.scss'],
 })
 export class SecurityUserGroupConfigComponent implements OnInit {
+    @ViewChild(MatPaginator) paginator: MatPaginator;
+    pageSize = 1;
+    @ViewChild(MatSort) sort: MatSort;
+
     dataSource: MatTableDataSource<Group>;
 
     displayedColumns: string[] = ['groupName', 'edit'];

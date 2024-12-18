@@ -20,23 +20,17 @@ package org.apache.streampipes.connect.iiot.adapters.simulator.machine;
 import org.apache.streampipes.commons.exceptions.connect.AdapterException;
 import org.apache.streampipes.extensions.api.connect.IEventCollector;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class MachineDataSimulator implements Runnable {
 
-  private final IEventCollector collector;
+  private IEventCollector collector;
 
   private final Integer waitTimeMs;
   private final String selectedSimulatorOption;
 
   private Boolean running;
-
-  private static final Logger LOG = LoggerFactory.getLogger(MachineDataSimulator.class);
 
   public MachineDataSimulator(IEventCollector collector,
                               Integer waitTimeMs,
@@ -50,10 +44,10 @@ public class MachineDataSimulator implements Runnable {
   @Override
   public void run() {
     this.running = true;
+    Map<String, Object> event = new HashMap<>();
     long startTimeMs = System.currentTimeMillis();
 
     while (running) {
-      Map<String, Object> event = new HashMap<>();
       long currentTimeMs = System.currentTimeMillis();
       long timeDeltaMs = currentTimeMs - startTimeMs;
 
@@ -101,18 +95,18 @@ public class MachineDataSimulator implements Runnable {
           try {
             throw new AdapterException("resource not found");
           } catch (AdapterException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
           }
       }
 
-      if (!event.keySet().isEmpty()) {
+      if (event.keySet().size() > 0) {
         collector.collect(event);
       }
 
       try {
-        TimeUnit.MILLISECONDS.sleep(waitTimeMs);
+        Thread.sleep(waitTimeMs);
       } catch (InterruptedException e) {
-        LOG.error("Machine simulator thread interrupted", e);
+        e.printStackTrace();
       }
     }
   }

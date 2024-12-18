@@ -19,14 +19,13 @@ package org.apache.streampipes.model.extensions.svcdiscovery;
 
 import org.apache.streampipes.model.extensions.ExtensionItemDescription;
 import org.apache.streampipes.model.shared.annotation.TsModel;
-import org.apache.streampipes.model.shared.api.Storable;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Set;
 
 @TsModel
-public class SpServiceRegistration implements Storable {
+public class SpServiceRegistration {
 
   private String svcType;
   private String svcGroup;
@@ -129,16 +128,6 @@ public class SpServiceRegistration implements Storable {
 
   public void setRev(String rev) {
     this.rev = rev;
-  }
-
-  @Override
-  public String getElementId() {
-    return this.svcId;
-  }
-
-  @Override
-  public void setElementId(String elementId) {
-    this.svcId = elementId;
   }
 
   public String getScheme() {

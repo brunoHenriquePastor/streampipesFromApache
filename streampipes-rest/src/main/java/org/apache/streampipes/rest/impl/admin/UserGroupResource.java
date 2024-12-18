@@ -22,7 +22,7 @@ import org.apache.streampipes.model.message.Notifications;
 import org.apache.streampipes.rest.core.base.impl.AbstractAuthGuardedRestResource;
 import org.apache.streampipes.rest.security.AuthConstants;
 import org.apache.streampipes.rest.shared.exception.SpMessageException;
-import org.apache.streampipes.storage.api.CRUDStorage;
+import org.apache.streampipes.storage.api.IUserGroupStorage;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,13 +46,13 @@ public class UserGroupResource extends AbstractAuthGuardedRestResource {
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   @PreAuthorize(AuthConstants.IS_ADMIN_ROLE)
   public ResponseEntity<List<Group>> getAllUserGroups() {
-    return ok(getUserGroupStorage().findAll());
+    return ok(getUserGroupStorage().getAll());
   }
 
   @PostMapping
   @PreAuthorize(AuthConstants.IS_ADMIN_ROLE)
   public ResponseEntity<Void> addUserGroup(@RequestBody Group group) {
-    getUserGroupStorage().persist(group);
+    getUserGroupStorage().createElement(group);
     return ok();
   }
 
@@ -89,7 +89,7 @@ public class UserGroupResource extends AbstractAuthGuardedRestResource {
     }
   }
 
-  private CRUDStorage<Group> getUserGroupStorage() {
+  private IUserGroupStorage getUserGroupStorage() {
     return getNoSqlStorage().getUserGroupStorage();
   }
 }

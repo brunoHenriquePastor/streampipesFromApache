@@ -19,17 +19,32 @@ package org.apache.streampipes.storage.couchdb.impl;
 
 import org.apache.streampipes.model.graph.DataProcessorDescription;
 import org.apache.streampipes.storage.api.IDataProcessorStorage;
+import org.apache.streampipes.storage.couchdb.dao.AbstractDao;
 import org.apache.streampipes.storage.couchdb.utils.Utils;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class DataProcessorStorageImpl extends DefaultCrudStorage<DataProcessorDescription>
-    implements IDataProcessorStorage {
+public class DataProcessorStorageImpl extends AbstractDao<DataProcessorDescription> implements IDataProcessorStorage {
 
 
   public DataProcessorStorageImpl() {
     super(Utils::getCouchDbDataProcessorDescriptionClient, DataProcessorDescription.class);
+  }
+
+  @Override
+  public List<DataProcessorDescription> getAll() {
+    return findAll();
+  }
+
+  @Override
+  public void createElement(DataProcessorDescription element) {
+    persist(element);
+  }
+
+  @Override
+  public DataProcessorDescription getElementById(String s) {
+    return findWithNullIfEmpty(s);
   }
 
   @Override
@@ -40,19 +55,25 @@ public class DataProcessorStorageImpl extends DefaultCrudStorage<DataProcessorDe
   }
 
   @Override
+  public void deleteElement(DataProcessorDescription element) {
+    delete(element.getElementId());
+  }
+
+  @Override
   public DataProcessorDescription getFirstDataProcessorByAppId(String appId) {
-    return getDataProcessorsByAppId(appId)
+    return getAll()
         .stream()
+        .filter(p -> p.getAppId().equals(appId))
         .findFirst()
         .orElseThrow(NoSuchElementException::new);
   }
 
   @Override
   public List<DataProcessorDescription> getDataProcessorsByAppId(String appId) {
-    return this.findAll()
-      .stream()
-      .filter(p -> p.getAppId().equals(appId))
-      .toList();
+    return getAll()
+            .stream()
+            .filter(p -> p.getAppId().equals(appId))
+            .toList();
   }
 
   private String getCurrentRev(String elementId) {

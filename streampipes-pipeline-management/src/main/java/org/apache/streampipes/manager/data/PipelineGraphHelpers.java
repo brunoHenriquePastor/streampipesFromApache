@@ -19,6 +19,7 @@
 package org.apache.streampipes.manager.data;
 
 import org.apache.streampipes.model.SpDataStream;
+import org.apache.streampipes.model.base.InvocableStreamPipesEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,10 @@ public class PipelineGraphHelpers {
 
   public static List<SpDataStream> findStreams(PipelineGraph pipelineGraph) {
     return find(pipelineGraph, SpDataStream.class);
+  }
+
+  public static List<InvocableStreamPipesEntity> findInvocableElements(PipelineGraph pipelineGraph) {
+    return find(pipelineGraph, InvocableStreamPipesEntity.class);
   }
 
   private static <T> List<T> find(PipelineGraph pipelineGraph, Class<T> clazz) {

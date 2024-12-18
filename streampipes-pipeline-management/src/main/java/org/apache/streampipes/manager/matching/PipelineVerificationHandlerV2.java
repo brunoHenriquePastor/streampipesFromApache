@@ -19,7 +19,6 @@ package org.apache.streampipes.manager.matching;
 
 import org.apache.streampipes.manager.data.PipelineGraph;
 import org.apache.streampipes.manager.data.PipelineGraphBuilder;
-import org.apache.streampipes.manager.matching.v2.pipeline.PipelineValidationSteps;
 import org.apache.streampipes.manager.recommender.AllElementsProvider;
 import org.apache.streampipes.model.base.InvocableStreamPipesEntity;
 import org.apache.streampipes.model.base.NamedStreamPipesEntity;
@@ -27,11 +26,8 @@ import org.apache.streampipes.model.graph.DataProcessorInvocation;
 import org.apache.streampipes.model.graph.DataSinkInvocation;
 import org.apache.streampipes.model.grounding.EventGrounding;
 import org.apache.streampipes.model.message.PipelineModificationMessage;
-import org.apache.streampipes.model.pipeline.ExtendedPipelineElementValidationInfo;
 import org.apache.streampipes.model.pipeline.Pipeline;
 import org.apache.streampipes.model.pipeline.PipelineModification;
-import org.apache.streampipes.model.pipeline.PipelineModificationResult;
-import org.apache.streampipes.model.pipeline.PipelineVerificationResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,16 +44,14 @@ public class PipelineVerificationHandlerV2 {
 
   public PipelineModificationMessage verifyPipeline() {
     PipelineGraph graph = new PipelineGraphBuilder(pipeline).buildGraph();
-    var steps = new PipelineValidationSteps().collect();
-    return new PipelineModificationGenerator(graph, steps).buildPipelineModificationMessage();
+    return new PipelineModificationGenerator(graph).buildPipelineModificationMessage();
   }
 
-  public PipelineModificationResult makeModifiedPipeline() {
-    var result = verifyAndBuildGraphs(false);
-    var allElements = result.modifiedPipelineElements();
+  public Pipeline makeModifiedPipeline() {
+    var allElements = verifyAndBuildGraphs(false);
     pipeline.setSepas(filterAndConvert(allElements, DataProcessorInvocation.class));
     pipeline.setActions(filterAndConvert(allElements, DataSinkInvocation.class));
-    return new PipelineModificationResult(pipeline, result.validationInfos());
+    return pipeline;
   }
 
   private <T extends InvocableStreamPipesEntity> List<T> filterAndConvert(List<NamedStreamPipesEntity> elements,
@@ -69,11 +63,10 @@ public class PipelineVerificationHandlerV2 {
         .toList();
   }
 
-  public PipelineVerificationResult verifyAndBuildGraphs(boolean ignoreUnconfigured) {
+  public List<NamedStreamPipesEntity> verifyAndBuildGraphs(boolean ignoreUnconfigured) {
     var pipelineModifications = verifyPipeline().getPipelineModifications();
     var allElements = new AllElementsProvider(pipeline).getAllElements();
-    var validationInfos = new ArrayList<ExtendedPipelineElementValidationInfo>();
-    var modifiedPipelineElements = new ArrayList<NamedStreamPipesEntity>();
+    var result = new ArrayList<NamedStreamPipesEntity>();
     allElements.forEach(pipelineElement -> {
       var modificationOpt = getModification(pipelineElement.getDom(), pipelineModifications);
       if (modificationOpt.isPresent()) {
@@ -84,26 +77,15 @@ public class PipelineVerificationHandlerV2 {
             applyModificationsForDataProcessor((DataProcessorInvocation) pipelineElement, modification);
           }
         }
-        validationInfos.addAll(
-            modification.getValidationInfos()
-                .stream()
-                .map(v -> new ExtendedPipelineElementValidationInfo(
-                        pipelineElement.getName(),
-                        pipelineElement.getDom(),
-                        v
-                    )
-                )
-                .toList()
-        );
         if (!ignoreUnconfigured || modification.isPipelineElementValid()) {
-          modifiedPipelineElements.add(pipelineElement);
+          result.add(pipelineElement);
         }
       } else {
-        modifiedPipelineElements.add(pipelineElement);
+        result.add(pipelineElement);
       }
     });
 
-    return new PipelineVerificationResult(validationInfos, modifiedPipelineElements);
+    return result;
   }
 
   private void applyModificationsForDataProcessor(DataProcessorInvocation pipelineElement,

@@ -18,14 +18,13 @@
 package streampipes
 
 import (
-	"io"
-	"log"
-	"net/http"
-
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/config"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/internal/serializer"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/internal/util"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/model/data_lake"
+	"io"
+	"log"
+	"net/http"
 )
 
 // DataLakeMeasure connects to the DataLakeMeasure endpoint of streamPipes.
@@ -43,13 +42,13 @@ func NewDataLakeMeasures(clientConfig config.StreamPipesClientConfig) *DataLakeM
 	}
 }
 
-// GetAllDataLakeMeasure retrieves a list of all measurements series from the Data Lake.
-func (d *DataLakeMeasure) GetAllDataLakeMeasure() ([]data_lake.DataLakeMeasure, error) {
+// AllDataLakeMeasure retrieves a list of all measurements series from the Data Lake.
+func (d *DataLakeMeasure) AllDataLakeMeasure() ([]data_lake.DataLakeMeasure, error) {
 
 	endPointUrl := util.NewStreamPipesApiPath(d.config.Url, "streampipes-backend/api/v4/datalake/measurements", nil)
 	log.Printf("Get data from: %s", endPointUrl)
 
-	response, err := d.executeRequest("GET", endPointUrl, nil)
+	response, err := d.executeRequest("GET", endPointUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +80,7 @@ func (d *DataLakeMeasure) DeleteDataLakeMeasurements() error {
 	endPointUrl := util.NewStreamPipesApiPath(d.config.Url, "streampipes-backend/api/v4/datalake/measurements", nil)
 	log.Printf("Delete data from: %s", endPointUrl)
 
-	response, err := d.executeRequest("DELETE", endPointUrl, nil)
+	response, err := d.executeRequest("DELETE", endPointUrl)
 	if err != nil {
 		return err
 	}
@@ -102,7 +101,7 @@ func (d *DataLakeMeasure) GetSingleDataLakeMeasure(elementId string) (data_lake.
 	endPointUrl := util.NewStreamPipesApiPath(d.config.Url, "streampipes-backend/api/v4/datalake/measure", []string{elementId})
 	log.Printf("Get data from: %s", endPointUrl)
 
-	response, err := d.executeRequest("GET", endPointUrl, nil)
+	response, err := d.executeRequest("GET", endPointUrl)
 	if err != nil {
 		return data_lake.DataLakeMeasure{}, err
 	}
@@ -134,7 +133,7 @@ func (d *DataLakeMeasure) DeleteSingleDataLakeMeasure(elementId string) error {
 	endPointUrl := util.NewStreamPipesApiPath(d.config.Url, "streampipes-backend/api/v4/datalake/measure", []string{elementId})
 	log.Printf("Delete data from: %s", endPointUrl)
 
-	response, err := d.executeRequest("DELETE", endPointUrl, nil)
+	response, err := d.executeRequest("DELETE", endPointUrl)
 	if err != nil {
 		return err
 	}
@@ -157,7 +156,7 @@ func (d *DataLakeMeasure) GetSingleDataSeries(measureId string) (*data_lake.Data
 	endPointUrl := util.NewStreamPipesApiPath(d.config.Url, "streampipes-backend/api/v4/datalake/measurements", []string{measureId})
 	log.Printf("Get data from: %s", endPointUrl)
 
-	response, err := d.executeRequest("GET", endPointUrl, nil)
+	response, err := d.executeRequest("GET", endPointUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +189,7 @@ func (d *DataLakeMeasure) ClearDataLakeMeasureData(measureId string) error {
 	endPointUrl := util.NewStreamPipesApiPath(d.config.Url, "streampipes-backend/api/v4/datalake/measurements", []string{measureId})
 	log.Printf("Clear data from: %s", endPointUrl)
 
-	response, err := d.executeRequest("DELETE", endPointUrl, nil)
+	response, err := d.executeRequest("DELETE", endPointUrl)
 	if err != nil {
 		return err
 	}
@@ -212,7 +211,7 @@ func (d *DataLakeMeasure) DeleteDataLakeMeasure(measureId string) error {
 
 	endPointUrl := util.NewStreamPipesApiPath(d.config.Url, "streampipes-backend/api/v4/datalake/measurements", []string{measureId, "drop"})
 	log.Printf("Delete data from: %s", endPointUrl)
-	response, err := d.executeRequest("DELETE", endPointUrl, nil)
+	response, err := d.executeRequest("DELETE", endPointUrl)
 	if err != nil {
 		return err
 	}

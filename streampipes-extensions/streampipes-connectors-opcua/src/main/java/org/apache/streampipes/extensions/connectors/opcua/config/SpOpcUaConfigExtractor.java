@@ -20,16 +20,11 @@ package org.apache.streampipes.extensions.connectors.opcua.config;
 
 import org.apache.streampipes.extensions.api.extractor.IParameterExtractor;
 import org.apache.streampipes.extensions.api.extractor.IStaticPropertyExtractor;
-import org.apache.streampipes.extensions.connectors.opcua.config.identity.AnonymousIdentityConfig;
-import org.apache.streampipes.extensions.connectors.opcua.config.identity.UsernamePasswordIdentityConfig;
-import org.apache.streampipes.extensions.connectors.opcua.config.security.SecurityConfig;
 import org.apache.streampipes.extensions.connectors.opcua.utils.OpcUaUtil;
-
-import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 
 import java.util.List;
 
+import static org.apache.streampipes.extensions.connectors.opcua.utils.OpcUaLabels.ACCESS_MODE;
 import static org.apache.streampipes.extensions.connectors.opcua.utils.OpcUaLabels.ADAPTER_TYPE;
 import static org.apache.streampipes.extensions.connectors.opcua.utils.OpcUaLabels.AVAILABLE_NODES;
 import static org.apache.streampipes.extensions.connectors.opcua.utils.OpcUaLabels.OPC_HOST_OR_URL;
@@ -40,6 +35,7 @@ import static org.apache.streampipes.extensions.connectors.opcua.utils.OpcUaLabe
 import static org.apache.streampipes.extensions.connectors.opcua.utils.OpcUaLabels.PASSWORD;
 import static org.apache.streampipes.extensions.connectors.opcua.utils.OpcUaLabels.PULLING_INTERVAL;
 import static org.apache.streampipes.extensions.connectors.opcua.utils.OpcUaLabels.PULL_MODE;
+import static org.apache.streampipes.extensions.connectors.opcua.utils.OpcUaLabels.UNAUTHENTICATED;
 import static org.apache.streampipes.extensions.connectors.opcua.utils.OpcUaLabels.USERNAME;
 
 public class SpOpcUaConfigExtractor {
@@ -59,12 +55,8 @@ public class SpOpcUaConfigExtractor {
     if (usePullMode) {
       Integer pullIntervalSeconds =
           extractor.singleValueParameter(PULLING_INTERVAL.name(), Integer.class);
-      var incompleteEventStrategy = extractor.selectedSingleValueInternalName(
-          SharedUserConfiguration.INCOMPLETE_EVENT_HANDLING_KEY, String.class
-      );
 
       config.setPullIntervalMilliSeconds(pullIntervalSeconds);
-      config.setIncompleteEventStrategy(incompleteEventStrategy);
     }
 
     return config;
@@ -75,31 +67,20 @@ public class SpOpcUaConfigExtractor {
   }
 
   public static <T extends OpcUaConfig> T extractSharedConfig(IParameterExtractor extractor,
-                                                              T config) {
+                                                               T config) {
 
     String selectedAlternativeConnection =
         extractor.selectedAlternativeInternalId(OPC_HOST_OR_URL.name());
-
     String selectedAlternativeAuthentication =
-        extractor.selectedAlternativeInternalId(SharedUserConfiguration.USER_AUTHENTICATION);
-
+        extractor.selectedAlternativeInternalId(ACCESS_MODE.name());
     List<String> selectedNodeNames =
-        extractor.selectedTreeNodesInternalNames(AVAILABLE_NODES.name(), String.class);
+        extractor.selectedTreeNodesInternalNames(AVAILABLE_NODES.name(), String.class, true);
+
     config.setSelectedNodeNames(selectedNodeNames);
 
-    String selectedSecurityMode = extractor.selectedSingleValueInternalName(
-        SharedUserConfiguration.SECURITY_MODE,
-        String.class
-    );
-    String selectedSecurityPolicy = extractor.selectedSingleValue(
-        SharedUserConfiguration.SECURITY_POLICY,
-        String.class
-    );
-    config.setSecurityConfig(new SecurityConfig(
-        MessageSecurityMode.valueOf(selectedSecurityMode),
-        SecurityPolicy.valueOf(selectedSecurityPolicy)));
-
     boolean useURL = selectedAlternativeConnection.equals(OPC_URL.name());
+    boolean unauthenticated = selectedAlternativeAuthentication.equals(UNAUTHENTICATED.name());
+
     if (useURL) {
       String serverAddress =
           extractor.singleValueParameter(OPC_SERVER_URL.name(), String.class);
@@ -112,15 +93,15 @@ public class SpOpcUaConfigExtractor {
       config.setOpcServerURL(serverAddress + ":" + port);
     }
 
-    boolean unauthenticated = selectedAlternativeAuthentication.equals(
-        SharedUserConfiguration.USER_AUTHENTICATION_ANONYMOUS
-    );
     if (unauthenticated) {
-      config.setIdentityConfig(new AnonymousIdentityConfig());
+      config.setUnauthenticated(true);
     } else {
       String username = extractor.singleValueParameter(USERNAME.name(), String.class);
       String password = extractor.secretValue(PASSWORD.name());
-      config.setIdentityConfig(new UsernamePasswordIdentityConfig(username, password));
+
+      config.setUsername(username);
+      config.setPassword(password);
+      config.setUnauthenticated(false);
     }
 
     return config;

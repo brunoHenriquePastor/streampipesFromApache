@@ -17,13 +17,8 @@
  */
 package org.apache.streampipes.sdk.helpers;
 
-import org.apache.streampipes.commons.environment.Environments;
-
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public enum Filetypes {
@@ -34,7 +29,6 @@ public enum Filetypes {
   XLS("xls"),
   XLSX("xlsx"),
   XML("xml"),
-  YAML("yaml", "yml"),
   ZIP("zip");
 
   private final List<String> fileExtensions;
@@ -47,22 +41,9 @@ public enum Filetypes {
     return fileExtensions;
   }
 
-  public static Set<String> getAllFileExtensions() {
-    var filetypes = Stream.of(Filetypes.values())
+  public static List<String> getAllFileExtensions() {
+    return Stream.of(Filetypes.values())
         .flatMap(filetype -> filetype.getFileExtensions().stream())
-        .collect(Collectors.toSet());
-    filetypes.addAll(getSupportedFiletypesFromEnv());
-    return filetypes;
-  }
-
-  private static Set<String> getSupportedFiletypesFromEnv() {
-    return Optional.ofNullable(Environments.getEnvironment()
-            .getAllowedUploadFiletypes()
-            .getValueOrDefault())
-        .stream()
-        .flatMap(allowedFiletypes -> Arrays.stream(allowedFiletypes.split(",")))
-        .map(String::trim)
-        .filter(s -> !s.isEmpty())
-        .collect(Collectors.toSet());
+        .toList();
   }
 }

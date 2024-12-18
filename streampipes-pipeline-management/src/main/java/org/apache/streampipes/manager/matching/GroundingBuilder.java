@@ -21,6 +21,7 @@ package org.apache.streampipes.manager.matching;
 import org.apache.streampipes.model.base.InvocableStreamPipesEntity;
 import org.apache.streampipes.model.base.NamedStreamPipesEntity;
 import org.apache.streampipes.model.grounding.EventGrounding;
+import org.apache.streampipes.model.grounding.TransportFormat;
 import org.apache.streampipes.model.grounding.TransportProtocol;
 
 import java.util.Collections;
@@ -38,8 +39,13 @@ public class GroundingBuilder {
 
   public EventGrounding getEventGrounding() {
     EventGrounding grounding = new EventGrounding();
+    grounding.setTransportFormats(Collections.singletonList(getFormat()));
     grounding.setTransportProtocols(Collections.singletonList(getProtocol()));
     return grounding;
+  }
+
+  private TransportFormat getFormat() {
+    return new FormatSelector(source, targets).getTransportFormat();
   }
 
   private TransportProtocol getProtocol() {

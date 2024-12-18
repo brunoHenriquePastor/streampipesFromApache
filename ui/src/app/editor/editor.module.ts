@@ -32,6 +32,7 @@ import { CustomizeComponent } from './dialog/customize/customize.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CoreUiModule } from '../core-ui/core-ui.module';
 import { SavePipelineComponent } from './dialog/save-pipeline/save-pipeline.component';
+import { PipelineElementRecommendationComponent } from './components/pipeline-element-recommendation/pipeline-element-recommendation.component';
 import { CompatibleElementsComponent } from './dialog/compatible-elements/compatible-elements.component';
 import { MatListModule } from '@angular/material/list';
 import { SafeCss } from './utils/style-sanitizer';
@@ -45,7 +46,7 @@ import { EnabledPipelineElementFilter } from './filter/enabled-pipeline-element.
 import { PipelineElementPreviewComponent } from './components/pipeline-element-preview/pipeline-element-preview.component';
 import { PipelineElementDiscoveryComponent } from './dialog/pipeline-element-discovery/pipeline-element-discovery.component';
 import { PlatformServicesModule } from '@streampipes/platform-services';
-import { PipelineElementIconStandRowComponent } from './components/pipeline-element-icon-stand/pipeline-element-icon-stand-row/pipeline-element-icon-stand-row.component';
+import { PipelineElementIconStandRowComponent } from './components/pipeline-element-icon-stand-row/pipeline-element-icon-stand-row.component';
 import { PipelineElementTypeFilterPipe } from './services/pipeline-element-type-filter.pipe';
 import { PipelineElementNameFilterPipe } from './services/pipeline-element-name-filter.pipe';
 import { PipelineElementGroupFilterPipe } from './services/pipeline-element-group-filter.pipe';
@@ -73,19 +74,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSliderModule } from '@angular/material/slider';
-import { PipelineElementStatisticsComponent } from './components/pipeline-element-statistics/pipeline-element-statistics.component';
-import { PipelineElementStatisticsBadgeComponent } from './components/pipeline-element-statistics/pipeline-element-statistics-badge/pipeline-element-statistics-badge.component';
-import { SavePipelineSettingsComponent } from './dialog/save-pipeline/save-pipeline-settings/save-pipeline-settings.component';
-import { PipelineAssemblyOptionsComponent } from './components/pipeline-assembly/pipeline-assembly-options/pipeline-assembly-options.component';
-import { PipelineAssemblyOptionsPipelineCacheComponent } from './components/pipeline-assembly/pipeline-assembly-options/pipeline-assembly-options-pipeline-cache/pipeline-assembly-options-pipeline-cache.component';
-import { PipelineAssemblyDrawingAreaPanZoomComponent } from './components/pipeline-assembly/pipeline-assembly-drawing-area/pipeline-assembly-drawing-area-pan-zoom/pipeline-assembly-drawing-area-pan-zoom.component';
-import { PipelineAssemblyDrawingAreaComponent } from './components/pipeline-assembly/pipeline-assembly-drawing-area/pipeline-assembly-drawing-area.component';
-import { DroppedPipelineElementComponent } from './components/pipeline/dropped-pipeline-element/dropped-pipeline-element.component';
-import { InputSchemaPanelComponent } from './dialog/customize/input-schema-panel/input-schema-panel.component';
-import { InputSchemaPropertyComponent } from './dialog/customize/input-schema-panel/input-schema-property/input-schema-property.component';
-import { SortByRuntimeNamePipe } from './pipes/sort-by-runtime-name.pipe';
-import { AddTemplateDialogComponent } from './dialog/add-template-dialog/add-template-dialog.component';
-import { TemplateSelectionComponent } from './dialog/add-template-dialog/template-selection/template-selection.component';
 
 @NgModule({
     imports: [
@@ -127,24 +115,16 @@ import { TemplateSelectionComponent } from './dialog/add-template-dialog/templat
         PlatformServicesModule,
     ],
     declarations: [
-        AddTemplateDialogComponent,
         CompatibleElementsComponent,
         CustomizeComponent,
         CustomOutputStrategyComponent,
-        DroppedPipelineElementComponent,
         EditorComponent,
         EnabledPipelineElementFilter,
-        InputSchemaPanelComponent,
-        InputSchemaPropertyComponent,
         MatchingErrorComponent,
         MissingElementsForTutorialComponent,
         OutputStrategyComponent,
         UserDefinedOutputStrategyComponent,
         PipelineAssemblyComponent,
-        PipelineAssemblyDrawingAreaComponent,
-        PipelineAssemblyDrawingAreaPanZoomComponent,
-        PipelineAssemblyOptionsComponent,
-        PipelineAssemblyOptionsPipelineCacheComponent,
         PipelineElementComponent,
         PipelineElementDiscoveryComponent,
         PipelineElementIconStandComponent,
@@ -153,24 +133,15 @@ import { TemplateSelectionComponent } from './dialog/add-template-dialog/templat
         PipelineElementNameFilterPipe,
         PipelineElementOptionsComponent,
         PipelineElementPreviewComponent,
-        PipelineElementStatisticsComponent,
-        PipelineElementStatisticsBadgeComponent,
+        PipelineElementRecommendationComponent,
         PipelineElementTypeFilterPipe,
         PipelineComponent,
         PropertySelectionComponent,
-        TemplateSelectionComponent,
         SavePipelineComponent,
-        SavePipelineSettingsComponent,
-        SortByRuntimeNamePipe,
         SafeCss,
     ],
-    providers: [SafeCss, SortByRuntimeNamePipe],
-    exports: [
-        EditorComponent,
-        PipelineComponent,
-        PipelineElementComponent,
-        PipelineAssemblyDrawingAreaComponent,
-    ],
+    providers: [SafeCss],
+    exports: [EditorComponent, PipelineComponent, PipelineElementComponent],
 })
 export class EditorModule {
     constructor() {}

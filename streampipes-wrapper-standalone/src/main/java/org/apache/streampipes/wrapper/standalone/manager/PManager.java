@@ -23,6 +23,7 @@ import org.apache.streampipes.dataformat.SpDataFormatDefinition;
 import org.apache.streampipes.dataformat.SpDataFormatManager;
 import org.apache.streampipes.messaging.SpProtocolDefinition;
 import org.apache.streampipes.messaging.SpProtocolManager;
+import org.apache.streampipes.model.grounding.TransportFormat;
 import org.apache.streampipes.model.grounding.TransportProtocol;
 
 import java.util.Optional;
@@ -33,7 +34,7 @@ public class PManager {
     return SpProtocolManager.INSTANCE.findDefinition(protocol);
   }
 
-  public static SpDataFormatDefinition getDataFormat() throws SpRuntimeException {
-    return SpDataFormatManager.getFormatDefinition();
+  public static Optional<SpDataFormatDefinition> getDataFormat(TransportFormat format) throws SpRuntimeException {
+    return SpDataFormatManager.INSTANCE.findDefinition(format);
   }
 }

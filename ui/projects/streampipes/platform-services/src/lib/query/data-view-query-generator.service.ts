@@ -51,7 +51,6 @@ export class DataViewQueryGeneratorService {
             return this.dataLakeRestService.getData(
                 sourceConfig.measureName,
                 dataLakeConfiguration,
-                true,
             );
         });
     }

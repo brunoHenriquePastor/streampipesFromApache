@@ -16,55 +16,53 @@
  *
  */
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { KeyValue } from '@angular/common';
-import { LivePreviewService } from '../../../services/live-preview.service';
-import { PipelinePreviewModel } from '@streampipes/platform-services';
+import { Component, Input, OnInit } from '@angular/core';
+import { EditorService } from '../../services/editor.service';
 
 @Component({
     selector: 'sp-pipeline-element-preview',
     templateUrl: './pipeline-element-preview.component.html',
     styleUrls: ['./pipeline-element-preview.component.scss'],
 })
-export class PipelineElementPreviewComponent implements OnInit, OnDestroy {
+export class PipelineElementPreviewComponent implements OnInit {
     @Input()
-    pipelinePreview: PipelinePreviewModel;
+    previewId: string;
 
     @Input()
-    elementId: string;
+    pipelineElementDomId: string;
 
-    runtimeData: Record<string, any>;
+    runtimeData: ReadonlyMap<string, unknown>;
+
     runtimeDataError = false;
-    previewSub: Subscription;
+    timer: any;
 
-    constructor(private livePreviewService: LivePreviewService) {}
+    constructor(private editorService: EditorService) {}
 
     ngOnInit(): void {
         this.getLatestRuntimeInfo();
     }
 
-    keyValueCompareFn = (
-        a: KeyValue<string, any>,
-        b: KeyValue<string, any>,
-    ): number => {
-        return a.key.localeCompare(b.key);
-    };
-
     getLatestRuntimeInfo() {
-        this.previewSub = this.livePreviewService.eventSub.subscribe(event => {
-            if (event) {
-                this.runtimeData =
-                    event[
-                        this.pipelinePreview.elementIdMappings[this.elementId]
-                    ];
-            } else {
-                this.runtimeDataError = true;
-            }
-        });
-    }
+        this.editorService
+            .getPipelinePreviewResult(this.previewId, this.pipelineElementDomId)
+            .subscribe(data => {
+                if (data) {
+                    this.runtimeDataError = false;
+                    if (
+                        !(
+                            Object.keys(data).length === 0 &&
+                            data.constructor === Object
+                        )
+                    ) {
+                        this.runtimeData = data;
+                    }
 
-    ngOnDestroy() {
-        this.previewSub?.unsubscribe();
+                    this.timer = setTimeout(() => {
+                        this.getLatestRuntimeInfo();
+                    }, 1000);
+                } else {
+                    this.runtimeDataError = true;
+                }
+            });
     }
 }

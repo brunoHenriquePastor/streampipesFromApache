@@ -40,7 +40,7 @@ for (var i = 0; i < testedRoles.length; i++) {
             UserUtils.goToUserConfiguration();
             cy.dataCy('navigation-icon', { timeout: 10000 }).should(
                 'have.length',
-                8,
+                10,
             );
 
             cy.dataCy('user-accounts-table-row', { timeout: 10000 }).should(
@@ -64,7 +64,7 @@ for (var i = 0; i < testedRoles.length; i++) {
             );
 
             // Login as user
-            UserUtils.switchUser(user);
+            cy.switchUser(user);
 
             // Check if every role displays correct navigation menu
             if (testRole == UserRole.ROLE_PIPELINE_ADMIN) {
@@ -75,12 +75,12 @@ for (var i = 0; i < testedRoles.length; i++) {
             } else if (testRole == UserRole.ROLE_DASHBOARD_ADMIN) {
                 cy.dataCy('navigation-icon', { timeout: 10000 }).should(
                     'have.length',
-                    4,
+                    2,
                 );
             } else if (testRole == UserRole.ROLE_DATA_EXPLORER_ADMIN) {
                 cy.dataCy('navigation-icon', { timeout: 10000 }).should(
                     'have.length',
-                    4,
+                    2,
                 );
             } else if (testRole == UserRole.ROLE_CONNECT_ADMIN) {
                 cy.dataCy('navigation-icon', { timeout: 10000 }).should(
@@ -90,12 +90,12 @@ for (var i = 0; i < testedRoles.length; i++) {
             } else if (testRole == UserRole.ROLE_ASSET_ADMIN) {
                 cy.dataCy('navigation-icon', { timeout: 10000 }).should(
                     'have.length',
-                    3,
+                    1,
                 );
             }
 
             // Login as admin and delete user
-            UserUtils.switchUser(UserUtils.adminUser);
+            cy.switchUser(UserUtils.adminUser);
             UserUtils.deleteUser(user);
         });
     });

@@ -20,8 +20,7 @@ package org.apache.streampipes.manager.execution.task;
 
 import org.apache.streampipes.commons.exceptions.NoServiceEndpointsAvailableException;
 import org.apache.streampipes.manager.execution.PipelineExecutionInfo;
-import org.apache.streampipes.manager.execution.endpoint.ExtensionsServiceEndpointGenerator;
-import org.apache.streampipes.manager.execution.endpoint.ExtensionsServiceEndpointUtils;
+import org.apache.streampipes.manager.execution.endpoint.ExtensionsServiceEndpointProvider;
 import org.apache.streampipes.model.api.EndpointSelectable;
 import org.apache.streampipes.model.base.InvocableStreamPipesEntity;
 import org.apache.streampipes.model.pipeline.Pipeline;
@@ -70,11 +69,7 @@ public class DiscoverEndpointsTask implements PipelineExecutionTask {
 
   private String findSelectedEndpoint(InvocableStreamPipesEntity pipelineElement)
       throws NoServiceEndpointsAvailableException {
-    return new ExtensionsServiceEndpointGenerator()
-        .getEndpointResourceUrl(
-            pipelineElement.getAppId(),
-            ExtensionsServiceEndpointUtils.getPipelineElementType(pipelineElement)
-        );
+    return new ExtensionsServiceEndpointProvider().findSelectedEndpoint(pipelineElement);
   }
 
 }

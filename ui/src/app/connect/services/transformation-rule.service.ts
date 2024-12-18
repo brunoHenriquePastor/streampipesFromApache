@@ -31,7 +31,6 @@ import {
     EventSchema,
     MoveRuleDescription,
     PropertyScope,
-    RegexTransformationRuleDescription,
     RenameRuleDescription,
     SemanticType,
     TimestampTranfsformationRuleDescription,
@@ -46,8 +45,6 @@ export class TransformationRuleService {
     constructor(
         private staticValueTransformService: StaticValueTransformService,
     ) {}
-
-    private delimiter = '<-=>';
 
     public getTransformationRuleDescriptions(
         originalSchema: EventSchema,
@@ -90,7 +87,9 @@ export class TransformationRuleService {
                 rule.label = ep.label;
                 rule.description = ep.description;
                 rule.propertyScope = ep.propertyScope as PropertyScope;
-                rule.semanticType = ep.semanticType;
+                if (ep.domainProperties.length > 0) {
+                    rule.semanticType = ep.domainProperties[0];
+                }
                 rule.measurementUnit = ep.measurementUnit;
                 rule.staticValue =
                     this.staticValueTransformService.getStaticValue(
@@ -101,13 +100,6 @@ export class TransformationRuleService {
 
             // Scale
             transformationRuleDescriptions = transformationRuleDescriptions
-                .concat(
-                    this.getRegexTransformationRules(
-                        targetSchema.eventProperties,
-                        originalSchema,
-                        targetSchema,
-                    ),
-                )
                 .concat(
                     this.getCorrectionValueRules(
                         targetSchema.eventProperties,
@@ -191,22 +183,22 @@ export class TransformationRuleService {
                 if (keyOld && keyNew) {
                     const keyOldPrefix = keyOld.substr(
                         0,
-                        keyOld.lastIndexOf(this.delimiter),
+                        keyOld.lastIndexOf('.'),
                     );
                     const keyNewPrefix = keyNew.substr(
                         0,
-                        keyNew.lastIndexOf(this.delimiter),
+                        keyNew.lastIndexOf('.'),
                     );
 
                     if (keyOldPrefix !== keyNewPrefix) {
                         let keyOfOldValue = '';
                         if (keyOldPrefix === '') {
                             keyOfOldValue = keyNew.substr(
-                                keyNew.lastIndexOf(this.delimiter) + 1,
+                                keyNew.lastIndexOf('.') + 1,
                             );
                         } else {
                             keyOfOldValue = `${keyOldPrefix}.${keyNew.substr(
-                                keyNew.lastIndexOf(this.delimiter) + 1,
+                                keyNew.lastIndexOf('.') + 1,
                             )}`;
                         }
 
@@ -401,10 +393,7 @@ export class TransformationRuleService {
                         id,
                     );
                     if (methodResult != null) {
-                        result =
-                            eventProperty.runtimeName +
-                            this.delimiter +
-                            methodResult;
+                        result = eventProperty.runtimeName + '.' + methodResult;
                     }
                 }
             }
@@ -419,7 +408,7 @@ export class TransformationRuleService {
 
     public getRuntimeNameKey(completeKey: string): string {
         if (completeKey) {
-            const keyElements = completeKey.split(this.delimiter);
+            const keyElements = completeKey.split('.');
 
             if (keyElements.length === 0) {
                 return completeKey;
@@ -575,7 +564,9 @@ export class TransformationRuleService {
     }
 
     isTimestampProperty(property: EventPropertyPrimitive) {
-        return SemanticType.isTimestamp(property);
+        return property.domainProperties.some(
+            dp => dp === SemanticType.TIMESTAMP,
+        );
     }
 
     private getDatatypeTransformRules(
@@ -678,60 +669,5 @@ export class TransformationRuleService {
         }
 
         return filteredResult;
-    }
-
-    private getRegexTransformationRules(
-        eventProperties: EventPropertyUnion[],
-        oldEventSchema: EventSchema,
-        newEventSchema: EventSchema,
-    ) {
-        const result: RegexTransformationRuleDescription[] = [];
-
-        eventProperties.forEach(eventProperty => {
-            if (eventProperty instanceof EventPropertyPrimitive) {
-                const newRuntimeName = this.getCompleteRuntimeNameKey(
-                    newEventSchema.eventProperties,
-                    eventProperty.elementId,
-                );
-
-                if (
-                    eventProperty.additionalMetadata?.regex &&
-                    eventProperty.additionalMetadata?.regex != ''
-                ) {
-                    const rule =
-                        this.createRegexTransformationRuleDescriptionFromEventProperty(
-                            newRuntimeName,
-                            eventProperty,
-                        );
-
-                    result.push(rule);
-                }
-            } else if (eventProperty instanceof EventPropertyNested) {
-                result.push(
-                    ...this.getRegexTransformationRules(
-                        eventProperty.eventProperties,
-                        oldEventSchema,
-                        newEventSchema,
-                    ),
-                );
-            }
-        });
-
-        return result;
-    }
-
-    private createRegexTransformationRuleDescriptionFromEventProperty(
-        newRuntimeName: string,
-        eventProperty: EventPropertyPrimitive,
-    ) {
-        const rule: RegexTransformationRuleDescription =
-            new RegexTransformationRuleDescription();
-        rule['@class'] =
-            'org.apache.streampipes.model.connect.rules.value.RegexTransformationRuleDescription';
-        rule.runtimeKey = newRuntimeName;
-        rule.regex = eventProperty.additionalMetadata.regex;
-        rule.replaceWith = eventProperty.additionalMetadata.replaceWith ?? '';
-        rule.replaceAll = eventProperty.additionalMetadata.replaceAll ?? false;
-        return rule;
     }
 }

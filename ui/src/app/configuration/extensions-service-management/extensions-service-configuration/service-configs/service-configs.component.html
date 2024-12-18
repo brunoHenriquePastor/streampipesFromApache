@@ -27,9 +27,42 @@
             *ngFor="let configuration of serviceConfiguration.configs"
         >
             <h5>{{ configuration.key }}</h5>
-            <sp-service-configs-item
+            <sp-service-configs-password
+                fxFlex="100"
+                *ngIf="configuration.isPassword"
                 [configuration]="configuration"
-            ></sp-service-configs-item>
+            >
+            </sp-service-configs-password>
+
+            <sp-service-configs-text
+                fxFlex="100"
+                *ngIf="
+                    configuration.valueType === semanticTypeService.XS_STRING &&
+                    !configuration.isPassword
+                "
+                [configuration]="configuration"
+            >
+            </sp-service-configs-text>
+
+            <sp-service-configs-number
+                fxFlex="100"
+                *ngIf="
+                    configuration.valueType ===
+                        semanticTypeService.XS_INTEGER ||
+                    configuration.valueType === semanticTypeService.XS_DOUBLE
+                "
+                [configuration]="configuration"
+            >
+            </sp-service-configs-number>
+
+            <sp-service-configs-boolean
+                fxFlex="100"
+                *ngIf="
+                    configuration.valueType === semanticTypeService.XS_BOOLEAN
+                "
+                [configuration]="configuration"
+            >
+            </sp-service-configs-boolean>
         </div>
         <div fxLayoutAlign="end center">
             <button

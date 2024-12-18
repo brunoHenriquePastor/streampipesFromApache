@@ -25,7 +25,6 @@ import org.apache.streampipes.extensions.api.pe.IStreamPipesPipelineElement;
 import org.apache.streampipes.processors.imageprocessing.jvm.processor.genericclassification.GenericImageClassificationProcessor;
 import org.apache.streampipes.processors.imageprocessing.jvm.processor.imagecropper.ImageCropperProcessor;
 import org.apache.streampipes.processors.imageprocessing.jvm.processor.imageenrichment.ImageEnrichmentProcessor;
-import org.apache.streampipes.processors.imageprocessing.jvm.processor.migration.ImageEnrichmentProcessorMigrationv1;
 import org.apache.streampipes.processors.imageprocessing.jvm.processor.qrreader.QrCodeReaderProcessor;
 
 import java.util.Collections;
@@ -49,8 +48,6 @@ public class ImageProcessingExtensionModuleExport implements IExtensionModuleExp
 
   @Override
   public List<IModelMigrator<?, ?>> migrators() {
-    return List.of(
-        new ImageEnrichmentProcessorMigrationv1()
-    );
+    return Collections.emptyList();
   }
 }

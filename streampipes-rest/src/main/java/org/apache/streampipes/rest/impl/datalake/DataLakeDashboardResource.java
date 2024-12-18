@@ -19,9 +19,8 @@
 package org.apache.streampipes.rest.impl.datalake;
 
 
-import org.apache.streampipes.model.client.user.DefaultPrivilege;
-import org.apache.streampipes.model.dashboard.DashboardModel;
-import org.apache.streampipes.resource.management.AbstractCRUDResourceManager;
+import org.apache.streampipes.model.client.user.Privilege;
+import org.apache.streampipes.resource.management.AbstractDashboardResourceManager;
 import org.apache.streampipes.rest.impl.dashboard.AbstractDashboardResource;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,17 +31,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class DataLakeDashboardResource extends AbstractDashboardResource {
 
   @Override
-  protected AbstractCRUDResourceManager<DashboardModel> getResourceManager() {
+  protected AbstractDashboardResourceManager getResourceManager() {
     return getSpResourceManager().manageDataExplorer();
   }
 
   @Override
   public boolean hasReadAuthority() {
-    return isAdminOrHasAnyAuthority(DefaultPrivilege.Constants.PRIVILEGE_READ_DATA_EXPLORER_VIEW_VALUE);
+    return isAdminOrHasAnyAuthority(Privilege.Constants.PRIVILEGE_READ_DATA_EXPLORER_VIEW_VALUE);
   }
 
   @Override
   public boolean hasWriteAuthority() {
-    return isAdminOrHasAnyAuthority(DefaultPrivilege.Constants.PRIVILEGE_WRITE_DATA_EXPLORER_VIEW_VALUE);
+    return isAdminOrHasAnyAuthority(Privilege.Constants.PRIVILEGE_WRITE_DATA_EXPLORER_VIEW_VALUE);
+  }
+
+  @Override
+  public boolean hasDeleteAuthority() {
+    return isAdminOrHasAnyAuthority(Privilege.Constants.PRIVILEGE_DELETE_DATA_EXPLORER_VIEW_VALUE);
   }
 }

@@ -25,20 +25,19 @@ import org.apache.streampipes.model.pipeline.PipelineElementValidationInfo;
 import java.util.List;
 import java.util.Set;
 
-public class PipelineValidator implements IPipelineValidationStep {
+public class PipelineValidator {
 
-  private final List<IPipelineValidationStep> steps;
+  private final List<AbstractPipelineValidationStep> steps;
 
-  public PipelineValidator(List<IPipelineValidationStep> steps) {
-    this.steps = steps;
+  public PipelineValidator() {
+    this.steps = new PipelineValidationSteps().collect();
   }
 
-  @Override
   public void apply(NamedStreamPipesEntity source,
                     InvocableStreamPipesEntity target,
                     Set<InvocableStreamPipesEntity> allTargets,
                     List<PipelineElementValidationInfo> validationInfos) throws SpValidationException {
-    for (var step : steps) {
+    for (AbstractPipelineValidationStep step : steps) {
       step.apply(source, target, allTargets, validationInfos);
     }
   }

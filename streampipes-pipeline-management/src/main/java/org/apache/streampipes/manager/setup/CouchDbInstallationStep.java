@@ -19,11 +19,9 @@
 package org.apache.streampipes.manager.setup;
 
 import org.apache.streampipes.manager.setup.design.UserDesignDocument;
-import org.apache.streampipes.manager.setup.tasks.AddDefaultPipelineTemplatesTask;
 import org.apache.streampipes.manager.setup.tasks.CreateAssetLinkTypeTask;
 import org.apache.streampipes.manager.setup.tasks.CreateDefaultAssetTask;
 import org.apache.streampipes.storage.couchdb.utils.Utils;
-import org.apache.streampipes.storage.management.StorageDispatcher;
 
 import org.lightcouch.DesignDocument;
 import org.lightcouch.DesignDocument.MapReduce;
@@ -50,9 +48,6 @@ public class CouchDbInstallationStep extends InstallationStep {
     createViews();
     new CreateAssetLinkTypeTask().execute();
     new CreateDefaultAssetTask().execute();
-    new AddDefaultPipelineTemplatesTask(
-        StorageDispatcher.INSTANCE.getNoSqlStore().getPipelineTemplateStorage()
-    ).execute();
   }
 
   @Override
@@ -62,11 +57,23 @@ public class CouchDbInstallationStep extends InstallationStep {
 
   private void createDatabases() {
     try {
+      // Set up couchdb internal databases
+      Utils.getCouchDbInternalUsersClient();
+      Utils.getCouchDbReplicatorClient();
+      Utils.getCouchDbGlobalChangesClient();
+
       // Set up streampipes internal databases
       Utils.getCouchDbUserClient();
+      Utils.getCouchDbMonitoringClient();
       Utils.getCouchDbPipelineClient();
+      Utils.getCouchDbConnectionClient();
       Utils.getCouchDbNotificationClient();
       Utils.getCouchDbPipelineCategoriesClient();
+      Utils.getCouchDbVisualizationClient();
+      Utils.getCouchDbDashboardClient();
+      Utils.getCouchDbDashboardWidgetClient();
+      Utils.getCouchDbLabelClient();
+      Utils.getCouchDbCategoryClient();
 
       logSuccess(getTitle());
     } catch (Exception e) {
@@ -76,7 +83,9 @@ public class CouchDbInstallationStep extends InstallationStep {
 
   private void createViews() {
     addUserView();
+    addConnectionView();
     addNotificationView();
+    addLabelView();
     addPipelineView();
   }
 
@@ -169,4 +178,53 @@ public class CouchDbInstallationStep extends InstallationStep {
       logFailure(PREPARING_USERS_TEXT, e);
     }
   }
+
+  private void addLabelView() {
+    try {
+      DesignDocument labelDocument = prepareDocument("_design/categoryId");
+      Map<String, MapReduce> views = new HashMap<>();
+
+      MapReduce categoryIdFunction = new MapReduce();
+      categoryIdFunction.setMap("function(doc) { if(doc.categoryId) { emit(doc.categoryId, doc); } }");
+
+      views.put("categoryId", categoryIdFunction);
+
+      labelDocument.setViews(views);
+      Response resp = Utils.getCouchDbLabelClient().design().synchronizeWithDb(labelDocument);
+
+      if (resp.getError() != null) {
+        logFailure(PREPARING_USERS_TEXT);
+      } else {
+        logSuccess(PREPARING_USERS_TEXT);
+      }
+    } catch (Exception e) {
+      logFailure(PREPARING_USERS_TEXT, e);
+    }
+  }
+
+  private void addConnectionView() {
+    try {
+      DesignDocument connectionDocument = prepareDocument("_design/connection");
+      Map<String, MapReduce> views = new HashMap<>();
+
+      MapReduce frequentFunction = new MapReduce();
+      frequentFunction.setMap("function(doc) { if(doc.from && doc.to) { emit([doc.from, doc.to] , 1 ); } }");
+      frequentFunction.setReduce("function (key, values) { return sum(values); }");
+
+      views.put("frequent", frequentFunction);
+
+      connectionDocument.setViews(views);
+      Response resp = Utils.getCouchDbConnectionClient().design().synchronizeWithDb(connectionDocument);
+
+      if (resp.getError() != null) {
+        logFailure("Preparing database 'connection'...");
+      } else {
+        logSuccess("Preparing database 'connection'...");
+      }
+    } catch (Exception e) {
+      logFailure("Preparing database 'connection'...", e);
+    }
+  }
+
+
 }

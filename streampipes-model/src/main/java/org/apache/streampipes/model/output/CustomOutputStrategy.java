@@ -23,6 +23,8 @@ import java.util.List;
 
 public class CustomOutputStrategy extends OutputStrategy {
 
+  private static final long serialVersionUID = -5858193127308435472L;
+
   private List<String> selectedPropertyKeys;
 
   private boolean outputRight;
@@ -74,10 +76,5 @@ public class CustomOutputStrategy extends OutputStrategy {
 
   public void setAvailablePropertyKeys(List<String> availablePropertyKeys) {
     this.availablePropertyKeys = availablePropertyKeys;
-  }
-
-  @Override
-  public void accept(OutputStrategyVisitor visitor) {
-    visitor.visit(this);
   }
 }

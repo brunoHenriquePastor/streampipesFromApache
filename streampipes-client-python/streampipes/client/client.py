@@ -137,7 +137,6 @@ class StreamPipesClient:
         # this allows to centrally determine the behavior of all requests made
         self.request_session = Session()
         self.request_session.headers.update(self.http_headers)
-        self.request_session.headers.update(self.client_config.additional_headers)
 
         self.logging_level = logging_level
         self._set_up_logging(logging_level=self.logging_level)  # type: ignore
@@ -231,7 +230,7 @@ class StreamPipesClient:
         Returns
         -------
         http_headers: Dict[str, str]
-            Header information for HTTP requests as string key-value pairs.
+            header information for HTTP requests as string key-value pairs.
         """
 
         # create HTTP headers from credential provider and add additional headers needed

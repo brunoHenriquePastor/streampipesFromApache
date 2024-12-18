@@ -21,7 +21,6 @@ package org.apache.streampipes.manager.migration;
 import org.apache.streampipes.manager.execution.PipelineExecutor;
 import org.apache.streampipes.model.base.InvocableStreamPipesEntity;
 import org.apache.streampipes.model.extensions.svcdiscovery.SpServiceRegistration;
-import org.apache.streampipes.model.extensions.svcdiscovery.SpServiceTagPrefix;
 import org.apache.streampipes.model.graph.DataProcessorInvocation;
 import org.apache.streampipes.model.graph.DataSinkInvocation;
 import org.apache.streampipes.model.migration.MigrationResult;
@@ -70,7 +69,7 @@ public class PipelineElementMigrationManager extends AbstractMigrationManager im
       LOG.info("Received {} pipeline element migrations from extension service {}.",
           migrationConfigs.size(),
           extensionsServiceConfig.getServiceUrl());
-      var availablePipelines = pipelineStorage.findAll();
+      var availablePipelines = pipelineStorage.getAllPipelines();
       if (!availablePipelines.isEmpty()) {
         LOG.info("Found {} available pipelines. Checking pipelines for applicable migrations...",
             availablePipelines.size()
@@ -123,13 +122,13 @@ public class PipelineElementMigrationManager extends AbstractMigrationManager im
               .toList();
           pipeline.setActions(migratedDataSinks);
 
-          pipelineStorage.updateElement(pipeline);
+          pipelineStorage.updatePipeline(pipeline);
 
           if (failedMigrations.isEmpty()) {
             LOG.info("Migration for pipeline successfully completed.");
           } else {
             // pass most recent version of pipeline
-            handleFailedMigrations(pipelineStorage.getElementById(pipeline.getPipelineId()), failedMigrations);
+            handleFailedMigrations(pipelineStorage.getPipeline(pipeline.getPipelineId()), failedMigrations);
           }
         }
       }
@@ -167,18 +166,18 @@ public class PipelineElementMigrationManager extends AbstractMigrationManager im
     ).toList());
     pipeline.setHealthStatus(PipelineHealthStatus.REQUIRES_ATTENTION);
 
-    pipelineStorage.updateElement(pipeline);
+    pipelineStorage.updatePipeline(pipeline);
 
     // get updated version of pipeline after modification
-    pipeline = pipelineStorage.getElementById(pipeline.getPipelineId());
+    pipeline = pipelineStorage.getPipeline(pipeline.getPipelineId());
 
     stopPipeline(pipeline);
   }
 
 
   public void stopPipeline(Pipeline pipeline) {
-    var pipelineExecutor = new PipelineExecutor(pipeline);
-    var pipelineStopResult = pipelineExecutor.stopPipeline(true);
+    var pipelineExecutor = new PipelineExecutor(pipeline, true);
+    var pipelineStopResult = pipelineExecutor.stopPipeline();
 
     if (pipelineStopResult.isSuccess()) {
       LOG.info("Pipeline successfully stopped.");
@@ -259,16 +258,5 @@ public class PipelineElementMigrationManager extends AbstractMigrationManager im
           .getStaticProperties();
     }
     pipelineElement.setStaticProperties(updatedStaticProperties);
-  }
-
-  @Override
-  protected boolean isInstalled(SpServiceTagPrefix modelType, String appId) {
-    if (modelType == SpServiceTagPrefix.DATA_PROCESSOR) {
-      return !dataProcessorStorage.getDataProcessorsByAppId(appId).isEmpty();
-    } else if (modelType == SpServiceTagPrefix.DATA_SINK) {
-      return !dataSinkStorage.getDataSinksByAppId(appId).isEmpty();
-    } else {
-      throw new RuntimeException(String.format("Wrong service tag provided: %s", modelType.asString()));
-    }
   }
 }

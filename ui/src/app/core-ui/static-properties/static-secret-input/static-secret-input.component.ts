@@ -26,7 +26,7 @@ import { AbstractValidatedStaticPropertyRenderer } from '../base/abstract-valida
 @Component({
     selector: 'sp-app-static-secret-input',
     templateUrl: './static-secret-input.component.html',
-    styleUrls: ['./static-secret-input.component.scss'],
+    styleUrls: ['./static-secret-input.component.css'],
 })
 export class StaticSecretInputComponent
     extends AbstractValidatedStaticPropertyRenderer<SecretStaticProperty>
@@ -36,19 +36,25 @@ export class StaticSecretInputComponent
         super();
     }
 
+    @Output() updateEmitter: EventEmitter<ConfigurationInfo> =
+        new EventEmitter();
+
     ngOnInit() {
         this.addValidator(this.staticProperty.value, Validators.required);
         this.enableValidators();
     }
 
     emitUpdate() {
-        this.applyCompletedConfiguration(
-            this.staticPropertyUtil.asFreeTextStaticProperty(
-                this.staticProperty,
-            ).value &&
+        this.updateEmitter.emit(
+            new ConfigurationInfo(
+                this.staticProperty.internalName,
                 this.staticPropertyUtil.asFreeTextStaticProperty(
                     this.staticProperty,
-                ).value !== '',
+                ).value &&
+                    this.staticPropertyUtil.asFreeTextStaticProperty(
+                        this.staticProperty,
+                    ).value !== '',
+            ),
         );
     }
 

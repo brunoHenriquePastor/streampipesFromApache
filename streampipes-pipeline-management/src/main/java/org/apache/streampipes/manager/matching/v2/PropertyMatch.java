@@ -59,7 +59,7 @@ public class PropertyMatch extends AbstractMatcher<EventProperty, EventProperty>
 
   private boolean isAnyProperty(EventProperty eventProperty) {
     return eventProperty instanceof EventPropertyPrimitive
-        && eventProperty.getSemanticType() == null
+        && eventProperty.getDomainProperties() == null
         && ((EventPropertyPrimitive) eventProperty).getMeasurementUnit() == null
         && ((EventPropertyPrimitive) eventProperty).getRuntimeType() == null;
   }

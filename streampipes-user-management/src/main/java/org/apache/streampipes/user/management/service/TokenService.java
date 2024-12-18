@@ -28,8 +28,9 @@ public class TokenService {
   public RawUserApiToken createAndStoreNewToken(String email,
                                                 RawUserApiToken baseToken) {
     UserAccount user = getUserStorage().getUserAccount(email);
-    RawUserApiToken generatedToken = TokenUtil.createToken(baseToken.tokenName());
+    RawUserApiToken generatedToken = TokenUtil.createToken(baseToken.getTokenName());
     storeToken(user, generatedToken);
+    generatedToken.setHashedToken("");
     return generatedToken;
   }
 

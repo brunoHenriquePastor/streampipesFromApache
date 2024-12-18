@@ -22,27 +22,24 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
-import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PipelinePreviewComponent } from './components/preview/pipeline-preview.component';
 import { EditorModule } from '../editor/editor.module';
-import { PipelineActionsComponent } from './components/pipeline-details-expansion-panel/actions/pipeline-actions.component';
-import { PipelineStatusComponent } from './components/pipeline-details-expansion-panel/status/pipeline-status.component';
-import { PipelineElementsRowComponent } from './components/pipeline-details-expansion-panel/pipeline-element-details-row/elements/pipeline-elements-row.component';
+import { PipelineActionsComponent } from './components/actions/pipeline-actions.component';
+import { PipelineStatusComponent } from './components/status/pipeline-status.component';
+import { PipelineElementsComponent } from './components/elements/pipeline-elements.component';
+import { PipelineElementsRowComponent } from './components/elements/pipeline-elements-row.component';
+import { QuickEditComponent } from './components/edit/quickedit.component';
 import { CoreUiModule } from '../core-ui/core-ui.module';
+import { PipelineMonitoringComponent } from './components/monitoring/pipeline-monitoring.component';
+import { PipelineElementStatisticsComponent } from './components/monitoring/statistics/pipeline-element-statistics.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { BarchartWidgetComponent } from './components/monitoring/widget/barchart/barchart-widget.component';
 import { PlatformServicesModule } from '@streampipes/platform-services';
-import { SpPipelineDetailsComponent } from './pipeline-details.component';
+import { SpPipelineDetailsOverviewComponent } from './components/overview/pipeline-details-overview.component';
 import { SharedUiModule } from '@streampipes/shared-ui';
-import { PipelineLogsDialogComponent } from './dialogs/pipeline-logs/pipeline-logs-dialog.component';
+import { PipelineLogsComponent } from './components/pipeline-logs/pipeline-logs.component';
 import { MatIconModule } from '@angular/material/icon';
-import { PipelineDetailsExpansionPanelComponent } from './components/pipeline-details-expansion-panel/pipeline-details-expansion-panel.component';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { PipelineElementDetailsRowComponent } from './components/pipeline-details-expansion-panel/pipeline-element-details-row/pipeline-element-details-row.component';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { PipelineDetailsToolbarComponent } from './components/pipeline-details-toolbar/pipeline-details-toolbar.component';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatDivider } from '@angular/material/divider';
-import { PipelineCodeDialogComponent } from './dialogs/pipeline-code/pipeline-code-dialog.component';
 
 @NgModule({
     imports: [
@@ -54,28 +51,25 @@ import { PipelineCodeDialogComponent } from './dialogs/pipeline-code/pipeline-co
         MatIconModule,
         CommonModule,
         MatProgressSpinnerModule,
-        MatTooltipModule,
+        NgxChartsModule,
         EditorModule,
         FormsModule,
         ReactiveFormsModule,
         PlatformServicesModule,
         SharedUiModule,
-        MatExpansionModule,
-        MatSlideToggleModule,
-        MatDivider,
-        ClipboardModule,
     ],
     declarations: [
         PipelineActionsComponent,
-        PipelineCodeDialogComponent,
+        PipelineElementsComponent,
         PipelineElementsRowComponent,
-        PipelineLogsDialogComponent,
+        PipelineElementStatisticsComponent,
+        PipelineLogsComponent,
+        PipelineMonitoringComponent,
         PipelineStatusComponent,
         PipelinePreviewComponent,
-        SpPipelineDetailsComponent,
-        PipelineDetailsExpansionPanelComponent,
-        PipelineElementDetailsRowComponent,
-        PipelineDetailsToolbarComponent,
+        QuickEditComponent,
+        BarchartWidgetComponent,
+        SpPipelineDetailsOverviewComponent,
     ],
     providers: [],
     exports: [],

@@ -18,6 +18,8 @@
 
 package org.apache.streampipes.extensions.management.init;
 
+import org.apache.streampipes.dataformat.SpDataFormatFactory;
+import org.apache.streampipes.dataformat.SpDataFormatManager;
 import org.apache.streampipes.extensions.api.connect.StreamPipesAdapter;
 import org.apache.streampipes.extensions.api.declarer.IStreamPipesFunctionDeclarer;
 import org.apache.streampipes.extensions.api.pe.IStreamPipesDataProcessor;
@@ -28,10 +30,15 @@ import org.apache.streampipes.extensions.api.pe.runtime.IStreamPipesRuntimeProvi
 import org.apache.streampipes.extensions.management.model.SpServiceDefinition;
 import org.apache.streampipes.messaging.SpProtocolDefinitionFactory;
 import org.apache.streampipes.messaging.SpProtocolManager;
+import org.apache.streampipes.model.grounding.TransportFormat;
 import org.apache.streampipes.model.grounding.TransportProtocol;
 import org.apache.streampipes.model.util.Cloner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +48,7 @@ import java.util.stream.Collectors;
 
 public class DeclarersSingleton implements IDeclarersSingleton {
 
+  private static final Logger LOG = LoggerFactory.getLogger(DeclarersSingleton.class);
   private static final String Http = "http://";
   private static final String Colon = ":";
   private static final String Slash = "/";
@@ -53,6 +61,8 @@ public class DeclarersSingleton implements IDeclarersSingleton {
   private final Map<String, IStreamPipesFunctionDeclarer> functions;
 
   private final Map<String, TransportProtocol> supportedProtocols;
+  private final Map<String, TransportFormat> supportedFormats;
+
   private final Map<String, StreamPipesAdapter> adapters;
 
   private List<IStreamPipesRuntimeProvider> runtimeProviders;
@@ -70,6 +80,7 @@ public class DeclarersSingleton implements IDeclarersSingleton {
     this.dataSinks = new HashMap<>();
     this.dataStreams = new HashMap<>();
     this.supportedProtocols = new HashMap<>();
+    this.supportedFormats = new HashMap<>();
     this.adapters = new HashMap<>();
     this.functions = new HashMap<>();
     this.runtimeProviders = new ArrayList<>();
@@ -92,6 +103,7 @@ public class DeclarersSingleton implements IDeclarersSingleton {
     this.serviceId = serviceDef.getServiceId();
     this.serviceGroup = serviceDef.getServiceGroup();
     this.registerProtocols(serviceDef.getProtocolDefinitionFactories());
+    this.registerDataFormats(serviceDef.getDataFormatFactories());
     this.runtimeProviders = serviceDef.getRuntimeProviders();
     serviceDef.getAdapters().forEach(a -> this.adapters.put(a.declareConfig().getAdapterDescription().getAppId(), a));
     serviceDef.getFunctions().forEach(f -> this.functions.put(f.getFunctionConfig().getFunctionId().getId(), f));
@@ -122,6 +134,7 @@ public class DeclarersSingleton implements IDeclarersSingleton {
     result.putAll(dataProcessors);
     result.putAll(dataStreams);
     result.putAll(dataSinks);
+    //result.putAll(pipelineTemplateDeclarers);
     return result;
   }
 
@@ -133,6 +146,20 @@ public class DeclarersSingleton implements IDeclarersSingleton {
 
   public void registerProtocols(List<SpProtocolDefinitionFactory<?>> protocols) {
     protocols.forEach(this::registerProtocol);
+  }
+
+  public void registerDataFormat(SpDataFormatFactory dataFormatDefinition) {
+    SpDataFormatManager.INSTANCE.register(dataFormatDefinition);
+    this.supportedFormats.put(dataFormatDefinition.getTransportFormatRdfUri(),
+        dataFormatDefinition.getTransportFormat());
+  }
+
+  public void registerDataFormats(SpDataFormatFactory... dataFormatDefinitions) {
+    registerDataFormats(Arrays.asList(dataFormatDefinitions));
+  }
+
+  public void registerDataFormats(List<SpDataFormatFactory> dataFormatDefinitions) {
+    dataFormatDefinitions.forEach(this::registerDataFormat);
   }
 
   private void addDataProcessor(IStreamPipesDataProcessor dataProcessor) {
@@ -165,6 +192,13 @@ public class DeclarersSingleton implements IDeclarersSingleton {
         .values()
         .stream()
         .map(p -> new Cloner().protocol(p))
+        .collect(Collectors.toList());
+  }
+
+  public Collection<TransportFormat> getSupportedFormats() {
+    return this.supportedFormats.values()
+        .stream()
+        .map(TransportFormat::new)
         .collect(Collectors.toList());
   }
 
@@ -224,6 +258,15 @@ public class DeclarersSingleton implements IDeclarersSingleton {
     if (declarer.isExecutable()) {
       declarer.executeStream();
     }
+  }
+
+  public SpServiceDefinition toServiceDefinition(String serviceId) {
+    SpServiceDefinition serviceDef = new SpServiceDefinition();
+    serviceDef.setServiceId(serviceId);
+    serviceDef.setDefaultPort(this.getPort());
+
+    // TODO create complete service definition
+    return serviceDef;
   }
 
   public String getServiceGroup() {

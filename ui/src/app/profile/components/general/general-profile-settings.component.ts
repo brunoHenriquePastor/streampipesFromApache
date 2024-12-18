@@ -43,7 +43,6 @@ export class GeneralProfileSettingsComponent
     darkMode = false;
     originalDarkMode = false;
     darkModeChanged = false;
-    isExternalUser = false;
 
     constructor(
         authService: AuthService,
@@ -76,7 +75,6 @@ export class GeneralProfileSettingsComponent
     onUserDataReceived() {
         this.originalDarkMode = this.userData.darkMode;
         this.currentUserService.darkMode$.next(this.userData.darkMode);
-        this.isExternalUser = this.userData.provider !== 'local';
     }
 
     updateAppearanceMode() {

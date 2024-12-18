@@ -61,10 +61,6 @@
                 <div style="padding: 0 10px">
                     <sp-app-static-property
                         [adapterId]="adapterId"
-                        [completedConfigurations]="
-                            completedAlternativeConfigurations
-                        "
-                        [deploymentConfiguration]="deploymentConfiguration"
                         [eventSchemas]="eventSchemas"
                         [parentForm]="parentForm"
                         [staticProperties]="staticProperties"
@@ -77,9 +73,7 @@
                         "
                         [staticProperty]="alternative.staticProperty"
                         [displayRecommended]="displayRecommended"
-                        (completedConfigurationsEmitter)="
-                            handleConfigurationUpdate($event)
-                        "
+                        (updateEmitter)="handleConfigurationUpdate($event)"
                         class="test fullWidth"
                     >
                     </sp-app-static-property>

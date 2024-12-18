@@ -17,11 +17,15 @@
  */
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AdapterDescription } from '@streampipes/platform-services';
+import { MatDialog } from '@angular/material/dialog';
+import {
+    AdapterDescription,
+    AdapterService,
+} from '@streampipes/platform-services';
+import { DialogService } from '@streampipes/shared-ui';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RestApi } from '../../../../services/rest-api.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { DialogService, PanelType } from '@streampipes/shared-ui';
-import { SpAdapterDocumentationDialogComponent } from '../../../dialog/adapter-documentation/adapter-documentation-dialog.component';
 
 @Component({
     selector: 'sp-adapter-description',
@@ -32,14 +36,24 @@ export class AdapterDescriptionComponent implements OnInit {
     @Input()
     adapter: AdapterDescription;
 
+    @Output()
+    updateAdapterEmitter: EventEmitter<void> = new EventEmitter<void>();
+
+    @Output()
+    createTemplateEmitter: EventEmitter<AdapterDescription> =
+        new EventEmitter<AdapterDescription>();
+
+    className = '';
     isRunningAdapter = false;
     adapterLabel: string;
     iconUrl: SafeUrl;
 
     constructor(
         private restApi: RestApi,
+        private dataMarketplaceService: AdapterService,
         private sanitizer: DomSanitizer,
-        private dialogService: DialogService,
+        public dialog: MatDialog,
+        private _snackBar: MatSnackBar,
     ) {}
 
     ngOnInit() {
@@ -50,24 +64,35 @@ export class AdapterDescriptionComponent implements OnInit {
             this.adapter.elementId !== undefined &&
             !(this.adapter as any).isTemplate;
         this.adapterLabel = this.adapter.name.split(' ').join('_');
+        this.className = this.getClassName();
         this.iconUrl = this.sanitizer.bypassSecurityTrustUrl(
             this.makeAssetIconUrl(),
         );
     }
 
-    makeAssetIconUrl() {
-        return this.restApi.getAssetUrl(this.adapter.appId) + '/icon';
+    getClassName() {
+        let className = this.isRunningAdapter
+            ? 'adapter-box'
+            : 'adapter-description-box';
+
+        className += ' adapter-box-stream';
+
+        return className;
     }
 
-    openDocumentation(event: MouseEvent): void {
-        event.stopPropagation();
-        this.dialogService.open(SpAdapterDocumentationDialogComponent, {
-            panelType: PanelType.SLIDE_IN_PANEL,
-            title: 'Documentation',
-            width: '50vw',
-            data: {
-                appId: this.adapter.appId,
-            },
-        });
+    getIconUrl() {
+        // TODO Use "this.adapter.includesAssets" if boolean demoralizing is working
+        if (this.adapter.includedAssets.length > 0) {
+            return (
+                this.dataMarketplaceService.getAssetUrl(this.adapter.appId) +
+                '/icon'
+            );
+        } else {
+            return `assets/img/connect/${this.adapter.iconUrl}`;
+        }
+    }
+
+    makeAssetIconUrl() {
+        return this.restApi.getAssetUrl(this.adapter.appId) + '/icon';
     }
 }

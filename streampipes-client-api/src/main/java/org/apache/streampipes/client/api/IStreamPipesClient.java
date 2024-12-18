@@ -28,8 +28,6 @@ import org.apache.streampipes.model.mail.SpEmail;
 import java.io.Serializable;
 
 public interface IStreamPipesClient extends Serializable {
-
-  @Deprecated(since = "0.97.0", forRemoval = true)
   void registerDataFormat(SpDataFormatFactory spDataFormatFactory);
 
   void registerProtocol(SpProtocolDefinitionFactory<?> spProtocolDefinitionFactory);

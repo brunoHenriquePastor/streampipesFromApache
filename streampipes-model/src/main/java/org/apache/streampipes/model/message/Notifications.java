@@ -44,12 +44,8 @@ public class Notifications {
     return new ErrorMessage(new Notification(type.name(), type.description()));
   }
 
-  public static ErrorMessage error(String message, String description) {
-    return new ErrorMessage(new Notification(message, description));
-  }
-
   public static ErrorMessage error(String message) {
-    return error(message, "");
+    return new ErrorMessage(new Notification(message, ""));
   }
 
   public static ErrorMessage error(NotificationType type, String info) {

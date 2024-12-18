@@ -24,6 +24,8 @@ import org.apache.streampipes.model.message.Notification;
 import org.apache.streampipes.model.message.SuccessMessage;
 import org.apache.streampipes.resource.management.SpResourceManager;
 import org.apache.streampipes.rest.shared.impl.AbstractSharedRestInterface;
+import org.apache.streampipes.storage.api.IDataLakeStorage;
+import org.apache.streampipes.storage.api.IFileMetadataStorage;
 import org.apache.streampipes.storage.api.INoSqlStorage;
 import org.apache.streampipes.storage.api.INotificationStorage;
 import org.apache.streampipes.storage.api.IPipelineElementDescriptionStorage;
@@ -34,6 +36,8 @@ import org.apache.streampipes.storage.api.IUserStorage;
 import org.apache.streampipes.storage.management.StorageDispatcher;
 
 import org.springframework.http.ResponseEntity;
+
+import java.net.URLDecoder;
 
 public class AbstractRestResource extends AbstractSharedRestInterface {
 
@@ -61,6 +65,10 @@ public class AbstractRestResource extends AbstractSharedRestInterface {
     return getNoSqlStorage().getNotificationStorageApi();
   }
 
+  protected IDataLakeStorage getDataLakeStorage() {
+    return getNoSqlStorage().getDataLakeStorage();
+  }
+
   protected IPipelineElementTemplateStorage getPipelineElementTemplateStorage() {
     return getNoSqlStorage().getPipelineElementTemplateStorage();
   }
@@ -69,12 +77,21 @@ public class AbstractRestResource extends AbstractSharedRestInterface {
     return StorageDispatcher.INSTANCE.getNoSqlStore();
   }
 
+  protected IFileMetadataStorage getFileMetadataStorage() {
+    return getNoSqlStorage().getFileMetadataStorage();
+  }
+
   protected ResponseEntity<Message> constructSuccessMessage(Notification... notifications) {
     return statusMessage(new SuccessMessage(notifications));
   }
 
   protected ResponseEntity<Message> constructErrorMessage(Notification... notifications) {
     return statusMessage(new ErrorMessage(notifications));
+  }
+
+  @SuppressWarnings("deprecation")
+  protected String decode(String encodedString) {
+    return URLDecoder.decode(encodedString);
   }
 
   protected ResponseEntity<Message> statusMessage(Message message) {

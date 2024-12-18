@@ -26,7 +26,7 @@ import { DatalakeRestService } from '@streampipes/platform-services';
 @Component({
     selector: 'sp-gauge-widget',
     templateUrl: './gauge-widget.component.html',
-    styleUrls: ['./gauge-widget.component.scss'],
+    styleUrls: ['./gauge-widget.component.css'],
 })
 export class GaugeWidgetComponent
     extends BaseNgxChartsStreamPipesWidget

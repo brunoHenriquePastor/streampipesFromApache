@@ -18,11 +18,8 @@
 
 package org.apache.streampipes.model.pipeline;
 
-import org.apache.streampipes.model.SpDataStream;
-import org.apache.streampipes.model.graph.DataProcessorInvocation;
 import org.apache.streampipes.model.graph.DataSinkInvocation;
 import org.apache.streampipes.model.shared.annotation.TsModel;
-import org.apache.streampipes.model.shared.api.Storable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
@@ -31,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @TsModel
-public class Pipeline implements Storable {
+public class Pipeline extends ElementComposition {
 
   private List<DataSinkInvocation> actions;
 
@@ -45,6 +42,8 @@ public class Pipeline implements Storable {
   private boolean publicElement;
 
   private String createdByUser;
+
+  private List<String> pipelineCategories;
   private List<String> pipelineNotifications;
 
   private PipelineHealthStatus healthStatus;
@@ -57,19 +56,11 @@ public class Pipeline implements Storable {
   private @SerializedName("_rev")
   String rev;
 
-  protected List<DataProcessorInvocation> sepas;
-
-  protected List<SpDataStream> streams;
-
-  protected String name;
-  protected String description;
-
   public Pipeline() {
     super();
     this.actions = new ArrayList<>();
     this.pipelineNotifications = new ArrayList<>();
-    this.sepas = new ArrayList<>();
-    this.streams = new ArrayList<>();
+    this.pipelineCategories = new ArrayList<>();
   }
 
   public List<DataSinkInvocation> getActions() {
@@ -104,6 +95,7 @@ public class Pipeline implements Storable {
     this.publicElement = publicElement;
   }
 
+
   public String getCreatedByUser() {
     return createdByUser;
   }
@@ -128,14 +120,12 @@ public class Pipeline implements Storable {
     this.rev = rev;
   }
 
-  @Override
-  public String getElementId() {
-    return pipelineId;
+  public List<String> getPipelineCategories() {
+    return pipelineCategories;
   }
 
-  @Override
-  public void setElementId(String elementId) {
-    this.pipelineId = elementId;
+  public void setPipelineCategories(List<String> pipelineCategories) {
+    this.pipelineCategories = pipelineCategories;
   }
 
   public long getCreatedAt() {
@@ -178,38 +168,6 @@ public class Pipeline implements Storable {
     this.valid = valid;
   }
 
-  public List<DataProcessorInvocation> getSepas() {
-    return sepas;
-  }
-
-  public void setSepas(List<DataProcessorInvocation> sepas) {
-    this.sepas = sepas;
-  }
-
-  public List<SpDataStream> getStreams() {
-    return streams;
-  }
-
-  public void setStreams(List<SpDataStream> streams) {
-    this.streams = streams;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
   public Pipeline clone() {
     Pipeline pipeline = new Pipeline();
     pipeline.setName(name);
@@ -218,6 +176,7 @@ public class Pipeline implements Storable {
     pipeline.setStreams(streams);
     pipeline.setActions(actions);
     pipeline.setCreatedByUser(createdByUser);
+    pipeline.setPipelineCategories(pipelineCategories);
     pipeline.setCreatedAt(createdAt);
     pipeline.setPipelineId(pipelineId);
     pipeline.setHealthStatus(healthStatus);
@@ -227,4 +186,6 @@ public class Pipeline implements Storable {
 
     return pipeline;
   }
+
+
 }

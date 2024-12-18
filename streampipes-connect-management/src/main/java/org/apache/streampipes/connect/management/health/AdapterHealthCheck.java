@@ -154,7 +154,7 @@ public class AdapterHealthCheck implements Runnable {
    */
   public Map<String, AdapterDescription> getAllAdaptersSupposedToRun() {
     Map<String, AdapterDescription> result = new HashMap<>();
-    List<AdapterDescription> allRunningInstancesAdapterDescription = this.adapterStorage.findAll();
+    List<AdapterDescription> allRunningInstancesAdapterDescription = this.adapterStorage.getAllAdapters();
     allRunningInstancesAdapterDescription
         .stream()
         .filter(AdapterDescription::isRunning)

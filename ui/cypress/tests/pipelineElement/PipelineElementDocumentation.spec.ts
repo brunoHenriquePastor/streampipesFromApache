@@ -16,7 +16,7 @@
  *
  */
 
-import { PipelineUtils } from '../../support/utils/pipeline/PipelineUtils';
+import { PipelineUtils } from '../../support/utils/PipelineUtils';
 
 describe('Validate that the markdown documentation for pipeline elements works', () => {
     beforeEach('Setup Test', () => {

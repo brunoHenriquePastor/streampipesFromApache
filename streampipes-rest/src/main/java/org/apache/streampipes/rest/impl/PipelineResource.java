@@ -18,13 +18,16 @@
 
 package org.apache.streampipes.rest.impl;
 
+import org.apache.streampipes.commons.exceptions.NoMatchingFormatException;
+import org.apache.streampipes.commons.exceptions.NoMatchingJsonSchemaException;
+import org.apache.streampipes.commons.exceptions.NoMatchingProtocolException;
+import org.apache.streampipes.commons.exceptions.NoMatchingSchemaException;
 import org.apache.streampipes.commons.exceptions.NoSuitableSepasAvailableException;
+import org.apache.streampipes.commons.exceptions.RemoteServerNotAccessibleException;
 import org.apache.streampipes.manager.execution.status.PipelineStatusManager;
-import org.apache.streampipes.manager.matching.PipelineVerificationHandlerV2;
+import org.apache.streampipes.manager.operations.Operations;
 import org.apache.streampipes.manager.pipeline.PipelineManager;
-import org.apache.streampipes.manager.pipeline.compact.CompactPipelineManagement;
-import org.apache.streampipes.manager.recommender.ElementRecommender;
-import org.apache.streampipes.manager.storage.PipelineStorageService;
+import org.apache.streampipes.model.client.exception.InvalidConnectionException;
 import org.apache.streampipes.model.message.ErrorMessage;
 import org.apache.streampipes.model.message.Message;
 import org.apache.streampipes.model.message.Notification;
@@ -35,12 +38,10 @@ import org.apache.streampipes.model.message.SuccessMessage;
 import org.apache.streampipes.model.pipeline.Pipeline;
 import org.apache.streampipes.model.pipeline.PipelineElementRecommendationMessage;
 import org.apache.streampipes.model.pipeline.PipelineOperationStatus;
-import org.apache.streampipes.model.pipeline.compact.CompactPipeline;
 import org.apache.streampipes.rest.core.base.impl.AbstractAuthGuardedRestResource;
 import org.apache.streampipes.rest.security.AuthConstants;
 import org.apache.streampipes.rest.shared.exception.SpMessageException;
 import org.apache.streampipes.rest.shared.exception.SpNotificationException;
-import org.apache.streampipes.storage.management.StorageDispatcher;
 
 import com.google.gson.JsonSyntaxException;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -80,14 +81,6 @@ public class PipelineResource extends AbstractAuthGuardedRestResource {
 
   private static final Logger LOG = LoggerFactory.getLogger(PipelineResource.class);
 
-  private final CompactPipelineManagement compactPipelineManagement;
-
-  public PipelineResource() {
-    this.compactPipelineManagement = new CompactPipelineManagement(
-        StorageDispatcher.INSTANCE.getNoSqlStore().getPipelineElementDescriptionStorage()
-    );
-  }
-
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(summary = "Get all pipelines of the current user", tags = {"Pipeline"}, responses = {
       @ApiResponse(content = {
@@ -114,7 +107,7 @@ public class PipelineResource extends AbstractAuthGuardedRestResource {
       path = "/{pipelineId}",
       produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(summary = "Delete a pipeline with a given id", tags = {"Pipeline"})
-  @PreAuthorize(AuthConstants.HAS_WRITE_PIPELINE_PRIVILEGE)
+  @PreAuthorize(AuthConstants.HAS_DELETE_PIPELINE_PRIVILEGE)
   public Message removeOwn(@PathVariable("pipelineId") String pipelineId) {
     PipelineManager.deletePipeline(pipelineId);
     return Notifications.success("Pipeline deleted");
@@ -176,16 +169,6 @@ public class PipelineResource extends AbstractAuthGuardedRestResource {
   }
 
   @PostMapping(
-      path = "compact",
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  @Operation(summary = "Convert a pipeline to the compact model", tags = {"Pipeline"})
-  @PreAuthorize(AuthConstants.HAS_WRITE_PIPELINE_PRIVILEGE)
-  public ResponseEntity<CompactPipeline> convertToCompactPipeline(@RequestBody Pipeline pipeline) {
-    return ok(compactPipelineManagement.convertPipeline(pipeline));
-  }
-
-  @PostMapping(
       path = "/recommend/{recId}",
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
@@ -195,7 +178,7 @@ public class PipelineResource extends AbstractAuthGuardedRestResource {
   public PipelineElementRecommendationMessage recommend(@RequestBody Pipeline pipeline,
                                                         @PathVariable("recId") String baseRecElement) {
     try {
-      return new ElementRecommender(pipeline, baseRecElement).findRecommendedElements();
+      return Operations.findRecommendedElements(pipeline, baseRecElement);
     } catch (JsonSyntaxException e) {
       throw new SpNotificationException(
           HttpStatus.BAD_REQUEST,
@@ -224,9 +207,19 @@ public class PipelineResource extends AbstractAuthGuardedRestResource {
   @PreAuthorize(AuthConstants.HAS_WRITE_PIPELINE_PRIVILEGE)
   public ResponseEntity<?> validatePipeline(@RequestBody Pipeline pipeline) {
     try {
-      return ok(new PipelineVerificationHandlerV2(pipeline).verifyPipeline());
+      return ok(Operations.validatePipeline(pipeline));
     } catch (JsonSyntaxException e) {
       return badRequest(new Notification(NotificationType.UNKNOWN_ERROR, e.getMessage()));
+    } catch (NoMatchingSchemaException e) {
+      return badRequest(new Notification(NotificationType.NO_VALID_CONNECTION, e.getMessage()));
+    } catch (NoMatchingFormatException e) {
+      return badRequest(new Notification(NotificationType.NO_MATCHING_FORMAT_CONNECTION, e.getMessage()));
+    } catch (NoMatchingProtocolException e) {
+      return badRequest(new Notification(NotificationType.NO_MATCHING_PROTOCOL_CONNECTION, e.getMessage()));
+    } catch (RemoteServerNotAccessibleException | NoMatchingJsonSchemaException e) {
+      return serverError(new Notification(NotificationType.REMOTE_SERVER_NOT_ACCESSIBLE, e.getMessage()));
+    } catch (InvalidConnectionException e) {
+      return badRequest(e.getErrorLog());
     } catch (Exception e) {
       LOG.error(e.getMessage());
       return serverError(new Notification(NotificationType.UNKNOWN_ERROR, e.getMessage()));
@@ -241,17 +234,18 @@ public class PipelineResource extends AbstractAuthGuardedRestResource {
   @PreAuthorize(AuthConstants.HAS_WRITE_PIPELINE_PRIVILEGE)
   public ResponseEntity<SuccessMessage> overwritePipeline(@PathVariable("pipelineId") String pipelineId,
                                                           @RequestBody Pipeline pipeline) {
-    Pipeline storedPipeline = getPipelineStorage().getElementById(pipelineId);
+    Pipeline storedPipeline = getPipelineStorage().getPipeline(pipelineId);
     if (!storedPipeline.isRunning()) {
       storedPipeline.setStreams(pipeline.getStreams());
       storedPipeline.setSepas(pipeline.getSepas());
       storedPipeline.setActions(pipeline.getActions());
     }
     storedPipeline.setCreatedAt(System.currentTimeMillis());
+    storedPipeline.setPipelineCategories(pipeline.getPipelineCategories());
     storedPipeline.setHealthStatus(pipeline.getHealthStatus());
     storedPipeline.setPipelineNotifications(pipeline.getPipelineNotifications());
     storedPipeline.setValid(pipeline.isValid());
-    new PipelineStorageService(storedPipeline).updatePipeline();
+    Operations.updatePipeline(storedPipeline);
     SuccessMessage message = Notifications.success("Pipeline modified");
     message.addNotification(new Notification("id", pipelineId));
     return ok(message);

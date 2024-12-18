@@ -16,7 +16,7 @@
  *
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RestorePasswordService } from '../../services/restore-password.service';
 import {
     UntypedFormBuilder,
@@ -27,15 +27,13 @@ import {
 import { checkPasswords } from '../../utils/check-password';
 import { RegistrationModel } from '../register/registration.model';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BaseLoginPageDirective } from '../base-login-page.directive';
-import { LoginService } from '../../services/login.service';
 
 @Component({
     selector: 'sp-set-new-password',
     templateUrl: './set-new-password.component.html',
     styleUrls: ['../login/login.component.scss'],
 })
-export class SetNewPasswordComponent extends BaseLoginPageDirective {
+export class SetNewPasswordComponent implements OnInit {
     parentForm: UntypedFormGroup;
     registrationModel: RegistrationModel;
     recoveryCode: string;
@@ -49,12 +47,9 @@ export class SetNewPasswordComponent extends BaseLoginPageDirective {
         private restorePasswordService: RestorePasswordService,
         private route: ActivatedRoute,
         private router: Router,
-        protected loginService: LoginService,
-    ) {
-        super(loginService);
-    }
+    ) {}
 
-    onSettingsAvailable(): void {
+    ngOnInit(): void {
         this.route.queryParams.subscribe(params => {
             this.recoveryCode = params['recoveryCode'];
             if (this.recoveryCode) {

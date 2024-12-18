@@ -31,13 +31,13 @@ import org.apache.streampipes.messaging.mqtt.MqttPublisher;
 import org.apache.streampipes.model.grounding.MqttTransportProtocol;
 import org.apache.streampipes.model.staticproperty.StaticPropertyAlternatives;
 import org.apache.streampipes.model.template.PipelineElementTemplate;
-
+import org.apache.streampipes.model.template.PipelineElementTemplateConfig;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,9 +64,11 @@ public class MqttAdapterTester extends AdapterTesterBase {
 
     IAdapterConfiguration configuration = new MqttProtocol().declareConfig();
 
-    List<Map<String, Object>> configs = new ArrayList<>();
-    configs.add(Map.of(MqttConnectUtils.TOPIC, TOPIC));
-    configs.add(Map.of(MqttConnectUtils.BROKER_URL, mosquittoContainer.getBrokerUrl()));
+    Map<String, PipelineElementTemplateConfig> configs = new HashMap<>();
+    configs.put(MqttConnectUtils.TOPIC,
+        new PipelineElementTemplateConfig(true, true, TOPIC));
+    configs.put(MqttConnectUtils.BROKER_URL,
+        new PipelineElementTemplateConfig(true, false, mosquittoContainer.getBrokerUrl()));
 
     var template = new PipelineElementTemplate("name", "description", configs);
 

@@ -28,12 +28,16 @@ export class SpTimeSeriesAppearanceConfigComponent {
     @Input()
     appearanceConfig: TimeSeriesAppearanceConfig;
 
+    @Input()
+    widgetId: string;
+
     constructor(
         private widgetConfigurationService: WidgetConfigurationService,
     ) {}
 
     triggerViewUpdate() {
         this.widgetConfigurationService.notify({
+            widgetId: this.widgetId,
             refreshView: true,
             refreshData: false,
         });

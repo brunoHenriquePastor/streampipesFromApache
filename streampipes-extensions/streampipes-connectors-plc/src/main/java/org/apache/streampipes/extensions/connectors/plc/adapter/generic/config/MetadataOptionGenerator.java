@@ -68,23 +68,19 @@ public class MetadataOptionGenerator {
   }
 
   private static StaticProperty getRuntimeResolvableGroup(String labelId) {
-    var group = StaticProperties.runtimeResolvableGroupStaticProperty(
+    return StaticProperties.runtimeResolvableGroupStaticProperty(
         Labels.withId(labelId),
         List.of(Plc4xLabels.SUPPORTED_TRANSPORTS)
     );
-    group.setHorizontalRendering(false);
-    return group;
   }
 
   private StaticProperty getGroup(List<Option> options,
                                   String labelId) {
-    var group = StaticProperties.group(
+    return StaticProperties.group(
         Labels.withId(labelId),
         false,
         getOptions(options)
     );
-    group.setHorizontalRendering(false);
-    return group;
   }
 
   public StaticProperty[] getOptions(List<Option> options) {

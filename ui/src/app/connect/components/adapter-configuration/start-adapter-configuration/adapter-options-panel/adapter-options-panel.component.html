@@ -18,16 +18,17 @@
 
 <div fxFlex="100" fxLayout="column" class="options-panel">
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
+        <div class="mr-15" fxLayoutAlign="start center">
+            <mat-icon class="icon">{{ optionIcon }}</mat-icon>
+        </div>
         <div fxFlex fxLayout="column" fxLayoutAlign="center start">
             <div
                 fxFlex="100"
-                class="title w-100"
+                class="title"
                 fxLayout="row"
-                fxLayoutAlign="start start"
-                fxLayoutGap="15px"
+                fxLayoutAlign="start center"
             >
-                <div class="mr-15" fxLayoutAlign="start center">
-                    <mat-icon class="icon mr-15">{{ optionIcon }}</mat-icon>
+                <div fxLayoutAlign="start center" class="mr-15">
                     <mat-checkbox
                         (change)="optionSelectedEmitter.emit($event.checked)"
                         [checked]="isChecked"
@@ -36,14 +37,15 @@
                     >
                     </mat-checkbox>
                 </div>
-                <div fxFlex fxLayout="column" class="w-100">
+                <div fxFlex fxLayout="column">
                     <div>{{ optionTitle }}</div>
-                    <mat-hint class="description"
-                        >{{ optionDescription }}
-                    </mat-hint>
-                    <ng-content class="w-100 mt-10"></ng-content>
+                    <mat-hint class="description">{{
+                        optionDescription
+                    }}</mat-hint>
                 </div>
             </div>
+
+            <ng-content></ng-content>
         </div>
     </div>
 </div>

@@ -66,7 +66,7 @@ public class AvailableExtensionsProvider {
    * @return Map of extension item descriptions keyed by their elementId
    */
   private Map<String, ExtensionItemDescription> getUniqueAvailableExtensions() {
-    return storage.getExtensionsServiceStorage().findAll()
+    return storage.getExtensionsServiceStorage().getAll()
         .stream()
         .filter(service -> service.getStatus() == SpServiceStatus.HEALTHY)
         .flatMap(service -> service.getProvidedExtensions().stream())
@@ -107,22 +107,22 @@ public class AvailableExtensionsProvider {
   }
 
   private List<AdapterDescription> getAllAdapters() {
-    return storage.getAdapterDescriptionStorage().findAll();
+    return storage.getAdapterDescriptionStorage().getAllAdapters();
   }
 
   private List<SpDataStream> getAllDataStreams() {
-    return storage.getDataStreamStorage().findAll()
+    return storage.getDataStreamStorage().getAll()
         .stream()
         .filter(stream -> !stream.isInternallyManaged())
         .toList();
   }
 
   private List<DataProcessorDescription> getAllDataProcessors() {
-    return storage.getDataProcessorStorage().findAll();
+    return storage.getDataProcessorStorage().getAll();
   }
 
   private List<DataSinkDescription> getAllDataSinks() {
-    return storage.getDataSinkStorage().findAll();
+    return storage.getDataSinkStorage().getAll();
   }
 
 }

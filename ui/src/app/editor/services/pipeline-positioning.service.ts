@@ -18,6 +18,7 @@
 
 import * as dagre from 'dagre';
 import { JsplumbBridge } from './jsplumb-bridge.service';
+import { JsplumbConfigService } from './jsplumb-config.service';
 import { JsplumbService } from './jsplumb.service';
 import { Injectable } from '@angular/core';
 import { PipelineElementConfig } from '../model/editor.model';
@@ -36,6 +37,7 @@ import { Connection } from '@jsplumb/browser-ui';
 export class PipelinePositioningService {
     constructor(
         private jsplumbService: JsplumbService,
+        private jsplumbConfigService: JsplumbConfigService,
         private jsplumbFactoryService: JsplumbFactoryService,
         private objectProvider: ObjectProvider,
     ) {}
@@ -85,6 +87,10 @@ export class PipelinePositioningService {
         const jsPlumbBridge =
             this.jsplumbFactoryService.getJsplumbBridge(previewConfig);
 
+        const jsplumbConfig = previewConfig
+            ? this.jsplumbConfigService.getPreviewConfig()
+            : this.jsplumbConfigService.getEditorConfig();
+
         rawPipelineModel.forEach(currentPe => {
             if (!currentPe.settings.disabled) {
                 if (currentPe.type === 'stream' || currentPe.type === 'set') {
@@ -117,13 +123,14 @@ export class PipelinePositioningService {
         this.connectPipelineElements(
             rawPipelineModel,
             previewConfig,
+            jsplumbConfig,
             jsPlumbBridge,
         );
         if (autoLayout) {
             this.layoutGraph(
                 targetCanvas,
                 "div[id^='jsplumb']",
-                110,
+                previewConfig ? 75 : 110,
                 previewConfig,
             );
         } else if (pipelineCanvasMetadata) {
@@ -141,7 +148,7 @@ export class PipelinePositioningService {
         const jsPlumbBridge =
             this.jsplumbFactoryService.getJsplumbBridge(previewConfig);
         const g = new dagre.graphlib.Graph();
-        g.setGraph({ rankdir: 'LR', ranksep: '100' });
+        g.setGraph({ rankdir: 'LR', ranksep: previewConfig ? '50' : '100' });
         g.setDefaultEdgeLabel(() => {
             return {};
         });
@@ -165,7 +172,6 @@ export class PipelinePositioningService {
             elementRef.css('left', g.node(v).x + 'px');
             elementRef.css('top', g.node(v).y + 'px');
         });
-        jsPlumbBridge.repaintEverything();
     }
 
     layoutGraphFromCanvasMetadata(
@@ -185,13 +191,18 @@ export class PipelinePositioningService {
     connectPipelineElements(
         rawPipelineModel: PipelineElementConfig[],
         previewConfig: boolean,
+        jsplumbConfig: any,
         jsPlumbBridge: JsplumbBridge,
     ) {
+        let source;
+        let target;
         jsPlumbBridge.setSuspendDrawing(true);
         rawPipelineModel.forEach(pe => {
             if (pe.type === 'sepa' || pe.type === 'action') {
                 if (!pe.settings.disabled && pe.payload.connectedTo) {
                     pe.payload.connectedTo.forEach((connection, index) => {
+                        source = connection;
+                        target = pe.payload.dom;
                         const sourceEndpointId = 'out-' + connection;
                         const inTargetEndpointId =
                             'in-' + index + '-' + pe.payload.dom;

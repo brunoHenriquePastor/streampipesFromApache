@@ -30,7 +30,10 @@ import { JsplumbConfigService } from './jsplumb-config.service';
 @Injectable({ providedIn: 'root' })
 export class JsplumbFactoryService {
     pipelineEditorInstance: BrowserJsPlumbInstance;
+    pipelinePreviewInstance: BrowserJsPlumbInstance;
+
     pipelineEditorBridge: JsplumbBridge;
+    pipelinePreviewBridge: JsplumbBridge;
 
     constructor(
         private pipelineElementDraggedService: PipelineElementDraggedService,
@@ -38,16 +41,26 @@ export class JsplumbFactoryService {
     ) {}
 
     getJsplumbBridge(previewConfig: boolean): JsplumbBridge {
-        if (!this.pipelineEditorBridge) {
-            this.pipelineEditorInstance = previewConfig
-                ? this.makePipelinePreviewInstance()
-                : this.makePipelineEditorInstance();
-            this.prepareJsplumb(this.pipelineEditorInstance);
-            this.pipelineEditorBridge = new JsplumbBridge(
-                this.pipelineEditorInstance,
-            );
+        if (!previewConfig) {
+            if (!this.pipelineEditorBridge) {
+                this.pipelineEditorInstance = this.makePipelineEditorInstance();
+                this.prepareJsplumb(this.pipelineEditorInstance);
+                this.pipelineEditorBridge = new JsplumbBridge(
+                    this.pipelineEditorInstance,
+                );
+            }
+            return this.pipelineEditorBridge;
+        } else {
+            if (!this.pipelinePreviewBridge) {
+                this.pipelinePreviewInstance =
+                    this.makePipelinePreviewInstance();
+                this.prepareJsplumb(this.pipelinePreviewInstance);
+                this.pipelinePreviewBridge = new JsplumbBridge(
+                    this.pipelinePreviewInstance,
+                );
+            }
+            return this.pipelinePreviewBridge;
         }
-        return this.pipelineEditorBridge;
     }
 
     makePipelineEditorInstance(): BrowserJsPlumbInstance {
@@ -69,7 +82,7 @@ export class JsplumbFactoryService {
 
     makePipelinePreviewInstance(): BrowserJsPlumbInstance {
         return newInstance({
-            container: document.getElementById('assembly'),
+            container: document.getElementById('assembly-preview'),
             elementsDraggable: false,
         });
     }
@@ -80,8 +93,13 @@ export class JsplumbFactoryService {
         );
     }
 
-    destroy() {
-        this.pipelineEditorInstance?.destroy();
-        this.pipelineEditorBridge = undefined;
+    destroy(preview: boolean) {
+        if (preview) {
+            this.pipelinePreviewInstance.destroy();
+            this.pipelinePreviewBridge = undefined;
+        } else {
+            this.pipelineEditorInstance.destroy();
+            this.pipelineEditorBridge = undefined;
+        }
     }
 }

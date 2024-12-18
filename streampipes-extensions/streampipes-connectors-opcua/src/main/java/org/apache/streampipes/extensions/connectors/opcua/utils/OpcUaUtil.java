@@ -25,9 +25,8 @@ import org.apache.streampipes.extensions.api.extractor.IAdapterParameterExtracto
 import org.apache.streampipes.extensions.api.extractor.IStaticPropertyExtractor;
 import org.apache.streampipes.extensions.api.runtime.ResolvesContainerProvidedOptions;
 import org.apache.streampipes.extensions.connectors.opcua.adapter.OpcUaNodeBrowser;
-import org.apache.streampipes.extensions.connectors.opcua.client.OpcUaClientProvider;
+import org.apache.streampipes.extensions.connectors.opcua.client.SpOpcUaClient;
 import org.apache.streampipes.extensions.connectors.opcua.config.OpcUaConfig;
-import org.apache.streampipes.extensions.connectors.opcua.config.SharedUserConfiguration;
 import org.apache.streampipes.extensions.connectors.opcua.config.SpOpcUaConfigExtractor;
 import org.apache.streampipes.extensions.connectors.opcua.model.OpcNode;
 import org.apache.streampipes.model.connect.guess.FieldStatusInfo;
@@ -38,7 +37,7 @@ import org.apache.streampipes.model.staticproperty.RuntimeResolvableTreeInputSta
 import org.apache.streampipes.sdk.builder.PrimitivePropertyBuilder;
 import org.apache.streampipes.sdk.builder.adapter.GuessSchemaBuilder;
 
-import org.eclipse.milo.opcua.sdk.client.api.UaClient;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -79,8 +78,7 @@ public class OpcUaUtil {
    * @throws AdapterException
    * @throws ParseException
    */
-  public static GuessSchema getSchema(OpcUaClientProvider clientProvider,
-                                      IAdapterParameterExtractor extractor)
+  public static GuessSchema getSchema(IAdapterParameterExtractor extractor)
       throws AdapterException, ParseException {
     var builder = GuessSchemaBuilder.create();
     EventSchema eventSchema = new EventSchema();
@@ -88,13 +86,14 @@ public class OpcUaUtil {
     Map<String, FieldStatusInfo> fieldStatusInfos = new HashMap<>();
     List<EventProperty> allProperties = new ArrayList<>();
 
-    var opcUaConfig = SpOpcUaConfigExtractor.extractSharedConfig(
-        extractor.getStaticPropertyExtractor(), new OpcUaConfig()
+    SpOpcUaClient<OpcUaConfig> spOpcUaClient = new SpOpcUaClient<>(
+        SpOpcUaConfigExtractor.extractSharedConfig(extractor.getStaticPropertyExtractor(), new OpcUaConfig())
     );
+
     try {
-      var connectedClient = clientProvider.getClient(opcUaConfig);
+      spOpcUaClient.connect();
       OpcUaNodeBrowser nodeBrowser =
-          new OpcUaNodeBrowser(connectedClient.getClient(), opcUaConfig);
+          new OpcUaNodeBrowser(spOpcUaClient.getClient(), spOpcUaClient.getSpOpcConfig());
       List<OpcNode> selectedNodes = nodeBrowser.findNodes();
 
       if (!selectedNodes.isEmpty()) {
@@ -117,12 +116,10 @@ public class OpcUaUtil {
       var nodeIds = selectedNodes.stream()
                                  .map(OpcNode::getNodeId)
                                  .collect(Collectors.toList());
-      var response = connectedClient.getClient()
+      var response = spOpcUaClient.getClient()
                                   .readValues(0, TimestampsToReturn.Both, nodeIds);
 
       var returnValues = response.get();
-
-      //clientProvider.releaseClient(opcUaConfig);
 
       makeEventPreview(selectedNodes, eventPreview, fieldStatusInfos, returnValues);
 
@@ -130,9 +127,7 @@ public class OpcUaUtil {
     } catch (Exception e) {
       throw new AdapterException("Could not guess schema for opc node:  " + e.getMessage(), e);
     } finally {
-      // TODO
-      //spOpcUaClient.disconnect();
-      clientProvider.releaseClient(opcUaConfig);
+      spOpcUaClient.disconnect();
     }
 
     eventSchema.setEventProperties(allProperties);
@@ -175,8 +170,7 @@ public class OpcUaUtil {
    * @param parameterExtractor to extract parameters from the OPC UA config
    * @return {@code List<Option>} with available node names for the given OPC UA configuration
    */
-  public static RuntimeResolvableTreeInputStaticProperty resolveConfig(OpcUaClientProvider clientProvider,
-                                                                       String internalName,
+  public static RuntimeResolvableTreeInputStaticProperty resolveConfig(String internalName,
                                                                        IStaticPropertyExtractor parameterExtractor)
       throws SpConfigurationException {
 
@@ -185,18 +179,19 @@ public class OpcUaUtil {
     // access mode and host/url have to be selected
     try {
       parameterExtractor.selectedAlternativeInternalId(OpcUaLabels.OPC_HOST_OR_URL.name());
-      parameterExtractor.selectedSingleValueInternalName(SharedUserConfiguration.SECURITY_MODE, String.class);
-      parameterExtractor.selectedSingleValue(SharedUserConfiguration.SECURITY_POLICY, String.class);
+      parameterExtractor.selectedAlternativeInternalId(OpcUaLabels.ACCESS_MODE.name());
     } catch (NullPointerException nullPointerException) {
       return config;
     }
 
-    var opcUaConfig = SpOpcUaConfigExtractor.extractSharedConfig(parameterExtractor, new OpcUaConfig());
+    SpOpcUaClient spOpcUaClient = new SpOpcUaClient(
+        SpOpcUaConfigExtractor.extractSharedConfig(parameterExtractor, new OpcUaConfig())
+    );
 
     try {
-      var connectedClient = clientProvider.getClient(opcUaConfig);
+      spOpcUaClient.connect();
       OpcUaNodeBrowser nodeBrowser =
-          new OpcUaNodeBrowser(connectedClient.getClient(), opcUaConfig);
+          new OpcUaNodeBrowser(spOpcUaClient.getClient(), spOpcUaClient.getSpOpcConfig());
 
       var nodes = nodeBrowser.buildNodeTreeFromOrigin(config.getNextBaseNodeToResolve());
       if (Objects.isNull(config.getNextBaseNodeToResolve())) {
@@ -207,7 +202,7 @@ public class OpcUaUtil {
 
       if (!config.getSelectedNodesInternalNames().isEmpty()) {
         config.setSelectedNodesInternalNames(
-            filterMissingNodes(connectedClient.getClient(), config.getSelectedNodesInternalNames())
+            filterMissingNodes(spOpcUaClient.getClient(), config.getSelectedNodesInternalNames())
         );
       }
 
@@ -218,15 +213,13 @@ public class OpcUaUtil {
     } catch (ExecutionException | InterruptedException | URISyntaxException e) {
       throw new SpConfigurationException("Could not connect to the OPC UA server with the provided settings", e);
     } finally {
-      clientProvider.releaseClient(opcUaConfig);
-      // TODO
-//      if (spOpcUaClient.getClient() != null) {
-//        spOpcUaClient.disconnect();
-//      }
+      if (spOpcUaClient.getClient() != null) {
+        spOpcUaClient.disconnect();
+      }
     }
   }
 
-  public static List<String> filterMissingNodes(UaClient opcUaClient,
+  public static List<String> filterMissingNodes(OpcUaClient opcUaClient,
                                                 List<String> selectedNodes) {
     return selectedNodes.stream().filter(selectedNode -> {
       try {

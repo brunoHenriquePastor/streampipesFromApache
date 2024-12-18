@@ -53,7 +53,6 @@ public class ParserDescriptionBuilder extends
         elementDescription.getName(),
         elementDescription.getDescription(),
         getStaticProperties());
-    group.setHorizontalRendering(false);
     this.elementDescription.setConfig(group);
   }
 }

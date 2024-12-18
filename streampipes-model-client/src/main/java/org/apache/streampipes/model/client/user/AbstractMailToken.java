@@ -17,11 +17,9 @@
  */
 package org.apache.streampipes.model.client.user;
 
-import org.apache.streampipes.model.shared.api.Storable;
-
 import com.google.gson.annotations.SerializedName;
 
-public abstract class AbstractMailToken implements Storable {
+public abstract class AbstractMailToken {
 
   protected @SerializedName("_id") String token;
   protected @SerializedName("_rev") String rev;
@@ -50,15 +48,5 @@ public abstract class AbstractMailToken implements Storable {
 
   public void setUsername(String username) {
     this.username = username;
-  }
-
-  @Override
-  public String getElementId() {
-    return this.token;
-  }
-
-  @Override
-  public void setElementId(String elementId) {
-    this.token = elementId;
   }
 }

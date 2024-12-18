@@ -27,7 +27,7 @@ import { Observable } from 'rxjs';
     styleUrls: ['./security-user-config.component.scss'],
 })
 export class SecurityUserConfigComponent extends AbstractSecurityPrincipalConfig<UserAccount> {
-    displayedColumns: string[] = ['username', 'provider', 'fullName', 'edit'];
+    displayedColumns: string[] = ['username', 'fullName', 'edit'];
 
     getObservable(): Observable<UserAccount[]> {
         return this.userAdminService.getAllUserAccounts();
@@ -38,8 +38,6 @@ export class SecurityUserConfigComponent extends AbstractSecurityPrincipalConfig
     }
 
     getNewInstance(): UserAccount {
-        const user = new UserAccount();
-        user.provider = 'local';
-        return user;
+        return new UserAccount();
     }
 }

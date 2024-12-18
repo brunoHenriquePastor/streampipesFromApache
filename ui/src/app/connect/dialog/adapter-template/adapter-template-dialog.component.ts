@@ -19,6 +19,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {
     PipelineElementTemplate,
+    PipelineElementTemplateConfig,
     PipelineElementTemplateService,
     StaticPropertyUnion,
 } from '@streampipes/platform-services';
@@ -37,7 +38,7 @@ export class SpAdapterTemplateDialogComponent implements OnInit {
     appId: string;
 
     template: PipelineElementTemplate;
-    templateConfigs: Map<string, any>[] = [];
+    templateConfigs: Map<string, any> = new Map();
 
     constructor(
         public dialogRef: DialogRef<SpAdapterTemplateDialogComponent>,
@@ -52,18 +53,19 @@ export class SpAdapterTemplateDialogComponent implements OnInit {
         this.template.templateConfigs = this.convert(this.templateConfigs);
         this.pipelineElementTemplateService
             .storePipelineElementTemplate(this.template)
-            .subscribe(() => {
+            .subscribe(result => {
                 this.dialogRef.close(true);
             });
     }
 
-    convert(templateConfigs: Map<string, any>[]): Record<string, any>[] {
-        return templateConfigs.map(map => {
-            const obj: Record<string, any> = {};
-            map.forEach((value, key) => {
-                obj[key] = value;
-            });
-            return obj;
+    convert(templateConfigs: Map<string, any>): any {
+        const configs: { [index: string]: PipelineElementTemplateConfig } = {};
+        templateConfigs.forEach((value, key) => {
+            configs[key] = new PipelineElementTemplateConfig();
+            configs[key].editable = value.editable;
+            configs[key].displayed = value.displayed;
+            configs[key].value = value.value;
         });
+        return configs;
     }
 }

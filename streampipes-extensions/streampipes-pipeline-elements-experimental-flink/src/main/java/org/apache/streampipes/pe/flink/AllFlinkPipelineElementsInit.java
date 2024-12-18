@@ -17,6 +17,10 @@
  */
 package org.apache.streampipes.pe.flink;
 
+import org.apache.streampipes.dataformat.cbor.CborDataFormatFactory;
+import org.apache.streampipes.dataformat.fst.FstDataFormatFactory;
+import org.apache.streampipes.dataformat.json.JsonDataFormatFactory;
+import org.apache.streampipes.dataformat.smile.SmileDataFormatFactory;
 import org.apache.streampipes.extensions.management.model.SpServiceDefinition;
 import org.apache.streampipes.extensions.management.model.SpServiceDefinitionBuilder;
 import org.apache.streampipes.messaging.jms.SpJmsProtocolFactory;
@@ -43,11 +47,11 @@ import org.apache.streampipes.pe.flink.processor.timestamp.TimestampController;
 import org.apache.streampipes.pe.flink.processor.urldereferencing.UrlDereferencingController;
 import org.apache.streampipes.pe.flink.processor.wordcount.WordCountController;
 import org.apache.streampipes.pe.flink.sink.elasticsearch.ElasticSearchController;
-import org.apache.streampipes.service.extensions.StreamPipesExtensionsServiceBase;
+import org.apache.streampipes.service.extensions.ExtensionsModelSubmitter;
 import org.apache.streampipes.wrapper.flink.FlinkRuntimeProvider;
 
 
-public class AllFlinkPipelineElementsInit extends StreamPipesExtensionsServiceBase {
+public class AllFlinkPipelineElementsInit extends ExtensionsModelSubmitter {
 
   public static void main(String[] args) {
     new AllFlinkPipelineElementsInit().init();
@@ -79,6 +83,11 @@ public class AllFlinkPipelineElementsInit extends StreamPipesExtensionsServiceBa
             new BoilerplateController(),
             new ElasticSearchController())
         .registerRuntimeProvider(new FlinkRuntimeProvider())
+        .registerMessagingFormats(
+            new JsonDataFormatFactory(),
+            new CborDataFormatFactory(),
+            new SmileDataFormatFactory(),
+            new FstDataFormatFactory())
         .registerMessagingProtocols(
             new SpKafkaProtocolFactory(),
             new SpJmsProtocolFactory(),

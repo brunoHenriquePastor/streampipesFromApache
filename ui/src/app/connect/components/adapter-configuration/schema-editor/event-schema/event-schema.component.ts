@@ -186,6 +186,24 @@ export class EventSchemaComponent implements OnChanges {
         }
     }
 
+    public addNestedProperty(eventProperty?: EventPropertyNested): void {
+        const uuid: string = this.idGeneratorService.generate(25);
+        const nested: EventPropertyNested = new EventPropertyNested();
+        nested['@class'] =
+            'org.apache.streampipes.model.schema.EventPropertyNested';
+        nested.elementId = uuid;
+        nested.eventProperties = [];
+        nested.domainProperties = [];
+        nested.runtimeName = 'nested';
+        nested.additionalMetadata = {};
+        if (!eventProperty) {
+            this.targetSchema.eventProperties.push(nested);
+        } else {
+            eventProperty.eventProperties.push(nested);
+        }
+        this.refreshTree();
+    }
+
     public removeSelectedProperties(eventProperties?: any): void {
         eventProperties = eventProperties || this.targetSchema.eventProperties;
         for (let i = eventProperties.length - 1; i >= 0; --i) {
@@ -211,7 +229,7 @@ export class EventSchemaComponent implements OnChanges {
 
         eventProperty.runtimeName = runtimeName;
         eventProperty.runtimeType = DataType.STRING;
-        eventProperty.semanticType = undefined;
+        eventProperty.domainProperties = [];
         eventProperty.propertyScope = 'DIMENSION_PROPERTY';
         eventProperty.additionalMetadata = {};
 
@@ -230,7 +248,7 @@ export class EventSchemaComponent implements OnChanges {
         eventProperty.runtimeName = 'timestamp';
         eventProperty.label = 'Timestamp';
         eventProperty.description = 'The current timestamp value';
-        eventProperty.semanticType = SemanticType.TIMESTAMP;
+        eventProperty.domainProperties = [SemanticType.TIMESTAMP];
         eventProperty.propertyScope = 'HEADER_PROPERTY';
         eventProperty.runtimeType = DataType.LONG;
         eventProperty.additionalMetadata = {};
@@ -280,7 +298,7 @@ export class EventSchemaComponent implements OnChanges {
     private checkIfValid(eventSchema: EventSchema): boolean {
         this.timestampPresent = false;
         eventSchema.eventProperties.forEach(p => {
-            if (SemanticType.isTimestamp(p)) {
+            if (p.domainProperties.indexOf('http://schema.org/DateTime') > -1) {
                 this.timestampPresent = true;
             }
         });

@@ -20,7 +20,6 @@ package org.apache.streampipes.extensions.connectors.opcua.migration;
 
 import org.apache.streampipes.extensions.api.extractor.IStaticPropertyExtractor;
 import org.apache.streampipes.extensions.api.migration.IAdapterMigrator;
-import org.apache.streampipes.extensions.connectors.opcua.adapter.OpcUaAdapter;
 import org.apache.streampipes.model.connect.adapter.AdapterDescription;
 import org.apache.streampipes.model.extensions.svcdiscovery.SpServiceTagPrefix;
 import org.apache.streampipes.model.migration.MigrationResult;
@@ -39,7 +38,7 @@ public class OpcUaAdapterMigrationV2 implements IAdapterMigrator {
   @Override
   public ModelMigratorConfig config() {
     return new ModelMigratorConfig(
-        OpcUaAdapter.ID,
+        "org.apache.streampipes.connect.iiot.adapters.opcua",
         SpServiceTagPrefix.ADAPTER,
         1,
         2

@@ -42,9 +42,4 @@ public class UserDefinedOutputStrategy extends OutputStrategy {
   public void setEventProperties(List<EventProperty> eventProperties) {
     this.eventProperties = eventProperties;
   }
-
-  @Override
-  public void accept(OutputStrategyVisitor visitor) {
-    visitor.visit(this);
-  }
 }

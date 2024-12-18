@@ -75,7 +75,7 @@
             <mat-form-field fxFlex color="accent">
                 <mat-label>Semantic type</mat-label>
                 <input
-                    [(ngModel)]="ep.semanticType"
+                    [(ngModel)]="ep.domainProperties[0]"
                     [disabled]="restrictedEditMode"
                     data-cy="semantic-type"
                     fxFlex

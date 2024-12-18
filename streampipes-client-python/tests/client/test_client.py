@@ -44,8 +44,10 @@ class TestStreamPipesClient(TestCase):
             "Application": "application/json",
         }
         result_headers = dict(result.request_session.headers)
-        for key, value in expected_headers.items():
-            self.assertEqual(result_headers.get(key), value)
+        self.assertDictContainsSubset(
+            subset=expected_headers,
+            dictionary=result_headers,
+        )
         self.assertTrue(isinstance(result.dataLakeMeasureApi, DataLakeMeasureEndpoint))
         self.assertEqual(result.base_api_path, "http://localhost:80/streampipes-backend/")
 
@@ -69,8 +71,10 @@ class TestStreamPipesClient(TestCase):
             "Application": "application/json",
         }
         result_headers = dict(result.request_session.headers)
-        for key, value in expected_headers.items():
-            self.assertEqual(result_headers.get(key), value)
+        self.assertDictContainsSubset(
+            subset=expected_headers,
+            dictionary=result_headers,
+        )
         self.assertTrue(isinstance(result.dataLakeMeasureApi, DataLakeMeasureEndpoint))
         self.assertEqual(result.base_api_path, "https://localhost:443/streampipes-backend/")
 
@@ -115,13 +119,7 @@ class TestStreamPipesClient(TestCase):
             if "streams" in kwargs["url"]:
                 return MockResponse(
                     json.dumps(
-                        [
-                            {
-                                "elementId": "test-stream",
-                                "name": "test",
-                                "eventGrounding": {"transportProtocols": []},
-                            }
-                        ]
+                        [{"elementId": "test-stream", "name": "test", "eventGrounding": {"transportProtocols": []}}]
                     )
                 )
             if "versions" in kwargs["url"]:
@@ -140,8 +138,7 @@ class TestStreamPipesClient(TestCase):
         mocked_logger.info.assert_has_calls(
             calls=[
                 call(
-                    "\nHi there!\nYou are connected to a StreamPipes instance running at "
-                    "https://localhost:443 with version SP-dev.\n"
+                    "\nHi there!\nYou are connected to a StreamPipes instance running at https://localhost:443 with version SP-dev.\n"
                     "The following StreamPipes resources are available with this client:\n"
                     "1x DataLakeMeasures\n1x DataStreams"
                 ),
