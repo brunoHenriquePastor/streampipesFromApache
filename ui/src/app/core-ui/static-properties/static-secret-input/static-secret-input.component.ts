@@ -26,7 +26,7 @@ import { AbstractValidatedStaticPropertyRenderer } from '../base/abstract-valida
 @Component({
     selector: 'sp-app-static-secret-input',
     templateUrl: './static-secret-input.component.html',
-    styleUrls: ['./static-secret-input.component.scss'],
+    styleUrls: ['./static-secret-input.component.css'],
 })
 export class StaticSecretInputComponent
     extends AbstractValidatedStaticPropertyRenderer<SecretStaticProperty>

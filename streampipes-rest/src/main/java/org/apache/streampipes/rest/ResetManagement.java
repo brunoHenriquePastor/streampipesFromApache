@@ -22,7 +22,8 @@ import org.apache.streampipes.commons.exceptions.SpRuntimeException;
 import org.apache.streampipes.commons.exceptions.connect.AdapterException;
 import org.apache.streampipes.commons.prometheus.adapter.AdapterMetricsManager;
 import org.apache.streampipes.connect.management.management.AdapterMasterManagement;
-import org.apache.streampipes.dataexplorer.management.DataExplorerDispatcher;
+import org.apache.streampipes.dataexplorer.DataExplorerQueryManagement;
+import org.apache.streampipes.dataexplorer.DataExplorerSchemaManagement;
 import org.apache.streampipes.manager.file.FileManager;
 import org.apache.streampipes.manager.pipeline.PipelineCacheManager;
 import org.apache.streampipes.manager.pipeline.PipelineCanvasMetadataCacheManager;
@@ -136,12 +137,12 @@ public class ResetManagement {
   }
 
   private static void removeAllDataInDataLake() {
-    var dataLakeMeasureManagement = new DataExplorerDispatcher()
-        .getDataExplorerManager()
-        .getSchemaManagement();
-    var dataExplorerQueryManagement = new DataExplorerDispatcher()
-        .getDataExplorerManager()
-        .getQueryManagement(dataLakeMeasureManagement);
+    var dataLakeStorage = StorageDispatcher.INSTANCE
+        .getNoSqlStore()
+        .getDataLakeStorage();
+    var dataLakeMeasureManagement = new DataExplorerSchemaManagement(dataLakeStorage);
+    var dataExplorerQueryManagement =
+        new DataExplorerQueryManagement(dataLakeMeasureManagement);
     List<DataLakeMeasure> allMeasurements = dataLakeMeasureManagement.getAllMeasurements();
     allMeasurements.forEach(measurement -> {
       boolean isSuccessDataLake = dataExplorerQueryManagement.deleteData(measurement.getMeasureName());

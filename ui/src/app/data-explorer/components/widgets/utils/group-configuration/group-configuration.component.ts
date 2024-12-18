@@ -22,7 +22,7 @@ import { EventPropertyUnion } from '@streampipes/platform-services';
 @Component({
     selector: 'sp-group-configuration',
     templateUrl: './group-configuration.component.html',
-    styleUrls: ['./group-configuration.component.scss'],
+    styleUrls: ['./group-configuration.component.css'],
 })
 export class GroupConfigurationComponent implements OnInit {
     groupingAvailable = true;

@@ -18,10 +18,12 @@
 
 package org.apache.streampipes.ps;
 
+import org.apache.streampipes.dataexplorer.DataExplorerSchemaManagement;
 import org.apache.streampipes.dataexplorer.api.IDataExplorerSchemaManagement;
-import org.apache.streampipes.dataexplorer.management.DataExplorerDispatcher;
+import org.apache.streampipes.dataexplorer.influx.DataLakeMeasurementCount;
 import org.apache.streampipes.model.datalake.DataLakeMeasure;
 import org.apache.streampipes.rest.core.base.impl.AbstractAuthGuardedRestResource;
+import org.apache.streampipes.storage.management.StorageDispatcher;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,8 +48,10 @@ public class DataLakeMeasureResourceV4 extends AbstractAuthGuardedRestResource {
   private final IDataExplorerSchemaManagement dataLakeMeasureManagement;
 
   public DataLakeMeasureResourceV4() {
-    this.dataLakeMeasureManagement = new DataExplorerDispatcher().getDataExplorerManager()
-        .getSchemaManagement();
+    var dataLakeStorage = StorageDispatcher.INSTANCE
+        .getNoSqlStore()
+        .getDataLakeStorage();
+    this.dataLakeMeasureManagement = new DataExplorerSchemaManagement(dataLakeStorage);
   }
 
   @PostMapping(
@@ -63,12 +67,7 @@ public class DataLakeMeasureResourceV4 extends AbstractAuthGuardedRestResource {
   public ResponseEntity<Map<String, Integer>> getDataLakeInfos(
       @RequestParam(value = "filter", required = false) List<String> measurementNames) {
     var allMeasurements = this.dataLakeMeasureManagement.getAllMeasurements();
-    return ok(new DataExplorerDispatcher().getDataExplorerManager()
-        .getMeasurementCounter(
-            allMeasurements,
-            measurementNames
-        )
-        .countMeasurementSizes());
+    return ok(new DataLakeMeasurementCount(allMeasurements, measurementNames).countMeasurementSizes());
   }
 
   @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)

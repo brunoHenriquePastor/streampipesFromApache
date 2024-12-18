@@ -55,6 +55,6 @@ public class ContainerProvidedOptionsHandler {
 
   private String getEndpointUrl(String appId) throws NoServiceEndpointsAvailableException {
     SpServiceUrlProvider provider = ExtensionsServiceEndpointUtils.getPipelineElementType(appId);
-    return new ExtensionsServiceEndpointGenerator().getEndpointResourceUrl(appId, provider) + "/configurations";
+    return new ExtensionsServiceEndpointGenerator(appId, provider).getEndpointResourceUrl() + "/configurations";
   }
 }

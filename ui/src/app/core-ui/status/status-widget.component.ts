@@ -21,7 +21,7 @@ import { Component, Input } from '@angular/core';
 @Component({
     selector: 'sp-status-widget',
     templateUrl: './status-widget.component.html',
-    styleUrls: ['./status-widget.component.scss'],
+    styleUrls: ['./status-widget.component.css'],
 })
 export class StatusWidgetComponent {
     @Input() color = 'rgb(156, 156, 156)';

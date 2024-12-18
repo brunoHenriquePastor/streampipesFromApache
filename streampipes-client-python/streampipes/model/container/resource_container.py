@@ -166,7 +166,7 @@ class ResourceContainer(ABC):
         Returns
         -------
         container: ResourceContainer
-            Instance of the container derived from the JSON definition
+            instance of the container derived from the JSON definition
 
         Raises
         ------

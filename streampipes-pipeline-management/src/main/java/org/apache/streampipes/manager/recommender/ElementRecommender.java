@@ -36,6 +36,7 @@ import org.apache.streampipes.resource.management.SpResourceManager;
 import org.apache.streampipes.storage.api.INoSqlStorage;
 import org.apache.streampipes.storage.api.IPipelineElementDescriptionStorage;
 import org.apache.streampipes.storage.management.StorageDispatcher;
+import org.apache.streampipes.storage.management.StorageManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,7 +185,7 @@ public class ElementRecommender {
   }
 
   private IPipelineElementDescriptionStorage getTripleStore() {
-    return StorageDispatcher.INSTANCE.getNoSqlStore().getPipelineElementDescriptionStorage();
+    return StorageManager.INSTANCE.getPipelineElementStorage();
   }
 
   private INoSqlStorage getNoSqlStorage() {

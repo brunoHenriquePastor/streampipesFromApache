@@ -22,7 +22,7 @@ import { DataExplorerField } from '@streampipes/platform-services';
 @Component({
     selector: 'sp-select-properties',
     templateUrl: './select-properties.component.html',
-    styleUrls: ['./select-properties.component.scss'],
+    styleUrls: ['./select-properties.component.css'],
 })
 export class SelectPropertiesComponent implements OnInit {
     @Output() changeSelectedProperties: EventEmitter<DataExplorerField[]> =

@@ -28,7 +28,7 @@ import { Observable } from 'rxjs';
 @Component({
     selector: 'sp-add-to-collection',
     templateUrl: './add-to-collection.component.html',
-    styleUrls: ['./add-to-collection.component.scss'],
+    styleUrls: ['./add-to-collection.component.css'],
 })
 export class AddToCollectionComponent {
     @Input()

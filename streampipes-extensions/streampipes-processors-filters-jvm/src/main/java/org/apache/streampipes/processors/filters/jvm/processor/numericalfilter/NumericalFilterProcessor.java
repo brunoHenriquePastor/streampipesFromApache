@@ -39,9 +39,9 @@ import org.apache.streampipes.sdk.utils.Assets;
 
 public class NumericalFilterProcessor implements IStreamPipesDataProcessor {
 
-  protected static final String NUMBER_MAPPING = "number-mapping";
-  protected static final String VALUE = "value";
-  protected static final String OPERATION = "operation";
+  private static final String NUMBER_MAPPING = "number-mapping";
+  private static final String VALUE = "value";
+  private static final String OPERATION = "operation";
 
   private double threshold;
   private NumericalOperator numericalOperator;

@@ -40,7 +40,7 @@ public class AssetFetcher {
   }
 
   public InputStream fetchPipelineElementAssets() throws IOException, NoServiceEndpointsAvailableException {
-    String endpointUrl = new ExtensionsServiceEndpointGenerator().getEndpointResourceUrl(appId, spServiceUrlProvider);
+    String endpointUrl = new ExtensionsServiceEndpointGenerator(appId, spServiceUrlProvider).getEndpointResourceUrl();
     return Request
         .Get(endpointUrl + ASSET_ENDPOINT_APPENDIX)
         .execute()

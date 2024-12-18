@@ -44,7 +44,7 @@ declare const window: Window;
 @Component({
     selector: 'sp-create-asset',
     templateUrl: './create-asset.component.html',
-    styleUrls: ['./create-asset.component.scss'],
+    styleUrls: ['./create-asset.component.css'],
 })
 export class CreateAssetComponent implements AfterViewInit {
     fileName: any;

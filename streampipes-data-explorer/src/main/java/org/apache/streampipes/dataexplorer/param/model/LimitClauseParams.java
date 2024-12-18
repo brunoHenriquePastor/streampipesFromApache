@@ -18,13 +18,23 @@
 
 package org.apache.streampipes.dataexplorer.param.model;
 
-import org.apache.streampipes.dataexplorer.api.IDataLakeQueryBuilder;
 import org.apache.streampipes.dataexplorer.api.IQueryStatement;
+import org.apache.streampipes.dataexplorer.querybuilder.IDataLakeQueryBuilder;
 
-public record LimitClauseParams(Integer limit) implements IQueryStatement {
+public class LimitClauseParams implements IQueryStatement {
+
+  private final Integer limit;
+
+  public LimitClauseParams(Integer limit) {
+    this.limit = limit;
+  }
 
   public static LimitClauseParams from(Integer limit) {
     return new LimitClauseParams(limit);
+  }
+
+  public Integer getLimit() {
+    return limit;
   }
 
   @Override

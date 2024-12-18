@@ -223,9 +223,7 @@ export class ConnectUtils {
             'be.visible',
         );
         if (switchUserCheck) {
-            UserUtils.switchUser(
-                UserUtils.userWithAdapterAndPipelineAdminRights,
-            );
+            cy.switchUser(UserUtils.adapterAndPipelineAdminUser);
         }
         this.checkAdapterAndAssociatedPipelinesDeleted();
     }

@@ -38,8 +38,6 @@ public interface Environment {
 
   // Time series storage env variables
 
-  StringEnvironmentVariable getTsStorage();
-
   StringEnvironmentVariable getTsStorageProtocol();
 
   StringEnvironmentVariable getTsStorageHost();
@@ -51,14 +49,6 @@ public interface Environment {
   StringEnvironmentVariable getTsStorageOrg();
 
   StringEnvironmentVariable getTsStorageBucket();
-
-  IntEnvironmentVariable getIotDbSessionPoolSize();
-
-  BooleanEnvironmentVariable getIotDbSessionEnableCompression();
-
-  StringEnvironmentVariable getIotDbUser();
-
-  StringEnvironmentVariable getIotDbPassword();
 
   // CouchDB env variables
 
@@ -144,7 +134,5 @@ public interface Environment {
   IntEnvironmentVariable getNatsPort();
 
   StringEnvironmentVariable getPulsarUrl();
-
-  StringEnvironmentVariable getCustomServiceTags();
 
 }

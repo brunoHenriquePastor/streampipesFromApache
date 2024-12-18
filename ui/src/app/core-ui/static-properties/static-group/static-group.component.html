@@ -20,7 +20,6 @@
     <sp-app-static-property
         *ngFor="let property of staticProperty.staticProperties; let i = index"
         [adapterId]="adapterId"
-        [deploymentConfiguration]="deploymentConfiguration"
         [parentForm]="parentForm"
         [staticProperties]="staticProperties"
         [fieldName]="fieldName + '-' + property.internalName + '-' + i"
@@ -45,7 +44,6 @@
         <span *ngIf="i > 0" style="margin-left: 10px"></span>
         <sp-app-static-property
             [adapterId]="adapterId"
-            [deploymentConfiguration]="deploymentConfiguration"
             [parentForm]="parentForm"
             [staticProperties]="staticProperties"
             [showBorder]="false"

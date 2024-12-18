@@ -117,10 +117,7 @@ public class PipelineElementTemplateVisitor implements StaticPropertyVisitor {
 
   @Override
   public void visit(MappingPropertyUnary mappingPropertyUnary) {
-    if (hasKey(mappingPropertyUnary)) {
-      var selectedProperty = getAsString(mappingPropertyUnary);
-      mappingPropertyUnary.setSelectedProperty(selectedProperty);
-    }
+    // Do nothing, not supported by pipeline element templates
   }
 
   @Override

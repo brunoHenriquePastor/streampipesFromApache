@@ -18,7 +18,6 @@
 
 import { AbstractStaticPropertyRenderer } from '../base/abstract-static-property';
 import {
-    ExtensionDeploymentConfiguration,
     RuntimeOptionsRequest,
     RuntimeOptionsResponse,
     RuntimeResolvableAnyStaticProperty,
@@ -49,8 +48,6 @@ export abstract class BaseRuntimeResolvableInput<
 {
     @Input()
     completedStaticProperty: ConfigurationInfo;
-
-    @Input() deploymentConfiguration: ExtensionDeploymentConfiguration;
 
     showOptions = false;
     loading = false;
@@ -90,9 +87,6 @@ export abstract class BaseRuntimeResolvableInput<
                 this.pipelineElement.appId;
             resolvableOptionsParameterRequest.belongsTo =
                 this.pipelineElement.belongsTo;
-        } else {
-            resolvableOptionsParameterRequest.deploymentConfiguration =
-                this.deploymentConfiguration;
         }
         this.showOptions = false;
         this.loading = true;

@@ -19,7 +19,34 @@ package org.apache.streampipes.model.client.user;
 
 import java.util.Objects;
 
-public record PermissionEntry(String sid, PrincipalType principalType) {
+public class PermissionEntry {
+
+  private String sid;
+  private PrincipalType principalType;
+
+  public PermissionEntry() {
+  }
+
+  public PermissionEntry(String sid, PrincipalType principalType) {
+    this.sid = sid;
+    this.principalType = principalType;
+  }
+
+  public String getSid() {
+    return sid;
+  }
+
+  public void setSid(String sid) {
+    this.sid = sid;
+  }
+
+  public PrincipalType getPrincipalType() {
+    return principalType;
+  }
+
+  public void setPrincipalType(PrincipalType principalType) {
+    this.principalType = principalType;
+  }
 
   @Override
   public boolean equals(Object o) {

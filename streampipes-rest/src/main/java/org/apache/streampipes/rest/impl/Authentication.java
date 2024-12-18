@@ -63,10 +63,10 @@ public class Authentication extends AbstractRestResource {
       path = "/login",
       produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE,
       consumes = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> doLogin(@RequestBody LoginRequest login) {
+  public ResponseEntity<?> doLogin(@RequestBody LoginRequest token) {
     try {
       org.springframework.security.core.Authentication authentication = authenticationManager.authenticate(
-          new UsernamePasswordAuthenticationToken(login.username(), login.password()));
+          new UsernamePasswordAuthenticationToken(token.getUsername(), token.getPassword()));
       SecurityContextHolder.getContext().setAuthentication(authentication);
       return processAuth(authentication);
     } catch (BadCredentialsException e) {
@@ -154,6 +154,6 @@ public class Authentication extends AbstractRestResource {
 
   private JwtAuthenticationResponse makeJwtResponse(org.springframework.security.core.Authentication auth) {
     String jwt = new JwtTokenProvider().createToken(auth);
-    return new JwtAuthenticationResponse(jwt);
+    return JwtAuthenticationResponse.from(jwt);
   }
 }

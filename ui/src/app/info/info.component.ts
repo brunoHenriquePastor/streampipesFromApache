@@ -22,7 +22,7 @@ import { SpBreadcrumbService } from '@streampipes/shared-ui';
 
 @Component({
     templateUrl: './info.component.html',
-    styleUrls: ['./info.component.scss'],
+    styleUrls: ['./info.component.css'],
 })
 export class InfoComponent implements OnInit {
     currentTabIndex = 0;

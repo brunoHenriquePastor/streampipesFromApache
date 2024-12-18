@@ -37,13 +37,8 @@ export class SpConfigurationTabs {
                 itemLink: ['configuration', 'export'],
             },
             {
-                itemId: 'extensions-installation',
-                itemTitle: 'Extensions',
-                itemLink: ['configuration', 'extensions-installation'],
-            },
-            {
                 itemId: 'extensions-services',
-                itemTitle: 'Extension Services',
+                itemTitle: 'Extensions Services',
                 itemLink: ['configuration', 'extensions-services'],
             },
             {

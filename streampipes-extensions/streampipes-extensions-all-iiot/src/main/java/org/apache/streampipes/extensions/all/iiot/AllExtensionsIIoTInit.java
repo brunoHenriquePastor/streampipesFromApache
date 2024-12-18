@@ -19,7 +19,6 @@
 package org.apache.streampipes.extensions.all.iiot;
 
 import org.apache.streampipes.connect.iiot.IIoTAdaptersExtensionModuleExport;
-import org.apache.streampipes.connectors.ros.RosConnectorsModuleExport;
 import org.apache.streampipes.dataformat.cbor.CborDataFormatFactory;
 import org.apache.streampipes.dataformat.fst.FstDataFormatFactory;
 import org.apache.streampipes.dataformat.json.JsonDataFormatFactory;
@@ -45,14 +44,14 @@ import org.apache.streampipes.processors.enricher.jvm.EnricherExtensionModuleExp
 import org.apache.streampipes.processors.filters.jvm.FilterExtensionModuleExport;
 import org.apache.streampipes.processors.siddhi.SiddhiFilterExtensionModuleExport;
 import org.apache.streampipes.processors.transformation.jvm.TransformationExtensionModuleExport;
-import org.apache.streampipes.service.extensions.StreamPipesExtensionsServiceBase;
+import org.apache.streampipes.service.extensions.ExtensionsModelSubmitter;
 import org.apache.streampipes.sinks.brokers.jvm.BrokerSinksExtensionModuleExport;
 import org.apache.streampipes.sinks.databases.jvm.DatabaseSinksExtensionModuleExport;
 import org.apache.streampipes.sinks.internal.jvm.InternalSinksExtensionModuleExports;
 import org.apache.streampipes.sinks.notifications.jvm.NotificationsExtensionModuleExport;
 import org.apache.streampipes.wrapper.standalone.runtime.StandaloneStreamPipesRuntimeProvider;
 
-public class AllExtensionsIIoTInit extends StreamPipesExtensionsServiceBase {
+public class AllExtensionsIIoTInit extends ExtensionsModelSubmitter {
 
   public static void main(String[] args) {
     new AllExtensionsIIoTInit().init();
@@ -74,7 +73,6 @@ public class AllExtensionsIIoTInit extends StreamPipesExtensionsServiceBase {
             new PlcConnectorsModuleExport(),
             new PulsarConnectorsModuleExport(),
             new RocketMqConnectorsModuleExport(),
-            new RosConnectorsModuleExport(),
             new TubeMQConnectorsModuleExport(),
 
             new ChangeDetectionExtensionModuleExport(),

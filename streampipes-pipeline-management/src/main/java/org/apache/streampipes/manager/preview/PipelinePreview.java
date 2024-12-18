@@ -80,11 +80,10 @@ public class PipelinePreview {
   }
 
   private String findSelectedEndpoint(InvocableStreamPipesEntity g) throws NoServiceEndpointsAvailableException {
-    return new ExtensionsServiceEndpointGenerator()
-        .getEndpointResourceUrl(
-            g.getAppId(),
-            ExtensionsServiceEndpointUtils.getPipelineElementType(g)
-        );
+    return new ExtensionsServiceEndpointGenerator(
+        g.getAppId(),
+        ExtensionsServiceEndpointUtils.getPipelineElementType(g))
+        .getEndpointResourceUrl();
   }
 
   private void invokeGraphs(List<InvocableStreamPipesEntity> graphs) {

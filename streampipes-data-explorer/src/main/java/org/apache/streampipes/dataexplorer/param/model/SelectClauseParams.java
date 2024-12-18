@@ -19,9 +19,8 @@
 package org.apache.streampipes.dataexplorer.param.model;
 
 
-import org.apache.streampipes.dataexplorer.api.IDataLakeQueryBuilder;
 import org.apache.streampipes.dataexplorer.api.IQueryStatement;
-import org.apache.streampipes.model.datalake.AggregationFunction;
+import org.apache.streampipes.dataexplorer.querybuilder.IDataLakeQueryBuilder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +31,10 @@ public class SelectClauseParams implements IQueryStatement {
   private List<SelectColumn> selectedColumns;
   private List<SelectColumn> selectedColumnsCountOnly;
   private boolean selectWildcard = false;
+
+  public SelectClauseParams() {
+    this.selectWildcard = true;
+  }
 
   public SelectClauseParams(String columns,
                             boolean countOnly) {

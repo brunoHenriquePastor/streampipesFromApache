@@ -17,10 +17,9 @@
  */
 package org.apache.streampipes.dataexplorer.param.model;
 
-import org.apache.streampipes.dataexplorer.api.IDataLakeQueryBuilder;
 import org.apache.streampipes.dataexplorer.api.IQueryStatement;
 import org.apache.streampipes.dataexplorer.param.ProvidedRestQueryParamConverter;
-import org.apache.streampipes.model.datalake.AggregationFunction;
+import org.apache.streampipes.dataexplorer.querybuilder.IDataLakeQueryBuilder;
 
 public class SelectColumn implements IQueryStatement {
 

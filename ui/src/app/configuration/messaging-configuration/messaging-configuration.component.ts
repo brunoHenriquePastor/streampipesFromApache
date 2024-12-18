@@ -27,7 +27,7 @@ import { MessagingSettings } from '@streampipes/platform-services';
 @Component({
     selector: 'sp-messaging-configuration',
     templateUrl: './messaging-configuration.component.html',
-    styleUrls: ['./messaging-configuration.component.scss'],
+    styleUrls: ['./messaging-configuration.component.css'],
 })
 export class MessagingConfigurationComponent implements OnInit {
     tabs = SpConfigurationTabs.getTabs();

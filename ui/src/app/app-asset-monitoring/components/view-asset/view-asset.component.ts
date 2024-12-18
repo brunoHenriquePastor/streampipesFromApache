@@ -46,7 +46,7 @@ declare const window: Window;
 @Component({
     selector: 'sp-view-asset',
     templateUrl: './view-asset.component.html',
-    styleUrls: ['./view-asset.component.scss'],
+    styleUrls: ['./view-asset.component.css'],
 })
 export class ViewAssetComponent implements AfterViewInit, OnDestroy {
     @Input() dashboardConfig: DashboardConfiguration;

@@ -25,7 +25,6 @@ import {
     CollectionStaticProperty,
     ColorPickerStaticProperty,
     EventSchema,
-    ExtensionDeploymentConfiguration,
     FileStaticProperty,
     FreeTextStaticProperty,
     MappingPropertyNary,
@@ -47,7 +46,7 @@ import { InvocablePipelineElementUnion } from '../../editor/model/editor.model';
 @Component({
     selector: 'sp-app-static-property',
     templateUrl: './static-property.component.html',
-    styleUrls: ['./static-property.component.scss'],
+    styleUrls: ['./static-property.component.css'],
 })
 export class StaticPropertyComponent implements OnInit {
     @Input()
@@ -82,9 +81,6 @@ export class StaticPropertyComponent implements OnInit {
 
     @Input()
     pipelineElement: InvocablePipelineElementUnion;
-
-    @Input()
-    deploymentConfiguration: ExtensionDeploymentConfiguration;
 
     showLabel = true;
 

@@ -112,7 +112,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { SpImageContainerComponent } from './components/widgets/image/image-container/image-container.component';
 
 @NgModule({
     imports: [
@@ -226,7 +225,6 @@ import { SpImageContainerComponent } from './components/widgets/image/image-cont
         SpValueHeatmapWidgetConfigComponent,
         SpHistogramChartWidgetConfigComponent,
         SpPieChartWidgetConfigComponent,
-        SpImageContainerComponent,
         SpInvalidConfigurationComponent,
         SpConfigurationBoxComponent,
         SpVisualizationConfigOuterComponent,

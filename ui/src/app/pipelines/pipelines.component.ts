@@ -16,6 +16,7 @@
  *
  */
 
+import * as FileSaver from 'file-saver';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
     FunctionId,
@@ -31,7 +32,9 @@ import {
     PanelType,
     SpBreadcrumbService,
 } from '@streampipes/shared-ui';
+import { ImportPipelineDialogComponent } from './dialog/import-pipeline/import-pipeline-dialog.component';
 import { StartAllPipelinesDialogComponent } from './dialog/start-all-pipelines/start-all-pipelines-dialog.component';
+import { PipelineCategoriesDialogComponent } from './dialog/pipeline-categories/pipeline-categories-dialog.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { UserPrivilege } from '../_enums/user-privilege.enum';
@@ -48,6 +51,7 @@ import { Subscription } from 'rxjs';
 export class PipelinesComponent implements OnInit, OnDestroy {
     pipeline: Pipeline;
     pipelines: Pipeline[] = [];
+    systemPipelines: Pipeline[] = [];
     starting: boolean;
     stopping: boolean;
     pipelineCategories: PipelineCategory[];
@@ -118,6 +122,18 @@ export class PipelinesComponent implements OnInit, OnDestroy {
             });
     }
 
+    setSelectedTab(index) {
+        this.activeCategoryId =
+            index === 0 ? undefined : this.pipelineCategories[index - 1]._id;
+    }
+
+    exportPipelines() {
+        const blob = new Blob([JSON.stringify(this.pipelines)], {
+            type: 'application/json',
+        });
+        FileSaver.saveAs(blob, 'pipelines.json');
+    }
+
     getFunctions() {
         this.functionsService.getActiveFunctions().subscribe(functions => {
             this.functions = functions.map(f => f.functionId);
@@ -152,6 +168,10 @@ export class PipelinesComponent implements OnInit, OnDestroy {
             });
     }
 
+    activeClass(pipeline) {
+        return 'active-pipeline';
+    }
+
     checkCurrentSelectionStatus(status) {
         let active = true;
         this.pipelines.forEach(pipeline => {
@@ -167,6 +187,23 @@ export class PipelinesComponent implements OnInit, OnDestroy {
             }
         });
         return active;
+    }
+
+    openImportPipelinesDialog() {
+        const dialogRef: DialogRef<ImportPipelineDialogComponent> =
+            this.dialogService.open(ImportPipelineDialogComponent, {
+                panelType: PanelType.STANDARD_PANEL,
+                title: 'Import Pipeline',
+                width: '70vw',
+                data: {
+                    pipelines: this.pipelines,
+                },
+            });
+        dialogRef.afterClosed().subscribe(data => {
+            if (data) {
+                this.refreshPipelines();
+            }
+        });
     }
 
     startAllPipelines(action) {
@@ -186,6 +223,24 @@ export class PipelinesComponent implements OnInit, OnDestroy {
             if (data) {
                 this.refreshPipelines();
             }
+        });
+    }
+
+    showPipelineCategoriesDialog() {
+        const dialogRef: DialogRef<PipelineCategoriesDialogComponent> =
+            this.dialogService.open(PipelineCategoriesDialogComponent, {
+                panelType: PanelType.STANDARD_PANEL,
+                title: 'Pipeline Categories',
+                width: '70vw',
+                data: {
+                    pipelines: this.pipelines,
+                    systemPipelines: this.systemPipelines,
+                },
+            });
+
+        dialogRef.afterClosed().subscribe(data => {
+            this.getPipelineCategories();
+            this.refreshPipelines();
         });
     }
 

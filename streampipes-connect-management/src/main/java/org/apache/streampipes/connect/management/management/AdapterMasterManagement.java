@@ -23,7 +23,7 @@ import org.apache.streampipes.commons.exceptions.SepaParseException;
 import org.apache.streampipes.commons.exceptions.connect.AdapterException;
 import org.apache.streampipes.commons.prometheus.adapter.AdapterMetrics;
 import org.apache.streampipes.connect.management.util.GroundingUtils;
-import org.apache.streampipes.manager.execution.endpoint.ExtensionsServiceEndpointGenerator;
+import org.apache.streampipes.connect.management.util.WorkerPaths;
 import org.apache.streampipes.manager.monitoring.pipeline.ExtensionsLogProvider;
 import org.apache.streampipes.manager.verification.DataStreamVerifier;
 import org.apache.streampipes.model.SpDataStream;
@@ -32,11 +32,12 @@ import org.apache.streampipes.model.util.ElementIdGenerator;
 import org.apache.streampipes.resource.management.AdapterResourceManager;
 import org.apache.streampipes.resource.management.DataStreamResourceManager;
 import org.apache.streampipes.storage.api.IAdapterStorage;
-import org.apache.streampipes.svcdiscovery.api.model.SpServiceUrlProvider;
+import org.apache.streampipes.storage.management.StorageDispatcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -53,12 +54,12 @@ public class AdapterMasterManagement {
 
   private final DataStreamResourceManager dataStreamResourceManager;
 
-  public AdapterMasterManagement(IAdapterStorage adapterInstanceStorage,
+  public AdapterMasterManagement(IAdapterStorage adapterStorage,
                                  AdapterResourceManager adapterResourceManager,
                                  DataStreamResourceManager dataStreamResourceManager,
                                  AdapterMetrics adapterMetrics
   ) {
-    this.adapterInstanceStorage = adapterInstanceStorage;
+    this.adapterInstanceStorage = adapterStorage;
     this.adapterMetrics = adapterMetrics;
     this.adapterResourceManager = adapterResourceManager;
     this.dataStreamResourceManager = dataStreamResourceManager;
@@ -163,11 +164,7 @@ public class AdapterMasterManagement {
 
     try {
       // Find endpoint to start adapter on
-      var baseUrl = new ExtensionsServiceEndpointGenerator().getEndpointBaseUrl(
-          ad.getAppId(),
-          SpServiceUrlProvider.ADAPTER,
-          ad.getDeploymentConfiguration().getDesiredServiceTags()
-      );
+      var baseUrl = WorkerPaths.findEndpointUrl(ad.getAppId());
 
       // Update selected endpoint URL of adapter
       ad.setSelectedEndpointUrl(baseUrl);
@@ -180,7 +177,7 @@ public class AdapterMasterManagement {
       adapterMetrics.register(ad.getElementId(), ad.getName());
 
       LOG.info("Started adapter " + elementId + " on: " + baseUrl);
-    } catch (NoServiceEndpointsAvailableException e) {
+    } catch (NoServiceEndpointsAvailableException | URISyntaxException e) {
       throw new AdapterException("Could not start adapter due to unavailable service endpoint", e);
     }
   }
@@ -194,5 +191,9 @@ public class AdapterMasterManagement {
       LOG.error("Error while installing data source: {}", stream.getElementId(), e);
       throw new AdapterException();
     }
+  }
+
+  private IAdapterStorage getAdapterInstanceStorage() {
+    return StorageDispatcher.INSTANCE.getNoSqlStore().getAdapterInstanceStorage();
   }
 }

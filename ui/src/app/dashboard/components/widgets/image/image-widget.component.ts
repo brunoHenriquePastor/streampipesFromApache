@@ -29,7 +29,7 @@ import { ImageConfig } from './image-config';
 @Component({
     selector: 'sp-image-widget',
     templateUrl: './image-widget.component.html',
-    styleUrls: ['./image-widget.component.scss'],
+    styleUrls: ['./image-widget.component.css'],
 })
 export class ImageWidgetComponent
     extends BaseNgxChartsStreamPipesWidget

@@ -32,12 +32,12 @@ import org.apache.streampipes.messaging.kafka.SpKafkaProtocolFactory;
 import org.apache.streampipes.messaging.mqtt.SpMqttProtocolFactory;
 import org.apache.streampipes.messaging.pulsar.SpPulsarProtocolFactory;
 import org.apache.streampipes.messaging.nats.SpNatsProtocolFactory;
-import org.apache.streampipes.service.extensions.StreamPipesExtensionsServiceBase;
+import org.apache.streampipes.service.extensions.ExtensionsModelSubmitter;
 
 import ${package}.config.ConfigKeys;
 import ${package}.pe.sink.${packageName}.${classNamePrefix}Controller;
 
-public class Init extends StreamPipesExtensionsServiceBase {
+public class Init extends ExtensionsModelSubmitter {
 
   public static void main(String[] args) throws Exception {
     new Init().init();

@@ -30,7 +30,7 @@ import {
 @Component({
     selector: 'sp-number-widget',
     templateUrl: './number-widget.component.html',
-    styleUrls: ['./number-widget.component.scss'],
+    styleUrls: ['./number-widget.component.css'],
 })
 export class NumberWidgetComponent
     extends BaseStreamPipesWidget

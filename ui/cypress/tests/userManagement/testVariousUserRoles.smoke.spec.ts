@@ -40,7 +40,7 @@ for (var i = 0; i < testedRoles.length; i++) {
             UserUtils.goToUserConfiguration();
             cy.dataCy('navigation-icon', { timeout: 10000 }).should(
                 'have.length',
-                9,
+                10,
             );
 
             cy.dataCy('user-accounts-table-row', { timeout: 10000 }).should(
@@ -64,7 +64,7 @@ for (var i = 0; i < testedRoles.length; i++) {
             );
 
             // Login as user
-            UserUtils.switchUser(user);
+            cy.switchUser(user);
 
             // Check if every role displays correct navigation menu
             if (testRole == UserRole.ROLE_PIPELINE_ADMIN) {
@@ -95,7 +95,7 @@ for (var i = 0; i < testedRoles.length; i++) {
             }
 
             // Login as admin and delete user
-            UserUtils.switchUser(UserUtils.adminUser);
+            cy.switchUser(UserUtils.adminUser);
             UserUtils.deleteUser(user);
         });
     });

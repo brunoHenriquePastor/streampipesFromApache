@@ -49,7 +49,7 @@ import { MatDialog } from '@angular/material/dialog';
 @Component({
     selector: 'sp-dashboard-panel',
     templateUrl: './dashboard-panel.component.html',
-    styleUrls: ['./dashboard-panel.component.scss'],
+    styleUrls: ['./dashboard-panel.component.css'],
 })
 export class DashboardPanelComponent implements OnInit {
     dashboard: Dashboard;

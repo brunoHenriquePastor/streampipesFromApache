@@ -52,7 +52,7 @@ import { SpDataExplorerRoutes } from '../../data-explorer.routes';
 @Component({
     selector: 'sp-data-explorer-dashboard-panel',
     templateUrl: './data-explorer-dashboard-panel.component.html',
-    styleUrls: ['./data-explorer-dashboard-panel.component.scss'],
+    styleUrls: ['./data-explorer-dashboard-panel.component.css'],
 })
 export class DataExplorerDashboardPanelComponent implements OnInit, OnDestroy {
     dashboardLoaded = false;

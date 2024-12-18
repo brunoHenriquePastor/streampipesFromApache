@@ -38,7 +38,7 @@ import { zip } from 'rxjs';
 @Component({
     selector: 'sp-dashboard-overview',
     templateUrl: './dashboard-overview.component.html',
-    styleUrls: ['./dashboard-overview.component.scss'],
+    styleUrls: ['./dashboard-overview.component.css'],
 })
 export class DashboardOverviewComponent implements OnInit {
     dashboards: Dashboard[] = [];

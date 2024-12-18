@@ -24,14 +24,12 @@ import org.apache.streampipes.commons.exceptions.connect.AdapterException;
 import org.apache.streampipes.commons.prometheus.adapter.AdapterMetricsManager;
 import org.apache.streampipes.connect.management.management.WorkerAdministrationManagement;
 import org.apache.streampipes.connect.management.management.WorkerRestClient;
-import org.apache.streampipes.manager.api.extensions.IExtensionsServiceEndpointGenerator;
-import org.apache.streampipes.manager.execution.endpoint.ExtensionsServiceEndpointGenerator;
+import org.apache.streampipes.connect.management.management.WorkerUrlProvider;
 import org.apache.streampipes.model.monitoring.SpLogMessage;
 import org.apache.streampipes.model.runtime.RuntimeOptionsRequest;
 import org.apache.streampipes.model.runtime.RuntimeOptionsResponse;
 import org.apache.streampipes.resource.management.SpResourceManager;
 import org.apache.streampipes.storage.management.StorageDispatcher;
-import org.apache.streampipes.svcdiscovery.api.model.SpServiceUrlProvider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,17 +47,17 @@ public class RuntimeResolvableResource extends AbstractAdapterResource<WorkerAdm
 
   private static final Logger LOG = LoggerFactory.getLogger(RuntimeResolvableResource.class);
 
-  private final IExtensionsServiceEndpointGenerator endpointGenerator;
+  private final WorkerUrlProvider workerUrlProvider;
 
   public RuntimeResolvableResource() {
     super(() -> new WorkerAdministrationManagement(
         StorageDispatcher.INSTANCE.getNoSqlStore()
-            .getAdapterInstanceStorage(),
+                                  .getAdapterInstanceStorage(),
         AdapterMetricsManager.INSTANCE.getAdapterMetrics(),
         new SpResourceManager().manageAdapters(),
         new SpResourceManager().manageDataStreams()
     ));
-    this.endpointGenerator = new ExtensionsServiceEndpointGenerator();
+    this.workerUrlProvider = new WorkerUrlProvider();
   }
 
   @PostMapping(
@@ -70,12 +68,8 @@ public class RuntimeResolvableResource extends AbstractAdapterResource<WorkerAdm
                                                @RequestBody RuntimeOptionsRequest runtimeOptionsRequest) {
 
     try {
-      String baseUrl = endpointGenerator.getEndpointBaseUrl(
-          appId,
-          SpServiceUrlProvider.ADAPTER,
-          runtimeOptionsRequest.getDeploymentConfiguration().getDesiredServiceTags()
-      );
-      RuntimeOptionsResponse result = WorkerRestClient.getConfiguration(baseUrl, appId, runtimeOptionsRequest);
+      String workerEndpoint = workerUrlProvider.getWorkerBaseUrl(appId);
+      RuntimeOptionsResponse result = WorkerRestClient.getConfiguration(workerEndpoint, appId, runtimeOptionsRequest);
 
       return ok(result);
     } catch (AdapterException e) {

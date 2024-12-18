@@ -27,7 +27,7 @@ export class UserUtils {
         .addRole(UserRole.ROLE_ADMIN)
         .build();
 
-    public static userWithAdapterAndPipelineAdminRights = UserBuilder.create(
+    public static adapterAndPipelineAdminUser = UserBuilder.create(
         'anpadmin@streampipes.apache.org',
     )
         .setName('anpadmin')
@@ -60,15 +60,6 @@ export class UserUtils {
 
         // Store
         cy.dataCy('sp-element-edit-user-save').click();
-    }
-
-    public static switchUser(user: User) {
-        cy.logout();
-        cy.visit('#/login');
-        cy.dataCy('login-email').type(user.email);
-        cy.dataCy('login-password').type(user.password);
-        cy.dataCy('login-button').click();
-        cy.wait(1000);
     }
 
     public static deleteUser(user: User) {

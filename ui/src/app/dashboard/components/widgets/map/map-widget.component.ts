@@ -36,7 +36,7 @@ import { DatalakeRestService } from '@streampipes/platform-services';
 @Component({
     selector: 'sp-map-widget',
     templateUrl: './map-widget.component.html',
-    styleUrls: ['./map-widget.component.scss'],
+    styleUrls: ['./map-widget.component.css'],
 })
 export class MapWidgetComponent
     extends BaseStreamPipesWidget

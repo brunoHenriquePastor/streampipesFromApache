@@ -27,7 +27,7 @@ import { BaseRuntimeResolvableSelectionInput } from '../static-runtime-resolvabl
 @Component({
     selector: 'sp-app-static-runtime-resolvable-any-input',
     templateUrl: './static-runtime-resolvable-any-input.component.html',
-    styleUrls: ['./static-runtime-resolvable-any-input.component.scss'],
+    styleUrls: ['./static-runtime-resolvable-any-input.component.css'],
 })
 export class StaticRuntimeResolvableAnyInputComponent
     extends BaseRuntimeResolvableSelectionInput<RuntimeResolvableAnyStaticProperty>

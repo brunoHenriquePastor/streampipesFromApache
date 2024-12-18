@@ -19,7 +19,6 @@ package org.apache.streampipes.model.extensions.svcdiscovery;
 
 public enum SpServiceTagPrefix {
   SP_GROUP,
-  CUSTOM,  // Is used for user-defined service tags provided via Envs.SP_SERVICE_TAGS
   ADAPTER,
   DATA_STREAM,
   DATA_PROCESSOR,

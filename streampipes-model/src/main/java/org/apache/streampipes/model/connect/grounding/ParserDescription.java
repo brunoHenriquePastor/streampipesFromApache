@@ -20,7 +20,10 @@ package org.apache.streampipes.model.connect.grounding;
 
 
 import org.apache.streampipes.model.base.NamedStreamPipesEntity;
+import org.apache.streampipes.model.staticproperty.StaticProperty;
 import org.apache.streampipes.model.staticproperty.StaticPropertyGroup;
+
+import java.util.List;
 
 public class ParserDescription extends NamedStreamPipesEntity {
 
@@ -29,6 +32,25 @@ public class ParserDescription extends NamedStreamPipesEntity {
   public ParserDescription() {
     super();
     this.config = new StaticPropertyGroup();
+  }
+
+  public ParserDescription(String uri, String name, String description) {
+    super(uri, name, description);
+    this.config = new StaticPropertyGroup(uri, name, description);
+  }
+
+  public ParserDescription(String uri,
+                           String name,
+                           String description,
+                           List<StaticProperty> config) {
+    super(uri, name, description);
+
+    this.config = new StaticPropertyGroup(uri, name, description, config);
+  }
+
+  public ParserDescription(ParserDescription other) {
+    super(other);
+    this.config = other.getConfig();
   }
 
   public StaticPropertyGroup getConfig() {

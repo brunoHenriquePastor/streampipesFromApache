@@ -18,5 +18,24 @@
 
 package org.apache.streampipes.model.client.user;
 
-public record JwtAuthenticationResponse(String accessToken) {
+public class JwtAuthenticationResponse {
+
+  private String accessToken;
+
+  private JwtAuthenticationResponse(String accessToken) {
+    this.accessToken = accessToken;
+  }
+
+  public static JwtAuthenticationResponse from(String accessToken) {
+    return new JwtAuthenticationResponse(accessToken);
+  }
+
+  public String getAccessToken() {
+    return accessToken;
+  }
+
+  public void setAccessToken(String accessToken) {
+    this.accessToken = accessToken;
+  }
+
 }

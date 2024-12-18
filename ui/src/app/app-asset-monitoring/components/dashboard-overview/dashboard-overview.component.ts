@@ -23,7 +23,7 @@ import { DashboardConfiguration } from '../../model/dashboard-configuration.mode
 @Component({
     selector: 'sp-asset-dashboard-overview',
     templateUrl: './dashboard-overview.component.html',
-    styleUrls: ['./dashboard-overview.component.scss'],
+    styleUrls: ['./dashboard-overview.component.css'],
 })
 export class AssetDashboardOverviewComponent implements OnInit {
     @Output() selectedDashboard = new EventEmitter<DashboardConfiguration>();

@@ -19,7 +19,6 @@
 package org.apache.streampipes.service.extensions;
 
 import org.apache.streampipes.client.StreamPipesClient;
-import org.apache.streampipes.commons.environment.Environments;
 import org.apache.streampipes.extensions.api.migration.IModelMigrator;
 import org.apache.streampipes.extensions.management.client.StreamPipesClientResolver;
 import org.apache.streampipes.extensions.management.init.DeclarersSingleton;
@@ -137,7 +136,6 @@ public abstract class StreamPipesExtensionsServiceBase extends StreamPipesServic
           DeclarersSingleton.getInstance().getServiceDefinition().getServiceGroup()));
     }
     tags.addAll(getExtensionsServiceTags(extensions));
-    tags.addAll(new CustomServiceTagResolver(Environments.getEnvironment()).getCustomServiceTags());
     return tags;
   }
 

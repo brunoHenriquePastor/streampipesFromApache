@@ -26,6 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FlexLayoutModule } from '@ngbracket/ngx-layout';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ConfigurationService } from './shared/configuration.service';
 
 import { MessagingConfigurationComponent } from './messaging-configuration/messaging-configuration.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -70,14 +71,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { PipelineElementTypeFilter } from './extensions-installation/filter/pipeline-element-type.pipe';
-import { PipelineElementNameFilter } from './extensions-installation/filter/pipeline-element-name.pipe';
-import { PipelineElementInstallationStatusFilter } from './extensions-installation/filter/pipeline-element-installation-status.pipe';
-import { OrderByPipe } from './extensions-installation/filter/order-by.pipe';
-import { SpExtensionsInstallationDialogComponent } from './dialog/extensions-installation/extensions-installation.component';
-import { EndpointItemComponent } from './extensions-installation/endpoint-item/endpoint-item.component';
-import { SpExtensionsInstallationComponent } from './extensions-installation/extensions-installation.component';
-import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
     imports: [
@@ -91,7 +84,6 @@ import { MatMenuModule } from '@angular/material/menu';
         MatInputModule,
         MatCheckboxModule,
         MatDividerModule,
-        MatMenuModule,
         MatTooltipModule,
         MatTableModule,
         MatPaginatorModule,
@@ -134,10 +126,6 @@ import { MatMenuModule } from '@angular/material/menu';
                     {
                         path: 'messaging',
                         component: MessagingConfigurationComponent,
-                    },
-                    {
-                        path: 'extensions-installation',
-                        component: SpExtensionsInstallationComponent,
                     },
                     {
                         path: 'extensions-services',
@@ -184,20 +172,7 @@ import { MatMenuModule } from '@angular/material/menu';
         SpMessagingBrokerConfigComponent,
         SpRegisteredExtensionsServiceComponent,
         SpExtensionsServiceConfigurationComponent,
-
-        SpExtensionsInstallationComponent,
-        SpExtensionsInstallationDialogComponent,
-        EndpointItemComponent,
-        OrderByPipe,
-        PipelineElementNameFilter,
-        PipelineElementInstallationStatusFilter,
-        PipelineElementTypeFilter,
     ],
-    providers: [
-        OrderByPipe,
-        PipelineElementInstallationStatusFilter,
-        PipelineElementNameFilter,
-        PipelineElementTypeFilter,
-    ],
+    providers: [],
 })
 export class ConfigurationModule {}

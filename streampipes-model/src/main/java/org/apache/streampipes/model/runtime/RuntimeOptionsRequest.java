@@ -18,7 +18,6 @@
 package org.apache.streampipes.model.runtime;
 
 import org.apache.streampipes.model.SpDataStream;
-import org.apache.streampipes.model.deployment.ExtensionDeploymentConfiguration;
 import org.apache.streampipes.model.shared.annotation.TsModel;
 import org.apache.streampipes.model.staticproperty.StaticProperty;
 
@@ -37,8 +36,6 @@ public class RuntimeOptionsRequest {
   protected List<StaticProperty> staticProperties;
 
   protected List<SpDataStream> inputStreams;
-
-  protected ExtensionDeploymentConfiguration deploymentConfiguration;
 
   private String belongsTo;
 
@@ -97,13 +94,5 @@ public class RuntimeOptionsRequest {
 
   public void setBelongsTo(String belongsTo) {
     this.belongsTo = belongsTo;
-  }
-
-  public ExtensionDeploymentConfiguration getDeploymentConfiguration() {
-    return deploymentConfiguration;
-  }
-
-  public void setDeploymentConfiguration(ExtensionDeploymentConfiguration deploymentConfiguration) {
-    this.deploymentConfiguration = deploymentConfiguration;
   }
 }

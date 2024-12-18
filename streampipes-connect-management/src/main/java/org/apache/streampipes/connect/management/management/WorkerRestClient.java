@@ -52,10 +52,10 @@ public class WorkerRestClient {
 
   private static final Logger LOG = LoggerFactory.getLogger(WorkerRestClient.class);
 
-  public static void invokeStreamAdapter(String baseUrl,
+  public static void invokeStreamAdapter(String endpointUrl,
                                          String elementId) throws AdapterException {
     var adapterStreamDescription = getAndDecryptAdapter(elementId);
-    var url = baseUrl + WorkerPaths.getStreamInvokePath();
+    var url = endpointUrl + WorkerPaths.getStreamInvokePath();
 
     startAdapter(url, adapterStreamDescription);
     updateStreamAdapterStatus(adapterStreamDescription.getElementId(), true);
@@ -127,11 +127,11 @@ public class WorkerRestClient {
     return request.execute().returnResponse();
   }
 
-  public static RuntimeOptionsResponse getConfiguration(String baseUrl,
+  public static RuntimeOptionsResponse getConfiguration(String workerEndpoint,
                                                         String appId,
                                                         RuntimeOptionsRequest runtimeOptionsRequest)
           throws AdapterException, SpConfigurationException {
-    String url = baseUrl + WorkerPaths.getRuntimeResolvablePath(appId);
+    String url = workerEndpoint + WorkerPaths.getRuntimeResolvablePath(appId);
 
     try {
       String payload = JacksonSerializer.getObjectMapper().writeValueAsString(runtimeOptionsRequest);

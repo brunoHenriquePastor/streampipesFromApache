@@ -230,7 +230,7 @@ class StreamPipesClient:
         Returns
         -------
         http_headers: Dict[str, str]
-            Header information for HTTP requests as string key-value pairs.
+            header information for HTTP requests as string key-value pairs.
         """
 
         # create HTTP headers from credential provider and add additional headers needed
