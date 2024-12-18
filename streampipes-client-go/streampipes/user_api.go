@@ -18,14 +18,13 @@
 package streampipes
 
 import (
-	"io"
-	"log"
-	"net/http"
-
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/config"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/internal/serializer"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/internal/util"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/model/streampipes_user"
+	"io"
+	"log"
+	"net/http"
 )
 
 type StreamPipesUserInfo struct {
@@ -44,7 +43,7 @@ func (s *StreamPipesUserInfo) GetSingleStreamPipesUserAccountInfo(principalId st
 	endPointUrl := util.NewStreamPipesApiPath(s.config.Url, "streampipes-backend/api/v2/users", []string{principalId})
 	log.Printf("Get data from: %s", endPointUrl)
 
-	response, err := s.executeRequest("GET", endPointUrl, nil)
+	response, err := s.executeRequest("GET", endPointUrl)
 	if err != nil {
 		return streampipes_user.UserAccount{}, err
 	}
@@ -75,7 +74,7 @@ func (s *StreamPipesUserInfo) GetAllStreamPipesShortUserInfo() ([]streampipes_us
 	endPointUrl := util.NewStreamPipesApiPath(s.config.Url, "streampipes-backend/api/v2/users", nil)
 	log.Printf("Get data from: %s", endPointUrl)
 
-	response, err := s.executeRequest("GET", endPointUrl, nil)
+	response, err := s.executeRequest("GET", endPointUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +104,7 @@ func (s *StreamPipesUserInfo) DeleteSingleStreamPipesShortUserInfo(principalId s
 	endPointUrl := util.NewStreamPipesApiPath(s.config.Url, "streampipes-backend/api/v2/users", []string{principalId})
 	log.Printf("Delete data from: %s", endPointUrl)
 
-	response, err := s.executeRequest("DELETE", endPointUrl, nil)
+	response, err := s.executeRequest("DELETE", endPointUrl)
 	if err != nil {
 		return err
 	}

@@ -18,14 +18,13 @@
 package streampipes
 
 import (
-	"io"
-	"log"
-	"net/http"
-
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/config"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/internal/serializer"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/internal/util"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/model/data_lake"
+	"io"
+	"log"
+	"net/http"
 )
 
 type DataLakeDashboard struct {
@@ -43,7 +42,7 @@ func (d *DataLakeDashboard) GetSingleDataLakeDashboard(dashboardId string) (data
 	endPointUrl := util.NewStreamPipesApiPath(d.config.Url, "streampipes-backend/api/v3/datalake/dashboard", []string{dashboardId})
 	log.Printf("Get data from: %s", endPointUrl)
 
-	response, err := d.executeRequest("GET", endPointUrl, nil)
+	response, err := d.executeRequest("GET", endPointUrl)
 	if err != nil {
 		return data_lake.Dashboard{}, err
 	}
@@ -73,7 +72,7 @@ func (d *DataLakeDashboard) GetAllDataLakeDashboard() ([]data_lake.Dashboard, er
 	endPointUrl := util.NewStreamPipesApiPath(d.config.Url, "streampipes-backend/api/v3/datalake/dashboard", nil)
 	log.Printf("Get data from: %s", endPointUrl)
 
-	response, err := d.executeRequest("GET", endPointUrl, nil)
+	response, err := d.executeRequest("GET", endPointUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +102,7 @@ func (d *DataLakeDashboard) DeleteSingleDataLakeDashboard(dashboardId string) er
 	endPointUrl := util.NewStreamPipesApiPath(d.config.Url, "streampipes-backend/api/v3/datalake/dashboard", []string{dashboardId})
 	log.Printf("Delete data from: %s", endPointUrl)
 
-	response, err := d.executeRequest("DELETE", endPointUrl, nil)
+	response, err := d.executeRequest("DELETE", endPointUrl)
 	if err != nil {
 		return err
 	}

@@ -38,23 +38,15 @@ public class TimeSeriesStorageInflux extends TimeSeriesStorage {
 
   private final PropertyHandler propertyHandler;
 
-  public TimeSeriesStorageInflux(
-      DataLakeMeasure measure,
-      Environment environment,
-      InfluxClientProvider influxClientProvider
-  ) throws SpRuntimeException {
-    this(measure, false, environment, influxClientProvider);
-  }
 
   public TimeSeriesStorageInflux(
       DataLakeMeasure measure,
-      boolean ignoreDuplicates,
       Environment environment,
       InfluxClientProvider influxClientProvider
   ) throws SpRuntimeException {
     super(measure);
-    this.influxDb = influxClientProvider.getSetUpInfluxDBClient(environment);
-    propertyHandler = new PropertyHandler(new PropertyDuplicateFilter(ignoreDuplicates));
+    influxDb = influxClientProvider.getInitializedInfluxDBClient(environment);
+    propertyHandler = new PropertyHandler();
   }
 
   protected void writeToTimeSeriesStorage(Event event) throws SpRuntimeException {

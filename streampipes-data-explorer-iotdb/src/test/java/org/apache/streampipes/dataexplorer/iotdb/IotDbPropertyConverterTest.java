@@ -18,13 +18,12 @@
 
 package org.apache.streampipes.dataexplorer.iotdb;
 
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.apache.streampipes.commons.exceptions.SpRuntimeException;
 import org.apache.streampipes.model.runtime.field.PrimitiveField;
 import org.apache.streampipes.model.schema.EventPropertyPrimitive;
 import org.apache.streampipes.vocabulary.SO;
 import org.apache.streampipes.vocabulary.XSD;
-
-import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +42,7 @@ public class IotDbPropertyConverterTest {
   @Test
   public void convertPrimitivePropertyInteger() {
 
-    var property = new EventPropertyPrimitive(XSD.INTEGER.toString(), "test", null, "");
+    var property = new EventPropertyPrimitive(XSD.INTEGER.toString(), "test", null, null);
     var field = new PrimitiveField("test", "test", 5);
 
     var result = new IotDbPropertyConverter().convertPrimitiveProperty(property, field, "sanitizedTest");
@@ -56,7 +55,7 @@ public class IotDbPropertyConverterTest {
   @Test
   public void convertPrimitivePropertyString() {
 
-    var property = new EventPropertyPrimitive(XSD.STRING.toString(), "test", null, "");
+    var property = new EventPropertyPrimitive(XSD.STRING.toString(), "test", null, null);
     var field = new PrimitiveField("test", "test", "value");
 
     var result = new IotDbPropertyConverter().convertPrimitiveProperty(property, field, "sanitizedTest");
@@ -69,7 +68,7 @@ public class IotDbPropertyConverterTest {
   @Test
   public void convertPrimitivePropertyFloat() {
 
-    var property = new EventPropertyPrimitive(XSD.FLOAT.toString(), "test", null, "");
+    var property = new EventPropertyPrimitive(XSD.FLOAT.toString(), "test", null, null);
     var field = new PrimitiveField("test", "test", 0.5f);
 
     var result = new IotDbPropertyConverter().convertPrimitiveProperty(property, field, "sanitizedTest");
@@ -82,7 +81,7 @@ public class IotDbPropertyConverterTest {
   @Test
   public void convertPrimitivePropertyNumber() {
 
-    var property = new EventPropertyPrimitive(SO.NUMBER, "test", null, "");
+    var property = new EventPropertyPrimitive(SO.NUMBER, "test", null, null);
     var field = new PrimitiveField("test", "test", 5.24);
 
     var result = new IotDbPropertyConverter().convertPrimitiveProperty(property, field, "sanitizedTest");
@@ -95,7 +94,7 @@ public class IotDbPropertyConverterTest {
   @Test
   public void convertPrimitivePropertyUnknown() {
 
-    var property = new EventPropertyPrimitive(XSD.ANY_TYPE.toString(), "test", null, "");
+    var property = new EventPropertyPrimitive(XSD.ANY_TYPE.toString(), "test", null, null);
     var field = new PrimitiveField("test", "test", 5);
 
     assertThrows(SpRuntimeException.class, () -> new IotDbPropertyConverter().convertPrimitiveProperty(property, field, "sanitizedTest"));

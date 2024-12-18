@@ -18,18 +18,30 @@
 
 .status-container {
     height: 150px;
-    width: 100%;
-    color: var(--color-primary);
+    width: 80%;
+    color: white;
     border-radius: 5px;
     margin-bottom: 20px;
-    border: 2px solid var(--color-bg-2);
-    background: var(--color-bg-2);
-    border-bottom: 5px solid var(--color-accent);
+}
+
+.status-container.pipelines {
+    background: var(--color-accent);
+}
+
+.status-container.pipelines-running {
+    background: rgb(59, 92, 149);
+}
+
+.status-container.notifications {
+    background: rgb(88, 114, 146);
+}
+
+.status-container.pipeline-elements-installed {
+    background: rgb(156, 156, 156);
 }
 
 .status-container-number {
-    font-size: 36pt;
-    font-weight: bold;
+    font-size: 46pt;
 }
 
 .status-container:hover {
@@ -38,19 +50,9 @@
 }
 
 .status-container-text {
-    font-size: 15pt;
+    font-size: 16pt;
 }
 
-.status-container-create-link {
-    font-size: 12pt;
-    color: var(--color-accent);
-}
-
-.status-container-create-link:hover {
-    font-weight: bold;
-}
-
-.status-container-icon {
-    font-size: 50pt;
-    color: var(--color-bg-3);
+.mr-20 {
+    margin-right: 20px;
 }

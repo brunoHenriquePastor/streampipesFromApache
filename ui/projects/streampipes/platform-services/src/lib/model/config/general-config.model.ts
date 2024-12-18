@@ -16,8 +16,6 @@
  *
  */
 
-import { LinkSettings } from '../gen/streampipes-model';
-
 export interface GeneralConfigModel {
     hostname: string;
     port: number;
@@ -27,5 +25,4 @@ export interface GeneralConfigModel {
     allowSelfRegistration: boolean;
     defaultUserRoles: string[];
     appName: string;
-    linkSettings: LinkSettings;
 }

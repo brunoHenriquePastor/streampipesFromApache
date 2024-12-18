@@ -16,8 +16,9 @@
  *
  */
 
-.mat-mdc-header-cell {
-    font-weight: bold;
+table {
+    width: 100%;
+    background: transparent;
 }
 
 .m-20 {
@@ -36,18 +37,9 @@
     margin-right: 10px;
 }
 
-.warning {
-    border: 1px solid #dea843;
-    background: #f1f1e6;
-    padding: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-sizing: border-box;
-    font-size: 10pt;
+.mat-mdc-row:nth-child(even) {
+    background-color: var(--color-bg-1);
 }
-
-.warning-icon {
-    color: #dea843;
-    font-size: 18px;
+.mat-mdc-row:nth-child(odd) {
+    background-color: var(--color-bg-2);
 }

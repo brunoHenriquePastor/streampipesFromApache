@@ -22,14 +22,13 @@ import {
     DialogService,
     PanelType,
     SpBreadcrumbService,
-    SpNavigationItem,
 } from '@streampipes/shared-ui';
 import { ExtensionItemDescription } from '@streampipes/platform-services';
 import { MatSelectChange } from '@angular/material/select';
 import { ExtensionsInstallationService } from './extensions-installation.service';
 import { SpExtensionsInstallationDialogComponent } from '../dialog/extensions-installation/extensions-installation.component';
 import { SpConfigurationRoutes } from '../configuration.routes';
-import { SpConfigurationTabsService } from '../configuration-tabs.service';
+import { SpConfigurationTabs } from '../configuration-tabs';
 
 @Component({
     selector: 'sp-extensions-installation',
@@ -37,7 +36,7 @@ import { SpConfigurationTabsService } from '../configuration-tabs.service';
     styleUrls: ['./extensions-installation.component.scss'],
 })
 export class SpExtensionsInstallationComponent implements OnInit {
-    tabs: SpNavigationItem[] = [];
+    tabs = SpConfigurationTabs.getTabs();
 
     activeLink: string;
 
@@ -58,7 +57,6 @@ export class SpExtensionsInstallationComponent implements OnInit {
         private dialogService: DialogService,
         private changeDetectorRef: ChangeDetectorRef,
         private breadcrumbService: SpBreadcrumbService,
-        private tabService: SpConfigurationTabsService,
     ) {
         this.results = [];
         this.loading = false;
@@ -67,10 +65,9 @@ export class SpExtensionsInstallationComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.tabs = this.tabService.getTabs();
         this.breadcrumbService.updateBreadcrumb([
             SpConfigurationRoutes.BASE,
-            { label: this.tabService.getTabTitle('extensions-installation') },
+            { label: SpConfigurationTabs.getTabs()[3].itemTitle },
         ]);
         this.getEndpointItems();
         this.selectedTab = 'all';

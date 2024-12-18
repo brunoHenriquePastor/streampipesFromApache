@@ -18,14 +18,13 @@
 package streampipes
 
 import (
-	"io"
-	"log"
-	"net/http"
-
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/config"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/internal/serializer"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/internal/util"
 	"github.com/apache/streampipes/streampipes-client-go/streampipes/model/functions"
+	"io"
+	"log"
+	"net/http"
 )
 
 type Functions struct {
@@ -44,7 +43,7 @@ func (f *Functions) GetFunctionLogs(functionId string) ([]functions.SpLogEntry, 
 	endPointUrl := util.NewStreamPipesApiPath(f.config.Url, "streampipes-backend/api/v2/functions", []string{functionId, "logs"})
 	log.Printf("Get data from: %s", endPointUrl)
 
-	response, err := f.executeRequest("GET", endPointUrl, nil)
+	response, err := f.executeRequest("GET", endPointUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +74,7 @@ func (f *Functions) GetFunctionMetrics(functionId string) (functions.SpMetricsEn
 	endPointUrl := util.NewStreamPipesApiPath(f.config.Url, "streampipes-backend/api/v2/functions", []string{functionId, "metrics"})
 	log.Printf("Get data from: %s", endPointUrl)
 
-	response, err := f.executeRequest("GET", endPointUrl, nil)
+	response, err := f.executeRequest("GET", endPointUrl)
 	if err != nil {
 		return functions.SpMetricsEntry{}, err
 	}
@@ -106,7 +105,7 @@ func (f *Functions) GetAllFunction() ([]functions.FunctionDefinition, error) {
 	endPointUrl := util.NewStreamPipesApiPath(f.config.Url, "streampipes-backend/api/v2/functions", nil)
 	log.Printf("Get data from: %s", endPointUrl)
 
-	response, err := f.executeRequest("GET", endPointUrl, nil)
+	response, err := f.executeRequest("GET", endPointUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +135,7 @@ func (f *Functions) DeleteSingleFunction(functionId string) error {
 	endPointUrl := util.NewStreamPipesApiPath(f.config.Url, "streampipes-backend/api/v2/functions", []string{functionId})
 	log.Printf("Delete data from: %s", endPointUrl)
 
-	response, err := f.executeRequest("DELETE", endPointUrl, nil)
+	response, err := f.executeRequest("DELETE", endPointUrl)
 	if err != nil {
 		return err
 	}
