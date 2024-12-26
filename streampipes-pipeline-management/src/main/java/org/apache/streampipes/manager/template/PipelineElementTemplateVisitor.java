@@ -165,12 +165,28 @@ public class PipelineElementTemplateVisitor implements StaticPropertyVisitor {
 
   @Override
   public void visit(StaticPropertyAlternatives staticPropertyAlternatives) {
+<<<<<<< HEAD
     if (hasKey(staticPropertyAlternatives)) {
       Map<String, Object> values = getAsMap(staticPropertyAlternatives, "alternatives");
       staticPropertyAlternatives.getAlternatives().forEach((alternative) -> {
         PipelineElementTemplateVisitor visitor = new PipelineElementTemplateVisitor(values);
         alternative.accept(visitor);
       });
+=======
+    if (hasConfig(staticPropertyAlternatives)) {
+      Map<String, Object> values = getConfig(staticPropertyAlternatives);
+      var selectedId = getConfigValueAsString(staticPropertyAlternatives);
+      staticPropertyAlternatives.getAlternatives().forEach(a -> a.setSelected(false));
+      staticPropertyAlternatives
+          .getAlternatives()
+          .stream()
+          .filter(a -> a.getInternalName().equalsIgnoreCase(selectedId))
+          .forEach(a -> {
+            a.setSelected(true);
+            PipelineElementTemplateVisitor visitor = new PipelineElementTemplateVisitor(List.of(values));
+            a.accept(visitor);
+          });
+>>>>>>> upstream/dev
     }
   }
 

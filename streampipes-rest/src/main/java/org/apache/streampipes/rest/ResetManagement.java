@@ -116,18 +116,14 @@ public class ResetManagement {
         AdapterMetricsManager.INSTANCE.getAdapterMetrics()
     );
 
-    try {
-      List<AdapterDescription> allAdapters = adapterMasterManagement.getAllAdapterInstances();
-      allAdapters.forEach(adapterDescription -> {
-        try {
-          adapterMasterManagement.deleteAdapter(adapterDescription.getElementId());
-        } catch (AdapterException e) {
-          logger.error("Failed to delete adapter with id: " + adapterDescription.getElementId(), e);
-        }
-      });
-    } catch (AdapterException e) {
-      logger.error("Failed to load all adapter descriptions", e);
-    }
+    List<AdapterDescription> allAdapters = adapterMasterManagement.getAllAdapterInstances();
+    allAdapters.forEach(adapterDescription -> {
+      try {
+        adapterMasterManagement.deleteAdapter(adapterDescription.getElementId());
+      } catch (AdapterException e) {
+        logger.error("Failed to delete adapter with id: " + adapterDescription.getElementId(), e);
+      }
+    });
   }
 
   private static void deleteAllFiles() {
@@ -157,22 +153,33 @@ public class ResetManagement {
     IDataExplorerWidgetStorage widgetStorage =
         StorageDispatcher.INSTANCE.getNoSqlStore()
                                   .getDataExplorerWidgetStorage();
+<<<<<<< HEAD
     widgetStorage.getAllDataExplorerWidgets()
                  .forEach(widget -> widgetStorage.deleteDataExplorerWidget(widget.getId()));
+=======
+    widgetStorage.findAll()
+                 .forEach(widget -> widgetStorage.deleteElementById(widget.getElementId()));
+>>>>>>> upstream/dev
   }
 
   private static void removeAllDataViews() {
     IDashboardStorage dataLakeDashboardStorage =
         StorageDispatcher.INSTANCE.getNoSqlStore()
                                   .getDataExplorerDashboardStorage();
+<<<<<<< HEAD
     dataLakeDashboardStorage.getAllDashboards()
                             .forEach(dashboard -> dataLakeDashboardStorage.deleteDashboard(dashboard.getCouchDbId()));
+=======
+    dataLakeDashboardStorage.findAll()
+                            .forEach(dashboard -> dataLakeDashboardStorage.deleteElementById(dashboard.getElementId()));
+>>>>>>> upstream/dev
   }
 
   private static void removeAllDashboardWidgets() {
     IDashboardWidgetStorage dashobardWidgetStorage =
         StorageDispatcher.INSTANCE.getNoSqlStore()
                                   .getDashboardWidgetStorage();
+<<<<<<< HEAD
     dashobardWidgetStorage.getAllDashboardWidgets()
                           .forEach(widget -> dashobardWidgetStorage.deleteDashboardWidget(widget.getId()));
   }
@@ -182,6 +189,17 @@ public class ResetManagement {
                                                                    .getDashboardStorage();
     dashboardStorage.getAllDashboards()
                     .forEach(dashboard -> dashboardStorage.deleteDashboard(dashboard.getCouchDbId()));
+=======
+    dashboardWidgetStorage.findAll()
+                          .forEach(widget -> dashboardWidgetStorage.deleteElementById(widget.getElementId()));
+  }
+
+  private static void removeAllDashboards() {
+    var dashboardStorage = StorageDispatcher.INSTANCE.getNoSqlStore()
+                                                     .getDashboardStorage();
+    dashboardStorage.findAll()
+                    .forEach(dashboard -> dashboardStorage.deleteElementById(dashboard.getElementId()));
+>>>>>>> upstream/dev
   }
 
   private static void removeAllAssets(String username) {
@@ -207,4 +225,33 @@ public class ResetManagement {
         .forEach(pipelineElementTemplateStorage::deleteElement);
 
   }
+<<<<<<< HEAD
+=======
+
+  private static void clearGenericStorage() {
+    var appDocTypesToDelete = List.of(
+        "asset-management",
+        "asset-sites"
+    );
+    var genericStorage = StorageDispatcher.INSTANCE.getNoSqlStore()
+                                                   .getGenericStorage();
+
+    appDocTypesToDelete.forEach(docType -> {
+      try {
+        var allDocs = genericStorage.findAll(docType);
+        for (var doc : allDocs) {
+          genericStorage.delete(
+              doc.get("_id")
+                 .toString(),
+              doc.get("_rev")
+                 .toString()
+          );
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+  }
+>>>>>>> upstream/dev
 }

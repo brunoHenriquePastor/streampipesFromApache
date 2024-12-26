@@ -81,6 +81,7 @@ public class AdapterMasterManagement {
 
     var elementId = this.adapterResourceManager.encryptAndCreate(ad);
 
+<<<<<<< HEAD
     // Create stream
     var storedDescription = new SourcesManagement().createAdapterDataStream(ad, dataStreamElementId);
     storedDescription.setCorrespondingAdapterId(elementId);
@@ -88,6 +89,23 @@ public class AdapterMasterManagement {
     LOG.info("Install source (source URL: {} in backend", ad.getElementId());
 
     return ad.getElementId();
+=======
+    // Stream is only created if the adpater is successfully stored
+    createDataStreamForAdapter(adapterDescription, adapterId, dataStreamElementId, principalSid);
+  }
+
+  private void createDataStreamForAdapter(
+      AdapterDescription adapterDescription,
+      String adapterId,
+      String streamId,
+      String principalSid
+  ) throws AdapterException {
+    var storedDescription = new SourcesManagement()
+        .createAdapterDataStream(adapterDescription, streamId);
+    storedDescription.setCorrespondingAdapterId(adapterId);
+    installDataSource(storedDescription, principalSid);
+    LOG.info("Install source (source URL: {} in backend", adapterDescription.getElementId());
+>>>>>>> upstream/dev
   }
 
 
@@ -132,6 +150,7 @@ public class AdapterMasterManagement {
     LOG.info("Successfully deleted data stream: " + adapter.getCorrespondingDataStreamElementId());
   }
 
+<<<<<<< HEAD
   public List<AdapterDescription> getAllAdapterInstances() throws AdapterException {
 
     List<AdapterDescription> allAdapters = adapterInstanceStorage.getAllAdapters();
@@ -141,6 +160,10 @@ public class AdapterMasterManagement {
     }
 
     return allAdapters;
+=======
+  public List<AdapterDescription> getAllAdapterInstances() {
+    return adapterInstanceStorage.findAll();
+>>>>>>> upstream/dev
   }
 
   public void stopStreamAdapter(String elementId) throws AdapterException {
@@ -182,11 +205,18 @@ public class AdapterMasterManagement {
     }
   }
 
+<<<<<<< HEAD
   private void installDataSource(SpDataStream stream,
                                  String principalSid,
                                  boolean publicElement) throws AdapterException {
+=======
+  private void installDataSource(
+      SpDataStream stream,
+      String principalSid
+  ) throws AdapterException {
+>>>>>>> upstream/dev
     try {
-      new DataStreamVerifier(stream).verifyAndAdd(principalSid, publicElement);
+      new DataStreamVerifier(stream).verifyAndAdd(principalSid, false);
     } catch (SepaParseException e) {
       LOG.error("Error while installing data source: {}", stream.getElementId(), e);
       throw new AdapterException();

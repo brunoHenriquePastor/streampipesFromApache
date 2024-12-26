@@ -46,6 +46,7 @@ import org.apache.streampipes.model.staticproperty.RuntimeResolvableOneOfStaticP
 import org.apache.streampipes.model.staticproperty.StaticProperty;
 import org.apache.streampipes.model.staticproperty.StaticPropertyAlternative;
 import org.apache.streampipes.sdk.builder.adapter.AdapterConfigurationBuilder;
+import org.apache.streampipes.sdk.helpers.Labels;
 import org.apache.streampipes.sdk.helpers.Locales;
 import org.apache.streampipes.sdk.utils.Assets;
 
@@ -61,6 +62,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -72,8 +74,13 @@ import java.util.stream.Collectors;
 
 public class KafkaProtocol implements StreamPipesAdapter, SupportsRuntimeConfig {
 
+<<<<<<< HEAD
   private static final Logger logger = LoggerFactory.getLogger(KafkaProtocol.class);
   KafkaConfig config;
+=======
+  private static final Logger LOG = LoggerFactory.getLogger(KafkaProtocol.class);
+  private KafkaAdapterConfig config;
+>>>>>>> upstream/dev
 
   public static final String ID = "org.apache.streampipes.connect.iiot.protocol.stream.kafka";
 
@@ -133,8 +140,14 @@ public class KafkaProtocol implements StreamPipesAdapter, SupportsRuntimeConfig 
       config.setOptions(topics.stream().map(Option::new).collect(Collectors.toList()));
 
       return config;
+<<<<<<< HEAD
     } catch (KafkaException e) {
       throw new SpConfigurationException(e.getMessage(), e);
+=======
+    } catch (Exception e) {
+      var message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+      throw new SpConfigurationException(message, e.getCause());
+>>>>>>> upstream/dev
     }
   }
 
@@ -145,7 +158,11 @@ public class KafkaProtocol implements StreamPipesAdapter, SupportsRuntimeConfig 
     latestAlternative.setSelected(true);
 
     return AdapterConfigurationBuilder
+<<<<<<< HEAD
         .create(ID, 0, KafkaProtocol::new)
+=======
+        .create(ID, 2, KafkaProtocol::new)
+>>>>>>> upstream/dev
         .withSupportedParsers(Parsers.defaultParsers())
         .withAssets(Assets.DOCUMENTATION, Assets.ICON)
         .withLocales(Locales.EN)
@@ -162,6 +179,7 @@ public class KafkaProtocol implements StreamPipesAdapter, SupportsRuntimeConfig 
 
         .requiredSlideToggle(KafkaConnectUtils.getHideInternalTopicsLabel(), true)
 
+<<<<<<< HEAD
         .requiredSingleValueSelectionFromContainer(KafkaConnectUtils.getTopicLabel(), Arrays.asList(
             KafkaConnectUtils.HOST_KEY,
             KafkaConnectUtils.PORT_KEY))
@@ -169,6 +187,21 @@ public class KafkaProtocol implements StreamPipesAdapter, SupportsRuntimeConfig 
                 KafkaConnectUtils.getAlternativesEarliest(),
                 latestAlternative,
                 KafkaConnectUtils.getAlternativesNone())
+=======
+        .requiredSlideToggle(KafkaConfigProvider.getHideInternalTopicsLabel(), true)
+
+        .requiredSingleValueSelectionFromContainer(KafkaConfigProvider.getTopicLabel(), Arrays.asList(
+            KafkaConfigProvider.HOST_KEY,
+            KafkaConfigProvider.PORT_KEY))
+        .requiredAlternatives(KafkaConfigProvider.getAutoOffsetResetConfigLabel(),
+            KafkaConfigProvider.getAlternativesEarliest(),
+            latestAlternative,
+            KafkaConfigProvider.getAlternativesNone())
+        .requiredCodeblock(
+            Labels.withId(KafkaConfigProvider.ADDITIONAL_PROPERTIES),
+            "# key=value, comments are ignored"
+        )
+>>>>>>> upstream/dev
         .buildConfiguration();
   }
 
@@ -204,16 +237,16 @@ public class KafkaProtocol implements StreamPipesAdapter, SupportsRuntimeConfig 
     try {
       kafkaConsumer.disconnect();
     } catch (SpRuntimeException e) {
-      e.printStackTrace();
+      LOG.warn("Runtime exception when disconnecting from Kafka", e);
     }
 
     try {
       Thread.sleep(5000);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      LOG.warn("Interrupted exception when stopping thread", e);
     }
 
-    logger.info("Kafka Adapter was sucessfully stopped");
+    LOG.info("Kafka Adapter was sucessfully stopped");
     thread.interrupt();
   }
 
@@ -244,7 +277,7 @@ public class KafkaProtocol implements StreamPipesAdapter, SupportsRuntimeConfig 
 
     while (true) {
       final ConsumerRecords<byte[], byte[]> consumerRecords =
-          consumer.poll(1000);
+          consumer.poll(Duration.ofMillis(1000));
 
       consumerRecords.forEach(record -> nEventsByte.add(record.value()));
 

@@ -120,6 +120,36 @@ function getTimezoneDifference(endDate: Date, startDate: Date): number {
     return endDate.getTimezoneOffset() - startDate.getTimezoneOffset();
 }
 
+<<<<<<< HEAD
 function parseDate(dateString: string): Date {
     return new Date(Date.parse(dateString));
+=======
+function getLocalizedDateString(date: Date) {
+    return date.toLocaleDateString();
+}
+
+function getLocalizedTimeString(date: Date) {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+}
+
+function parseTimeStringToSeconds(timeString: string) {
+    const [hours, minutes, seconds] = timeString.split(':').map(Number);
+    return hours * 3600 + minutes * 60 + seconds || 0;
+}
+
+function isTimeWithinTolerance(
+    actualTimeString: string,
+    expectedTimeString: string,
+    toleranceInSeconds: number,
+) {
+    const actualTimeInSeconds = parseTimeStringToSeconds(actualTimeString);
+    const expectedTimeInSeconds = parseTimeStringToSeconds(expectedTimeString);
+    return (
+        Math.abs(actualTimeInSeconds - expectedTimeInSeconds) <=
+        toleranceInSeconds
+    );
+>>>>>>> upstream/dev
 }

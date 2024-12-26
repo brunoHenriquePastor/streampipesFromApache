@@ -364,4 +364,31 @@ export class ConnectUtils {
         // Close dialog
         cy.get('button').contains('Close').parent().click();
     }
+<<<<<<< HEAD
+=======
+
+    public static validateAdapterIsRunning() {
+        ConnectUtils.goToConnect();
+        ConnectBtns.startAdapter().should('have.length', 0);
+        ConnectBtns.stopAdapter().should('have.length', 1);
+    }
+
+    public static validateAdapterIsStopped() {
+        ConnectUtils.goToConnect();
+        ConnectBtns.startAdapter().should('have.length', 1);
+        ConnectBtns.stopAdapter().should('have.length', 0);
+    }
+
+    public static checkAmountOfAdapters(amount: number) {
+        ConnectUtils.goToConnect();
+        if (amount === 0) {
+            // The wait is needed because the default value is the no-table-entries element.
+            // It must be waited till the data is loaded. Once a better solution is found, this can be removed.
+            cy.wait(1000);
+            cy.dataCy('no-table-entries').should('be.visible');
+        } else {
+            ConnectBtns.deleteAdapter().should('have.length', amount);
+        }
+    }
+>>>>>>> upstream/dev
 }

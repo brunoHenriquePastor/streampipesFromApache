@@ -112,7 +112,11 @@ public class KafkaAdapterTester extends AdapterTesterBase {
     // Set format to Json
     ((StaticPropertyAlternatives) (desc)
          .getConfig()
+<<<<<<< HEAD
          .get(6))
+=======
+         .get(8))
+>>>>>>> upstream/dev
          .getAlternatives()
          .get(0)
          .setSelected(true);

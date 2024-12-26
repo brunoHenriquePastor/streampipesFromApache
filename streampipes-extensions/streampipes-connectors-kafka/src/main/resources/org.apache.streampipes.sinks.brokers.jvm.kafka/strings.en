@@ -52,3 +52,6 @@ sasl-ssl.title=SASL/SSL
 sasl-ssl.description=Username and password, with ssl encryption
 
 username-group.title=Username and password
+
+additional-properties.title=Additional configurations
+additional-properties.description=Additional Kafka producer configurations in the form key=value

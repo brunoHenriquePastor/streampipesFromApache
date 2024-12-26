@@ -71,11 +71,19 @@ public class AdapterMasterManagementTest {
   }
 
   @Test
+<<<<<<< HEAD
   public void getAllAdaptersSuccess() throws AdapterException {
     List<AdapterDescription> adapterDescriptions = List.of(new AdapterDescription());
     AdapterInstanceStorageImpl adapterStorage = mock(AdapterInstanceStorageImpl.class);
     AdapterResourceManager resourceManager = mock(AdapterResourceManager.class);
     when(adapterStorage.getAllAdapters()).thenReturn(adapterDescriptions);
+=======
+  public void getAllAdapters_Success() {
+    var adapterDescriptions = List.of(new AdapterDescription());
+    var adapterStorage = mock(AdapterInstanceStorageImpl.class);
+    var resourceManager = mock(AdapterResourceManager.class);
+    when(adapterStorage.findAll()).thenReturn(adapterDescriptions);
+>>>>>>> upstream/dev
 
     AdapterMasterManagement adapterMasterManagement =
         new AdapterMasterManagement(
@@ -90,6 +98,7 @@ public class AdapterMasterManagementTest {
     Assertions.assertEquals(1, result.size());
   }
 
+<<<<<<< HEAD
   @Test
   public void getAllAdaptersFail() {
     AdapterInstanceStorageImpl adapterStorage = mock(AdapterInstanceStorageImpl.class);
@@ -107,4 +116,6 @@ public class AdapterMasterManagementTest {
     assertThrows(AdapterException.class, adapterMasterManagement::getAllAdapterInstances);
 
   }
+=======
+>>>>>>> upstream/dev
 }

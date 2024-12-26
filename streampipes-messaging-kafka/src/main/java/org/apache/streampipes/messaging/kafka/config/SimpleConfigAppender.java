@@ -16,24 +16,23 @@
  *
  */
 
-<<<<<<< HEAD
-import { ConnectUtils } from '../../support/utils/connect/ConnectUtils';
-import { PipelineUtils } from '../../support/utils/PipelineUtils';
-import { PipelineElementBuilder } from '../../support/builder/PipelineElementBuilder';
-import { PipelineBuilder } from '../../support/builder/PipelineBuilder';
+package org.apache.streampipes.messaging.kafka.config;
 
-const adapterName = 'simulator';
-=======
-import { PipelineUtils } from '../../support/utils/pipeline/PipelineUtils';
->>>>>>> upstream/dev
+import org.apache.streampipes.commons.exceptions.SpRuntimeException;
 
-describe('Test Random Data Simulator Stream Adapter', () => {
-    beforeEach('Setup Test', () => {
-        cy.initStreamPipesTest();
-    });
+import java.util.Map;
+import java.util.Properties;
 
-    it('Perform Test', () => {
-        PipelineUtils.addSampleAdapterAndPipeline();
-        PipelineUtils.deletePipeline();
-    });
-});
+public class SimpleConfigAppender implements KafkaConfigAppender {
+
+  private final Map<String, String> configs;
+
+  public SimpleConfigAppender(Map<String, String> configs) {
+    this.configs = configs;
+  }
+
+  @Override
+  public void appendConfig(Properties props) throws SpRuntimeException {
+    configs.forEach(props::setProperty);
+  }
+}
